@@ -1,0 +1,18 @@
+{
+  "name": "@ws/worldgen",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Generación física del planeta (P1/P3)",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "lint": "eslint --max-warnings=0 .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "catalog:"
+  }
+}

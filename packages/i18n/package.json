@@ -1,0 +1,21 @@
+{
+  "name": "@ws/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Catálogos es/en y formateadores (headless: corre en UI, Worker y Node)",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "lint": "eslint --max-warnings=0 .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "i18next": "catalog:"
+  },
+  "devDependencies": {
+    "vitest": "catalog:"
+  }
+}

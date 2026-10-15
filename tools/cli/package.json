@@ -1,0 +1,23 @@
+{
+  "name": "@ws/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CLI de desarrollo: ws --version · ws bench (P0.17) · ws run/health/inspect (P1)",
+  "bin": {
+    "ws": "./bin/ws.js"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "lint": "eslint --max-warnings=0 .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ws/core": "workspace:*",
+    "tsx": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "vitest": "catalog:"
+  }
+}
