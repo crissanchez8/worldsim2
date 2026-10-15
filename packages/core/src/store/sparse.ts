@@ -1,7 +1,10 @@
 // Tabla escasa por id (ADR-004) para entidades pocas y heterogéneas (personajes, guerras,
 // tratados…). Un Map con orden de inserción = orden de id, porque los ids solo crecen.
+import { type ByteReader, type ByteWriter, SerializeError } from '../serialize/bytes';
+import { readScalar, writeScalar } from '../serialize/scalar-io';
+import type { Serializable } from '../serialize/serializable';
 import { type Id, IdAllocator } from './id';
-import { checkScalar, type FieldDef, type Fields, type Schema } from './schema';
+import { checkScalar, describeSchema, type FieldDef, type Fields, type Schema } from './schema';
 
 type ValueOf<D extends FieldDef> = D['type'] extends 'str'
   ? string
@@ -18,14 +21,18 @@ function defaultOf(def: FieldDef): number | string | readonly number[] {
   return def.default ?? 0;
 }
 
-export class SparseTable<K extends string, F extends Fields> {
+export class SparseTable<K extends string, F extends Fields> implements Serializable {
   readonly schema: Schema<F>;
+  readonly partName: string;
+  readonly schemaDescription: string;
   readonly allocator: IdAllocator<K>;
   private readonly records = new Map<number, SparseRecord<F>>();
   private lastId = 0;
 
   constructor(schema: Schema<F>, options: { allocator?: IdAllocator<K> } = {}) {
     this.schema = schema;
+    this.partName = schema.name;
+    this.schemaDescription = `sparse:${describeSchema(schema)}`;
     this.allocator = options.allocator ?? new IdAllocator<K>();
   }
 
@@ -110,6 +117,64 @@ export class SparseTable<K extends string, F extends Fields> {
 
   ids(): IterableIterator<number> {
     return this.records.keys();
+  }
+
+  writeState(w: ByteWriter): void {
+    w.varuint(this.allocator.peek());
+    w.varuint(this.records.size);
+    let prev = 0;
+    for (const [id, record] of this.records) {
+      w.varuint(id - prev);
+      prev = id;
+      for (const key of this.schema.order) {
+        const def = this.schema.fields[key];
+        if (!def) continue;
+        const value: unknown = record[key];
+        const where = `${this.schema.name}.${key}#${id}`;
+        if (def.type === 'str') {
+          w.str(value as string);
+        } else if (def.type === 'refs' || def.type === 'f64s') {
+          const list = value as readonly number[];
+          w.varuint(list.length);
+          for (const v of list) writeScalar(w, def.type === 'refs' ? 'ref' : 'f64', v, where);
+        } else {
+          writeScalar(w, def.type, value as number, where);
+        }
+      }
+    }
+  }
+
+  readState(r: ByteReader): void {
+    if (this.records.size !== 0 || this.lastId !== 0) {
+      throw new SerializeError(`${this.schema.name}: readState sobre tabla no vacía`);
+    }
+    const next = r.varuint();
+    const count = r.varuint();
+    let id = 0;
+    for (let i = 0; i < count; i++) {
+      const delta = r.varuint();
+      if (delta === 0) throw new SerializeError(`${this.schema.name}: ids no crecientes`);
+      id += delta;
+      const init: Record<string, unknown> = {};
+      for (const key of this.schema.order) {
+        const def = this.schema.fields[key];
+        if (!def) continue;
+        if (def.type === 'str') {
+          init[key] = r.str();
+        } else if (def.type === 'refs' || def.type === 'f64s') {
+          const length = r.varuint();
+          const list: number[] = [];
+          for (let j = 0; j < length; j++)
+            list.push(readScalar(r, def.type === 'refs' ? 'ref' : 'f64'));
+          init[key] = list;
+        } else {
+          init[key] = readScalar(r, def.type);
+        }
+      }
+      this.insert(id as Id<K>, init as SparseInit<F>);
+    }
+    if (next <= id) throw new SerializeError(`${this.schema.name}: asignador detrás del último id`);
+    this.allocator.ensureAbove(next - 1);
   }
 }
 

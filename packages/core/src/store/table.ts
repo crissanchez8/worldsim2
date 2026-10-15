@@ -2,8 +2,11 @@
 // ordenadas por id (los ids crecen y la compactación preserva el orden), así que:
 //   - iterar filas = iterar en orden de id (determinista);
 //   - id → fila es una búsqueda binaria, sin estructuras que crezcan con la historia.
+import { type ByteReader, type ByteWriter, SerializeError } from '../serialize/bytes';
+import { readScalar, writeScalar } from '../serialize/scalar-io';
+import type { Serializable } from '../serialize/serializable';
 import { type Id, IdAllocator } from './id';
-import { checkScalar, type Fields, type ScalarType, type Schema } from './schema';
+import { checkScalar, describeSchema, type Fields, type ScalarType, type Schema } from './schema';
 
 export type ColumnArray =
   | Float64Array
@@ -63,8 +66,10 @@ function grown<A extends ColumnArray>(array: A, capacity: number): A {
   return next;
 }
 
-export class Table<K extends string, F extends ScalarFields> {
+export class Table<K extends string, F extends ScalarFields> implements Serializable {
   readonly schema: Schema<F>;
+  readonly partName: string;
+  readonly schemaDescription: string;
   readonly allocator: IdAllocator<K>;
   private capacity: number;
   private used = 0; // filas ocupadas, vivas o muertas
@@ -75,6 +80,8 @@ export class Table<K extends string, F extends ScalarFields> {
 
   constructor(schema: Schema<F>, options: { capacity?: number; allocator?: IdAllocator<K> } = {}) {
     this.schema = schema;
+    this.partName = schema.name;
+    this.schemaDescription = `table:${describeSchema(schema)}`;
     this.allocator = options.allocator ?? new IdAllocator<K>();
     this.capacity = Math.max(1, options.capacity ?? 16);
     this.idColumn = new Uint32Array(this.capacity);
@@ -218,6 +225,58 @@ export class Table<K extends string, F extends ScalarFields> {
   /** Fracción de filas muertas (para decidir cuándo compactar). */
   deadFraction(): number {
     return this.used === 0 ? 0 : (this.used - this.live) / this.used;
+  }
+
+  /**
+   * Serializa solo las filas vivas (ids con delta + columnas contiguas): el resultado no
+   * depende de cuándo se compactó.
+   */
+  writeState(w: ByteWriter): void {
+    w.varuint(this.allocator.peek());
+    w.varuint(this.live);
+    let prev = 0;
+    for (const row of this.rows()) {
+      const id = this.idColumn[row] ?? 0;
+      w.varuint(id - prev);
+      prev = id;
+    }
+    for (const key of this.schema.order) {
+      const type = this.def(key).type;
+      const col = this.column(key);
+      for (const row of this.rows()) {
+        writeScalar(
+          w,
+          type,
+          col[row] ?? 0,
+          `${this.schema.name}.${key}#${this.idColumn[row] ?? 0}`,
+        );
+      }
+    }
+  }
+
+  readState(r: ByteReader): void {
+    if (this.used !== 0)
+      throw new SerializeError(`${this.schema.name}: readState sobre tabla no vacía`);
+    const next = r.varuint();
+    const count = r.varuint();
+    this.ensureCapacity(count);
+    let id = 0;
+    for (let row = 0; row < count; row++) {
+      const delta = r.varuint();
+      if (delta === 0) throw new SerializeError(`${this.schema.name}: ids no crecientes`);
+      id += delta;
+      this.idColumn[row] = id;
+      this.aliveColumn[row] = 1;
+    }
+    if (next <= id) throw new SerializeError(`${this.schema.name}: asignador detrás del último id`);
+    this.used = count;
+    this.live = count;
+    this.allocator.ensureAbove(next - 1);
+    for (const key of this.schema.order) {
+      const type = this.def(key).type;
+      const col = this.column(key);
+      for (let row = 0; row < count; row++) col[row] = readScalar(r, type);
+    }
   }
 
   /** Filas vivas en orden de id. */
