@@ -18,5 +18,8 @@
     "dependency-cruiser": "catalog:",
     "eslint": "catalog:",
     "vitest": "catalog:"
+  },
+  "dependencies": {
+    "@ws/core": "workspace:*"
   }
 }
