@@ -47,6 +47,7 @@
 | D39 | 2026-10-15 | RNG por contador: XXH32 de 6 palabras, dos carriles, registro único de streams con ids constantes | Independiente del orden del tick; agregar sistemas no altera el azar (ADR-002) | P0 |
 | D40 | 2026-10-15 | `core/math` = port de fdlibm + allowlist de `Math` en el motor | < 2,2 ulp vs V8; bit a bit entre motores a confirmar en spike C (ADR-003) | P0 |
 | D41 | 2026-10-15 | Estado en SoA + tablas escasas; snapshot binario `WSST`; hash de estado = 2×XXH32 de los bytes serializados | XXH64 emulado medía 50 MB/s vs 3,3 GB/s; el hash sobre bytes garantiza que todo el estado esté en el hash (ADR-004) | P0 |
+| D42 | 2026-10-15 | `docs/model.md` v1.0 aprobado con las decisiones de modelo M1–M8 tal como se recomendaron | M1 libro mayor (`ledger`) para población, territorio y reclamos · M2 log de eventos fuera del hash · M3 vistas derivadas fuera del snapshot · M4 lo que cruza el tick es estado · M5 sistema `factions` · M6 `Person` permanente + `CharacterDetail` · M7 costo de movimiento en días · M8 moneda de cuenta única (plata) | P0 |
 
 ## Aprobaciones de fase
 
@@ -54,3 +55,4 @@
 |---|---|---|---|
 | 2026-10-14 | Plan | DEVELOPMENT_PLAN aprobado como v1.0 | Q1–Q4 quedan para el BRIEF de P0 |
 | 2026-10-15 | P0 | BRIEF aprobado tal cual | D30–D37; descargas de dependencias npm y navegadores de Playwright autorizadas |
+| 2026-10-15 | P0 | `docs/model.md` v1.0 aprobado (gate P0.11) | D42; se habilita el bloque 4 (P0.8–P0.10) |

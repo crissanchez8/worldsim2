@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| **Versión** | 1.0-rc (P0.11) |
+| **Versión** | 1.0 (P0.11) |
 | **Fecha** | 2026-10-15 |
-| **Estado** | 📋 En revisión: gate de P0. Hasta tu OK no se implementan events, modifiers ni scheduler (P0.8–P0.10) |
+| **Estado** | ✅ Aprobado el 2026-10-15 con M1–M8 (D42) |
 | **Implementado en P0** | Solo las primitivas de `packages/core` (rng, math, store, serialize; luego events, modifiers, time). Las entidades llegan en su fase |
 | **Fuentes** | DEVELOPMENT_PLAN §8, §10, §11 y §16 (P1–P11); LEARNINGS (herencia H-01…H-14) |
 
@@ -32,7 +32,7 @@
 contenido (`packages/content`, datos validados con zod).
 
 **Marcas:** ⏳ = la forma está decidida pero el detalle (campos exactos, fórmulas) se refina en
-el BRIEF de esa fase · **M#** = decisión de modelo para revisar en el gate (§17).
+el BRIEF de esa fase · **M#** = decisión de modelo aprobada en el gate (§17, D42).
 
 **Nivel de detalle:** completo para lo que se implementa en P1–P6; al nivel de §10 del plan,
 con dueños y contratos, para P7–P11 (riesgo "sobre-diseño" del BRIEF).
@@ -977,3 +977,4 @@ ley y tipo de cambio. Sin esto, comparar riqueza entre siglos o entre monedas es
 | Versión | Fecha | Cambios |
 |---|---|---|
 | 1.0-rc | 2026-10-15 | Primera versión completa para el gate de P0 |
+| 1.0 | 2026-10-15 | Aprobada por Cristian con M1–M8 tal como se recomendaron (D42) |
