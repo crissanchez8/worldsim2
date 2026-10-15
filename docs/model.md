@@ -484,8 +484,8 @@ Cada transición emite el evento indicado (catálogo §11). Los estados viven en
 
 Un tick = un año. Las fases corren en este orden fijo; dentro de una fase, los sistemas corren
 en el orden listado. Cada sistema declara su contrato (§9) y en dev/test un **guard** verifica que
-solo escriba lo declarado (P0.10; detecta escrituras comparando `hashPart` por columna antes y
-después del sistema).
+solo escriba lo declarado (P0.10: compara la huella por campo, `fieldFingerprints`, de cada parte
+antes y después del sistema; detecta también escrituras directas a columnas y altas de filas).
 
 | # | Fase | Sistemas (orden) | Por qué acá |
 |---|---|---|---|
