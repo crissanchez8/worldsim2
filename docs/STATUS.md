@@ -7,9 +7,9 @@
 |---|---|
 | **Última actualización** | 2026-10-15 |
 | **Fase actual** | P0 — Fundaciones de arquitectura |
-| **Estado** | 🟢 En curso — bloques 1 (casa) y 2 (primitivas) hechos; checkpoint 1 a confirmar |
-| **Próximo paso** | Confirmar el primer preview en PR #1 y la prueba del README (Cristian) → bloque 3: P0.11 `docs/model.md` (gate) + en paralelo spike A (P0.13) |
-| **Bloqueos** | Ninguno (secretos de Cloudflare cargados el 2026-10-15) |
+| **Estado** | 🟢 En curso — bloque 3: `model.md` 1.0-rc en revisión (gate); spike A en una sesión paralela |
+| **Próximo paso** | Cristian revisa `docs/model.md` (decisiones M1–M8, §17) → OK en `decisions.md` → bloque 4 (P0.8 events, P0.9 modifiers, P0.10 time+scheduler). Integrar la rama `p00-spike-terrain` cuando la sesión del spike A termine |
+| **Bloqueos** | P0.8–P0.10 esperan la aprobación de `model.md` |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · rama `phase/p00-fundaciones` · PR #1 (draft) |
 
 ## Fases
@@ -34,6 +34,13 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-15 (sesión P0-4):**
+  - primer deploy a Cloudflare OK (preview comentado en el PR #1 por el CI); el certificado TLS del subdominio de rama todavía estaba en emisión;
+  - `docs/model.md` 1.0-rc escrito (≈980 líneas): entidades, dueños, pipeline, buffers, 25 contratos, invariantes, eventos, decisiones M1–M8;
+  - nuevos respecto del plan: sistemas `ledger` (M1) y `factions` (M5), `Person`/`CharacterDetail` (M6), costo en `days` (M7);
+  - `UNITS` alineado con el glosario + test doc↔código;
+  - spike A delegado a la sesión `spike-terrain` (worktree, rama `p00-spike-terrain`, sin PR propio).
+
 - **2026-10-15 (sesión P0-3):**
   - **bloque 2 hecho** en `packages/core` (205 tests):
     - hash: XXH32 propio (vectores de referencia) y `hash64` = 2×XXH32;
