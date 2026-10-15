@@ -56,6 +56,36 @@
 - **Cómo detectarlo antes:** el nombre mencionado no aparece literal en el filesystem.
 - **Promovido a CLAUDE.md:** no.
 
+### L-004 · Un test de lint que deriva sus casos de la config que prueba no prueba nada
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia (prueba de mutación)
+- **Contexto:** P0.3, test de que el lint de determinismo falla con cada API prohibida.
+- **Qué pasó:** los casos se generaban desde `MATH_ALLOWED` / `FORBIDDEN_GLOBALS`; al agregar `sin` a la allowlist o borrar `process`, el test seguía verde.
+- **Causa raíz:** el oráculo del test era el mismo código bajo prueba (autorreferencia).
+- **Regla:** los tests de reglas de seguridad/determinismo usan **listas canónicas propias** (independientes de la config) + una aserción de igualdad exacta sobre la allowlist; y se valida cada test nuevo de este tipo con **una mutación manual** (aflojar la regla → el test debe fallar).
+- **Cómo detectarlo antes:** si el test importa la lista que define qué está prohibido y solo itera sobre ella, sospechar.
+- **Promovido a CLAUDE.md:** no (si se repite, sí).
+
+### L-005 · "latest" de npm no siempre es compatible con el resto del stack
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia
+- **Contexto:** P0.2, fijando versiones del monorepo.
+- **Qué pasó:** TypeScript `latest` es 7.0 (compilador nativo), pero typescript-eslint 8.x declara `typescript <6.1`.
+- **Causa raíz:** asumir que las últimas versiones de cada herramienta son compatibles entre sí.
+- **Regla:** antes de fijar versiones, revisar `peerDependencies` de las herramientas que se enchufan entre sí (`npm view <pkg> peerDependencies`); fijar con `catalog:` y anotar el motivo en `pnpm-workspace.yaml` cuando se queda atrás de latest.
+- **Cómo detectarlo antes:** cambio de versión mayor reciente en una herramienta "base" (TS, ESLint, Vite).
+- **Promovido a CLAUDE.md:** no.
+
+### L-006 · Verificar la UI en el navegador aunque sea un placeholder
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia
+- **Contexto:** P0.2, toggle es/en de la página placeholder.
+- **Qué pasó:** typecheck, lint y tests verdes, pero la página quedaba en blanco: loop infinito (`changeLanguage` dentro de un `useEffect` que dependía de `t`, que cambia en cada `languageChanged`).
+- **Causa raíz:** dos fuentes de verdad para el idioma (estado de React + i18next) sincronizadas con un efecto.
+- **Regla:** (1) toda UI se abre en el navegador y se revisa la consola antes de commitear; (2) el idioma activo vive solo en i18next: la UI lo lee de `i18n.resolvedLanguage` y lo cambia con `changeLanguage` en el handler, nunca en un efecto.
+- **Cómo detectarlo antes:** un `useEffect` que llama a algo que emite eventos que a su vez cambian sus dependencias.
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)
