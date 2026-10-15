@@ -1,0 +1,94 @@
+# LEARNINGS
+
+> Errores, fricciones y supuestos equivocados que no se repiten. Se leen **al inicio de cada
+> sesión**. Los recurrentes se promueven a reglas en `CLAUDE.md`.
+
+## Cuándo registrar
+- Un problema que costó más de ~30 min o requirió retrabajo.
+- Una corrección o queja de Cristian (aunque sea chica).
+- Una fricción del flujo de trabajo (algo que hubo que pedir dos veces, un paso olvidado).
+- Un supuesto que resultó falso.
+- Una herramienta o técnica que falló de forma no obvia.
+
+## Formato
+```
+### L-NNN · Título corto
+- **Fecha / fase:** AAAA-MM-DD · PNN
+- **Origen:** Cristian | observación propia
+- **Contexto:** qué estaba haciendo
+- **Qué pasó:** el síntoma
+- **Causa raíz:** por qué pasó de verdad
+- **Regla:** qué hago distinto a partir de ahora (imperativo, verificable)
+- **Cómo detectarlo antes:** señal temprana o chequeo
+- **Promovido a CLAUDE.md:** sí/no
+```
+
+---
+
+## Registro
+
+### L-001 · Las opciones sin pros/contras no le sirven a Cristian
+- **Fecha / fase:** 2026-10-14 · pre-P0
+- **Origen:** Cristian
+- **Contexto:** entrevista inicial; le ofrecí elegir referencias y plataforma con descripciones de una línea.
+- **Qué pasó:** no pudo decidir y tuvo que pedir el detalle de pros/contras, recomendación y qué no hacer.
+- **Causa raíz:** asumí que conocía los trade-offs de motores de juego y referencias de diseño.
+- **Regla:** toda decisión técnica o de diseño se presenta con tabla de opciones + pros/contras + recomendación explícita + "qué no recomiendo y por qué", **desde la primera vez**. Si ninguna opción encaja, proponer un híbrido.
+- **Cómo detectarlo antes:** si una opción requiere conocimiento especializado para elegirla, necesita comparación.
+- **Promovido a CLAUDE.md:** sí (contrato, punto 3).
+
+### L-002 · Nivel de detalle del plan por debajo de lo esperado
+- **Fecha / fase:** 2026-10-14 · pre-P0
+- **Origen:** Cristian
+- **Contexto:** primer plan (v0.1) con fases de una línea y criterios generales.
+- **Qué pasó:** pidió un plan con subtareas por entregable, decisiones, criterios de salida y gates, y compartió un plan de referencia de otro proyecto.
+- **Causa raíz:** no pregunté qué formato y profundidad esperaba para un entregable de planificación.
+- **Regla:** para entregables de planificación o documentación, usar por defecto el formato detallado (tareas numeradas `PN.M` con subtareas, 🔶 decisiones con recomendación, criterios de salida verificables, riesgos). Si hay un documento de referencia del usuario, seguir su nivel de detalle.
+- **Cómo detectarlo antes:** si un ítem del plan no se puede verificar como hecho/no hecho, le falta detalle.
+- **Promovido a CLAUDE.md:** no (cubierto por las plantillas).
+
+### L-003 · El nombre que usa el usuario no siempre es la ruta real
+- **Fecha / fase:** 2026-10-14 · pre-P0
+- **Origen:** observación propia
+- **Contexto:** Cristian llamó "world-history-sim" al proyecto anterior; la carpeta era `human-history-simulator`.
+- **Qué pasó:** lo resolví listando el Escritorio, pero pude haber asumido mal.
+- **Regla:** verificar en el sistema de archivos los nombres y rutas que menciona el usuario antes de actuar; si hay ambigüedad, preguntar.
+- **Cómo detectarlo antes:** el nombre mencionado no aparece literal en el filesystem.
+- **Promovido a CLAUDE.md:** no.
+
+---
+
+## Herencia del proyecto anterior (`human-history-simulator`)
+
+Lecciones de diseño del primer intento (TS, grilla hex, 34 sistemas, 147 commits en una semana).
+Rigen desde P0.
+
+### Errores que no se repiten
+| # | Error | Regla |
+|---|---|---|
+| H-01 | Unidad de simulación = un grupo por tile (sin mezcla de cultura/religión; conversión binaria; ciudades con doble conteo) | Provincias con pops mixtos; asimilación y conversión como flujos |
+| H-02 | Multiplicadores encadenados (`fuerza = pop·tech·terreno·…·defensa`) y ~10 cachés transitorias acopladas al orden del tick | Escritor único, contratos, buffers de flujo, modificadores con fuente |
+| H-03 | Tecnología como un escalar sin techo (2.675) con hitos por umbral | Grafo de innovaciones con prerrequisitos, materiales, entorno y pérdida |
+| H-04 | Economía de fachada (sin bienes, precios ni moneda) | Bienes, mercados, rutas y moneda reales (P6) |
+| H-05 | Gobierno como etiqueta recalculada cada turno | Régimen como estructura persistente con transiciones por eventos (P7) |
+| H-06 | Decisiones solo de guerra/paz; alianzas por tirada | IA de agenda con objetivos y diplomacia con memoria (P9) |
+| H-07 | Guerra como dados de frontera (48k "conquistas" por corrida) | Ejércitos, batallas, sitios, objetivos y tratados (P9) |
+| H-08 | 97k eventos sin jerarquía; 20k "colapsos" | Significancia al emitir; episodios jerárquicos; umbrales de emisión |
+| H-09 | Cultura de 2 escalares; pueblos asignados por grilla cuadrada | Cultura emergente del entorno; idiomas con familias |
+| H-10 | Estado fuera del snapshot y del hash (relaciones, guerras, tesoro…) | Estado 100% serializable y hasheado |
+| H-11 | Números sin unidades (879M habitantes en 399 grupos) | Unidades físicas y calibración contra curvas reales |
+| H-12 | 9 versiones apiladas con campos opcionales; 24 recalibraciones del golden | Modelo de dominio diseñado en P0; RNG por streams; la salud estadística calibra, el golden solo detecta regresiones |
+| H-13 | Mapa con biomas en franjas, ríos que no forman cuencas, cordilleras de una línea, serrucho hex, canvas 2D | Worldgen físico (P3) y render GPU (P1/P12) |
+| H-14 | El frontend quedaba atrás del motor (una fase entera para "mostrar lo nuevo") | Cada fase entrega su capa de mapa, sus fichas y sus gráficos |
+
+### Ideas que sí se llevan (conceptos)
+- Determinismo con seed; motor headless.
+- "El motor decide qué pasa, el LLM cómo se cuenta", con fallback offline y anclado en hechos.
+- Ranking de relevancia por categoría y era.
+- La guerra no favorecida: casus belli, reputación, agotamiento, coaliciones contra el hegemón.
+- Conocimiento que se pierde; ciclo auge → colapso → edad oscura → renacimiento.
+- Ciudades que sobreviven a sus estados y dejan ruinas.
+- Deslealtad de conquistados por etnia y fe; conversión por conquista; sitios sagrados como agravio; cismas con linaje.
+- Pueblo ≠ cultura; clima en períodos; reloj con prehistoria larga.
+- Dirección del worldgen físico (placas, orografía, Hadley, caudal, lapse rate).
+- Tests de salud histórica multi-seed.

@@ -1,0 +1,52 @@
+# Log de decisiones
+
+> **Append-only.** Una fila por decisión o aprobación, con fecha y contexto. No se edita el
+> pasado: si una decisión cambia, se agrega una nueva que la reemplaza ("reemplaza a D#").
+> Las aprobaciones de BRIEF y los cierres de fase también se registran acá.
+
+| # | Fecha | Decisión | Contexto / por qué | Fase |
+|---|---|---|---|---|
+| D1 | 2026-10-14 | Destino: web pública / portfolio | Entrevista inicial | — |
+| D2 | 2026-10-14 | Plataforma: TS + Three.js (WebGPU, fallback WebGL2), motor en Web Worker, WASM solo si el perfilado lo pide | Comparación Web vs Godot vs Unity vs Bevy: gana la web por objetivo público, UI de datos y trabajo con Claude Code | — |
+| D3 | 2026-10-14 | Hardware: desktop/laptop moderna | — | — |
+| D4 | 2026-10-14 | Síntesis: esqueleto Paradox + memoria DF + vida WorldBox + estética Civ/Humankind | Análisis de pros/contras por referencia | — |
+| D5 | 2026-10-14 | Mapa híbrido: 3D de cerca, atlas político de lejos | — | — |
+| D6 | 2026-10-14 | Geometría: plano con wrap E-O | — | — |
+| D7 | 2026-10-14 | Assets: CC0 + procedural | — | — |
+| D8 | 2026-10-14 | Rol del usuario: observador puro | — | — |
+| D9 | 2026-10-14 | Ejecución: en vivo + rebobinar | — | — |
+| D10 | 2026-10-14 | Duración de corrida: 5–15 min a velocidad normal | — | — |
+| D11 | 2026-10-14 | Inicio ≈12.000 a.C., mundo ya poblado | — | — |
+| D12 | 2026-10-14 | Calibración: forma de la historia real con variación | — | — |
+| D13 | 2026-10-14 | Personajes: híbrido "casas, no cortes" | Cristian pidió vasallaje, intriga y casas menores sin el costo de CK | — |
+| D14 | 2026-10-14 | Economía: bienes + mercados + moneda | — | — |
+| D15 | 2026-10-14 | Guerra: ejércitos visibles en el mapa | — | — |
+| D16 | 2026-10-14 | Narrativa: idiomas procedurales + LLM opcional para la crónica | — | — |
+| D17 | 2026-10-14 | Resumen: enciclopedia + estadísticas + atlas + árboles | — | — |
+| D18 | 2026-10-14 | Compartir: seed + historia como archivo | — | — |
+| D19 | 2026-10-14 | Proceso: rebanada vertical primero | — | — |
+| D20 | 2026-10-14 | Idioma: bilingüe es/en desde el día 1 | — | — |
+| D21 | 2026-10-14 | Escala: ≈1.500 provincias por defecto, configurable | — | — |
+| D22 | 2026-10-14 | Contrato de trabajo: BRIEF, REPORT, decisiones compartidas, mock-first + DS, prompts de fase, LEARNINGS | Pedido explícito de Cristian | — |
+| D23 | 2026-10-14 | Arquitectura y mecánica antes que frontend lindo; inmersión visual en P12 | Pedido explícito de Cristian | — |
+| D24 | 2026-10-14 | Costo fijo cero: hosting estático gratis, sin backend, LLM BYOK, sin dominio pago | Pedido explícito de Cristian | — |
+| D25 | 2026-10-14 | Diseño: 3 direcciones mock en P2 → Cristian elige → Design System | Pedido explícito de Cristian | — |
+| D26 | 2026-10-14 | Q1 Hosting: Cloudflare Pages Free (plan B: GitHub Pages) | Previews por PR, 25 MiB/archivo, sin tarjeta. Límites verificados hoy: 500 builds/mes, 1 concurrente, 20.000 archivos. Pages vs Workers static assets y método de deploy se cierran en el ADR-007 | P0 |
+| D27 | 2026-10-14 | Q2 Repo público | Portfolio + Actions gratis con runners estándar (confirmado en los cambios de precios 2026) | P0 |
+| D28 | 2026-10-14 | Q3 Cuenta personal `crissanchez8` | Ya autenticada en `gh`; Q5 (nombre definitivo) llega en P2 | P0 |
+| D29 | 2026-10-14 | Q4 Licencia MIT | Simple y estándar para portfolio | P0 |
+| D30 | 2026-10-15 | i18n: i18next + react-i18next (ADR-005) | Corre igual en UI, Worker y CLI sin plugins de build (BRIEF P0 · D00-a) | P0 |
+| D31 | 2026-10-15 | Deploy: direct upload a Cloudflare Pages desde GitHub Actions con `wrangler pages deploy` (ADR-007) | Se publica el mismo build que pasó CI; no depende del tope de builds de Cloudflare (D00-b) | P0 |
+| D32 | 2026-10-15 | Node 24 LTS (reemplaza "Node 22" del plan §16 P0.1) | Node 22 vence en abril 2027, en medio del proyecto (D00-c) | P0 |
+| D33 | 2026-10-15 | Spikes en workspace `spikes/` aparte, descartable, desplegado bajo `/spikes/*` del preview | Evita promover código de spike sin decidirlo (D00-d) | P0 |
+| D34 | 2026-10-15 | Fronteras: dependency-cruiser + `no-restricted-imports`/`no-restricted-globals` de ESLint | Detecta dependencias transitivas (D00-e) | P0 |
+| D35 | 2026-10-15 | S2 confirmado: mundo realista, solo humanos, sin magia, nombres ficticios | BRIEF P0 §9 | P0 |
+| D36 | 2026-10-15 | S4 confirmado: 2 últimas versiones mayores de Chrome, Edge, Safari y Firefox de escritorio; WebGL2 como piso | BRIEF P0 §9 | P0 |
+| D37 | 2026-10-15 | Repo `crissanchez8/worldsim2` hasta que Q5 defina el nombre en P2 | BRIEF P0 §9 | P0 |
+
+## Aprobaciones de fase
+
+| Fecha | Fase | Hito | Notas |
+|---|---|---|---|
+| 2026-10-14 | Plan | DEVELOPMENT_PLAN aprobado como v1.0 | Q1–Q4 quedan para el BRIEF de P0 |
+| 2026-10-15 | P0 | BRIEF aprobado tal cual | D30–D37; descargas de dependencias npm y navegadores de Playwright autorizadas |

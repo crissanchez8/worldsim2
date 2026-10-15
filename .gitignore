@@ -1,0 +1,33 @@
+# Dependencias y builds
+node_modules/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+.vite/
+
+# Salidas de corridas, bench y capturas temporales
+runs/
+out/
+*.wsim
+bench-results/
+coverage/
+playwright-report/
+test-results/
+blob-report/
+tmp/
+*.log
+
+# Entorno y secretos
+.env
+.env.*
+!.env.example
+.wrangler/
+.dev.vars
+
+# Editor / SO
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.claude/settings.local.json
