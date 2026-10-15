@@ -86,6 +86,26 @@
 - **Cómo detectarlo antes:** un `useEffect` que llama a algo que emite eventos que a su vez cambian sus dependencias.
 - **Promovido a CLAUDE.md:** no.
 
+### L-007 · Buffers que crecen: probar por encima de la capacidad inicial
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia (bench de P0.7)
+- **Contexto:** `ByteWriter` del serializador, con capacidad inicial de 1 KiB.
+- **Qué pasó:** `this.view.setFloat64(this.reserve(8), v)` escribía en la vista VIEJA cuando `reserve` agrandaba el buffer (JS evalúa `this.view` antes que los argumentos). Los tests pasaban porque ningún estado de prueba superaba 1 KiB; lo encontró el bench con 615 KiB.
+- **Causa raíz:** orden de evaluación + tests que nunca ejercitaban el crecimiento.
+- **Regla:** (1) en estructuras que se reasignan, obtener el offset/recurso en una sentencia y usar el campo después; (2) todo test de una estructura con capacidad inicial incluye un caso que la supera varias veces.
+- **Cómo detectarlo antes:** un método que reemplaza un campo y se llama como argumento de otro método de ese mismo campo.
+- **Promovido a CLAUDE.md:** no.
+
+### L-008 · Un reemplazo por script que no encuentra el texto falla en silencio
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia (profiling de P0.7)
+- **Contexto:** apliqué el camino rápido de serialización con `str.replace` en Python.
+- **Qué pasó:** Prettier ya había partido la llamada en varias líneas; el reemplazo no matcheó y el camino rápido nunca existió. El test "rápido = lento" pasaba porque ambos usaban el lento.
+- **Causa raíz:** `str.replace` devuelve el texto sin cambios si no hay match; no verifiqué que se aplicara.
+- **Regla:** para editar código existente usar la herramienta Edit (falla si no encuentra el texto); si uso scripts, `assert old in s` antes de cada reemplazo. Todo test que compara dos caminos se valida con una mutación en cada camino.
+- **Cómo detectarlo antes:** un cambio de rendimiento que no cambia las mediciones.
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)

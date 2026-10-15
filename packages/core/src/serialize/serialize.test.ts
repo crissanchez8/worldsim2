@@ -243,10 +243,29 @@ describe('serialize · errores explícitos', () => {
     return s;
   };
 
-  it('NaN en una columna escrita directo → error con ubicación', () => {
+  it('NaN en una columna escrita directo → error con ubicación (camino rápido y lento)', () => {
     const s = sample();
     s.provinces.column('area')[0] = NaN;
     expect(() => serializeState(partsOf(s), ENGINE)).toThrow(/province\.area#1: NaN/);
+    s.provinces.remove(s.provinces.add()); // fila muerta → camino valor por valor
+    expect(() => serializeState(partsOf(s), ENGINE)).toThrow(/province\.area#1: NaN/);
+  });
+
+  it('camino rápido y lento producen los mismos bytes', () => {
+    fc.assert(
+      fc.property(stateArb, (spec) => {
+        const slow = build({ ...spec, compact: false });
+        const extra = slow.provinces.add();
+        const fast = build({ ...spec, compact: false });
+        fast.provinces.add();
+        slow.provinces.remove(extra); // slow tiene una fila muerta: fuerza el camino lento…
+        fast.provinces.remove(extra);
+        fast.provinces.compact(); // …fast está compacta: camino rápido
+        expect(serializeState(partsOf(fast), ENGINE)).toEqual(
+          serializeState(partsOf(slow), ENGINE),
+        );
+      }),
+    );
   });
 
   it('magic, formato y versión de motor', () => {
@@ -292,6 +311,42 @@ describe('serialize · errores explícitos', () => {
     expect(() => {
       deserializeState(bytes, partsOf(sample()), ENGINE);
     }).toThrow(/no vacía/);
+  });
+});
+
+describe('bytes · crecimiento del buffer', () => {
+  it('escribe bien más allá de la capacidad inicial (1 KiB) con todos los tipos', () => {
+    const w = new ByteWriter();
+    const n = 5000;
+    for (let i = 0; i < n; i++) {
+      w.u8(i & 0xff);
+      w.i16(-i);
+      w.u32(i * 7919);
+      w.f64(i / 3);
+      w.f32(i);
+      w.str('ñ');
+    }
+    const r = new ByteReader(w.finish());
+    for (let i = 0; i < n; i++) {
+      expect(r.u8()).toBe(i & 0xff);
+      expect(r.i16()).toBe(-i | 0); // los enteros no tienen −0
+      expect(r.u32()).toBe(i * 7919);
+      expect(r.f64()).toBe(i / 3);
+      expect(r.f32()).toBe(i);
+      expect(r.str()).toBe('ñ');
+    }
+    r.end();
+  });
+
+  it('estado grande: ida y vuelta de 20.000 filas', () => {
+    const a = emptyState();
+    for (let i = 0; i < 20000; i++)
+      a.provinces.add({ area: i * 1.5, elevation: (i % 60000) - 30000 });
+    const bytes = serializeState(partsOf(a), ENGINE);
+    expect(bytes.length).toBeGreaterThan(100_000);
+    const b = emptyState();
+    deserializeState(bytes, partsOf(b), ENGINE);
+    expect(hashState(partsOf(b))).toBe(hashState(partsOf(a)));
   });
 });
 

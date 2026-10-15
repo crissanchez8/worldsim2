@@ -3,7 +3,7 @@
 //   - iterar filas = iterar en orden de id (determinista);
 //   - id → fila es una búsqueda binaria, sin estructuras que crezcan con la historia.
 import { type ByteReader, type ByteWriter, SerializeError } from '../serialize/bytes';
-import { readScalar, writeScalar } from '../serialize/scalar-io';
+import { writeScalar } from '../serialize/scalar-io';
 import type { Serializable } from '../serialize/serializable';
 import { type Id, IdAllocator } from './id';
 import { checkScalar, describeSchema, type Fields, type ScalarType, type Schema } from './schema';
@@ -235,21 +235,40 @@ export class Table<K extends string, F extends ScalarFields> implements Serializ
     w.varuint(this.allocator.peek());
     w.varuint(this.live);
     let prev = 0;
-    for (const row of this.rows()) {
+    for (let row = 0; row < this.used; row++) {
+      if (this.aliveColumn[row] !== 1) continue;
       const id = this.idColumn[row] ?? 0;
       w.varuint(id - prev);
       prev = id;
     }
+    const compact = this.used === this.live;
     for (const key of this.schema.order) {
       const type = this.def(key).type;
       const col = this.column(key);
-      for (const row of this.rows()) {
-        writeScalar(
-          w,
-          type,
-          col[row] ?? 0,
-          `${this.schema.name}.${key}#${this.idColumn[row] ?? 0}`,
-        );
+      if (compact) {
+        // Camino rápido: filas contiguas → copia en bloque (mismos bytes que valor por valor).
+        if (type === 'f64' || type === 'f32') this.assertNoNaN(key, col);
+        w.numeric(col, this.used);
+        continue;
+      }
+      for (let row = 0; row < this.used; row++) {
+        if (this.aliveColumn[row] !== 1) continue;
+        const v = col[row] ?? 0;
+        if (v !== v) {
+          const id = this.idColumn[row] ?? 0;
+          throw new SerializeError(`${this.schema.name}.${key}#${id}: NaN en el estado`);
+        }
+        writeScalar(w, type, v, this.schema.name);
+      }
+    }
+  }
+
+  private assertNoNaN(key: string, col: ColumnArray): void {
+    for (let row = 0; row < this.used; row++) {
+      const v = col[row] ?? 0;
+      if (v !== v) {
+        const id = this.idColumn[row] ?? 0;
+        throw new SerializeError(`${this.schema.name}.${key}#${id}: NaN en el estado`);
       }
     }
   }
@@ -272,11 +291,7 @@ export class Table<K extends string, F extends ScalarFields> implements Serializ
     this.used = count;
     this.live = count;
     this.allocator.ensureAbove(next - 1);
-    for (const key of this.schema.order) {
-      const type = this.def(key).type;
-      const col = this.column(key);
-      for (let row = 0; row < count; row++) col[row] = readScalar(r, type);
-    }
+    for (const key of this.schema.order) r.numeric(this.column(key), count);
   }
 
   /** Filas vivas en orden de id. */
