@@ -1,0 +1,140 @@
+# CI/CD gratis (P0.16, D31): GitHub Actions (repo público, runners estándar) + Cloudflare Pages
+# por direct upload. Se despliega exactamente el build que pasó los chequeos.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Caché de Turborepo
+        uses: actions/cache@v6
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: turbo-${{ runner.os }}-
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Formato
+        run: pnpm format:check
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint (estilo + determinismo + texto de UI + fronteras)
+        run: pnpm lint
+
+      - name: Tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Armar el sitio (web + spikes)
+        run: pnpm site
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: site/
+          retention-days: 7
+          if-no-files-found: error
+
+  deploy:
+    name: deploy
+    needs: check
+    # Los PRs desde forks no tienen acceso a los secretos: no se despliegan.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    concurrency:
+      group: deploy-${{ github.head_ref || github.ref_name }}
+      cancel-in-progress: true
+    env:
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PAGES_PROJECT: worldsim2
+      BRANCH: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - name: ¿Hay credenciales de Cloudflare?
+        id: gate
+        run: |
+          if [ -n "$CF_API_TOKEN" ] && [ -n "$CF_ACCOUNT_ID" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Faltan los secretos CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID: no se despliega."
+          fi
+
+      - uses: actions/download-artifact@v8
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          name: site
+          path: site
+
+      - name: Deploy a Cloudflare Pages
+        id: pages
+        if: steps.gate.outputs.enabled == 'true'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4.151.0'
+          packageManager: npm
+          # Crea el proyecto la primera vez (direct upload, producción = main); si ya existe, sigue.
+          preCommands: npx wrangler pages project create ${{ env.PAGES_PROJECT }} --production-branch=main || true
+          command: pages deploy site --project-name=${{ env.PAGES_PROJECT }} --branch=${{ env.BRANCH }} --commit-hash=${{ github.event.pull_request.head.sha || github.sha }} --commit-dirty=true
+
+      - name: Comentar el preview en el PR
+        if: steps.gate.outputs.enabled == 'true' && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOY_URL: ${{ steps.pages.outputs.deployment-url }}
+          ALIAS_URL: ${{ steps.pages.outputs.pages-deployment-alias-url }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          body="**Preview** (Cloudflare Pages)
+
+          - Rama: ${ALIAS_URL:-$DEPLOY_URL}
+          - Este commit (\`${SHA:0:7}\`): ${DEPLOY_URL}
+          - Spikes: \`/spikes/<nombre>/\`"
+          gh pr comment "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" \
+            --edit-last --create-if-none --body "$body"
+
+      - name: Resumen
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          DEPLOY_URL: ${{ steps.pages.outputs.deployment-url }}
+          ALIAS_URL: ${{ steps.pages.outputs.pages-deployment-alias-url }}
+        run: |
+          {
+            echo "### Deploy"
+            echo "- Deployment: $DEPLOY_URL"
+            echo "- Alias: ${ALIAS_URL:-—}"
+          } >> "$GITHUB_STEP_SUMMARY"
