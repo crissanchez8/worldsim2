@@ -10,7 +10,11 @@
     "./math": "./src/math/index.ts",
     "./rng": "./src/rng/index.ts",
     "./store": "./src/store/index.ts",
-    "./serialize": "./src/serialize/index.ts"
+    "./serialize": "./src/serialize/index.ts",
+    "./events": "./src/events/index.ts",
+    "./time": "./src/time/index.ts",
+    "./modifiers": "./src/modifiers/index.ts",
+    "./scheduler": "./src/scheduler/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",
