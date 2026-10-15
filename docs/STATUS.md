@@ -7,9 +7,9 @@
 |---|---|
 | **Última actualización** | 2026-10-15 |
 | **Fase actual** | P0 — Fundaciones de arquitectura |
-| **Estado** | 🟢 En curso — bloque 1 (casa) implementado; checkpoint 1 pendiente |
-| **Próximo paso** | Checkpoint 1: Cristian carga los secretos de Cloudflare y prueba el README en un clon nuevo → CI verde + preview en PR #1 → protección de `main`. En paralelo: bloque 2 (P0.4 rng → P0.5 math → P0.6 store → P0.7 serialize+hash) |
-| **Bloqueos** | Deploy: faltan secretos `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` (los carga Cristian) |
+| **Estado** | 🟢 En curso — bloques 1 (casa) y 2 (primitivas) hechos; checkpoint 1 a confirmar |
+| **Próximo paso** | Confirmar el primer preview en PR #1 y la prueba del README (Cristian) → bloque 3: P0.11 `docs/model.md` (gate) + en paralelo spike A (P0.13) |
+| **Bloqueos** | Ninguno (secretos de Cloudflare cargados el 2026-10-15) |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · rama `phase/p00-fundaciones` · PR #1 (draft) |
 
 ## Fases
@@ -34,6 +34,18 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-15 (sesión P0-3):**
+  - **bloque 2 hecho** en `packages/core` (205 tests):
+    - hash: XXH32 propio (vectores de referencia) y `hash64` = 2×XXH32;
+    - P0.4 RNG por contador (`rng.stream().sub().at(entidad, año)`), registro único de streams, tests estadísticos;
+    - P0.5 `core/math`: port de fdlibm, ≤ 2,2 ulp vs V8, 107 vectores golden bit a bit;
+    - P0.6 almacenes: `Table` SoA, `SparseTable`, `Globals`, ids nunca reutilizados, unidades obligatorias;
+    - P0.7 snapshot `WSST` + `hashState` sobre los bytes serializados; 15.000 pops: serializar 0,8 ms, hash < 1 ms;
+  - ADR-001 a ADR-004 escritos con mediciones; decisiones D38–D41;
+  - bugs encontrados y corregidos: crecimiento del buffer del serializador (L-007), reemplazo por script que no se aplicó (L-008);
+  - XXH64 descartado con datos (50 MB/s vs 3,3 GB/s);
+  - **pendiente:** confirmar el primer preview de Cloudflare en el PR #1 (los secretos ya están) y la prueba del README.
+
 - **2026-10-15 (sesión P0-2):**
   - BRIEF aprobado tal cual (D30–D37) y registrado;
   - repo público creado; `main` tiene solo los docs; todo lo demás va por la rama de fase y el PR #1 (draft);

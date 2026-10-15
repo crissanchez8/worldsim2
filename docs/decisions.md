@@ -43,6 +43,10 @@
 | D35 | 2026-10-15 | S2 confirmado: mundo realista, solo humanos, sin magia, nombres ficticios | BRIEF P0 §9 | P0 |
 | D36 | 2026-10-15 | S4 confirmado: 2 últimas versiones mayores de Chrome, Edge, Safari y Firefox de escritorio; WebGL2 como piso | BRIEF P0 §9 | P0 |
 | D37 | 2026-10-15 | Repo `crissanchez8/worldsim2` hasta que Q5 defina el nombre en P2 | BRIEF P0 §9 | P0 |
+| D38 | 2026-10-15 | TypeScript fijado en 6.0.3 (no 7.0) | typescript-eslint 8.x declara `typescript <6.1`; revisar cuando soporte TS 7 (ADR-001, L-005) | P0 |
+| D39 | 2026-10-15 | RNG por contador: XXH32 de 6 palabras, dos carriles, registro único de streams con ids constantes | Independiente del orden del tick; agregar sistemas no altera el azar (ADR-002) | P0 |
+| D40 | 2026-10-15 | `core/math` = port de fdlibm + allowlist de `Math` en el motor | < 2,2 ulp vs V8; bit a bit entre motores a confirmar en spike C (ADR-003) | P0 |
+| D41 | 2026-10-15 | Estado en SoA + tablas escasas; snapshot binario `WSST`; hash de estado = 2×XXH32 de los bytes serializados | XXH64 emulado medía 50 MB/s vs 3,3 GB/s; el hash sobre bytes garantiza que todo el estado esté en el hash (ADR-004) | P0 |
 
 ## Aprobaciones de fase
 
