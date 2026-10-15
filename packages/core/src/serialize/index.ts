@@ -1,5 +1,5 @@
 export { ByteReader, ByteWriter, SerializeError } from './bytes';
-export type { Serializable } from './serializable';
+export type { Serializable, StatePart } from './serializable';
 export {
   deserializeState,
   hashPart,

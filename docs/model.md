@@ -439,8 +439,11 @@ start (year), expires (year; 0 = permanente).
 | `morale` | Army | fraction | base + Σ add, acotado | military | P9 |
 | `supplyCapacity` | Province × Season | persons | base × Π mul | military | P9 |
 
-Orden de aplicación determinista: por op (add → mul → min → max), después por tipo de fuente,
-después por id de modificador. `explain` devuelve el árbol y la suma reconstruye el valor exacto.
+Forma de agregación por stat: `additive` = (base + Σ add) × Π mul; `multiplicative` = base ×
+Π mul + Σ add; después topes (`min`), pisos (`max`) y el rango del stat. Dentro de cada operación
+el orden es por **contenido** (tipo e id de fuente, valor, dueño; el id del modificador solo
+desempata): el resultado es idéntico bit a bit sin importar en qué orden se crearon.
+`explain` devuelve cada término y la cuenta reconstruye el valor exacto.
 
 ### 5.13 Memoria (historia; fuera del hash de estado, M2)
 

@@ -1,11 +1,12 @@
 // Escalares globales del estado (año actual, nivel del mar, etc.): un único registro tipado.
-import { type ByteReader, type ByteWriter, SerializeError } from '../serialize/bytes';
+import { hash64 } from '../hash';
+import { type ByteReader, ByteWriter, SerializeError } from '../serialize/bytes';
 import { readScalar, writeScalar } from '../serialize/scalar-io';
-import type { Serializable } from '../serialize/serializable';
+import type { StatePart } from '../serialize/serializable';
 import { checkScalar, describeSchema, type Schema } from './schema';
 import type { ScalarFields } from './table';
 
-export class Globals<F extends ScalarFields> implements Serializable {
+export class Globals<F extends ScalarFields> implements StatePart {
   readonly schema: Schema<F>;
   readonly partName: string;
   readonly schemaDescription: string;
@@ -36,6 +37,17 @@ export class Globals<F extends ScalarFields> implements Serializable {
     if (!def) throw new Error(`${this.schema.name}: campo desconocido ${key}`);
     checkScalar(this.schema.name, key, def.type, value);
     this.values.set(key, value);
+  }
+
+  /** Huella por campo (guard de contratos). */
+  fieldFingerprints(): ReadonlyMap<string, string> {
+    const out = new Map<string, string>();
+    for (const key of this.schema.order) {
+      const w = new ByteWriter();
+      w.f64(this.get(key));
+      out.set(`${this.schema.name}.${key}`, hash64(w.finish()));
+    }
+    return out;
   }
 
   writeState(w: ByteWriter): void {

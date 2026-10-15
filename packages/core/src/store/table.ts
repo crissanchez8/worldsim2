@@ -2,9 +2,10 @@
 // ordenadas por id (los ids crecen y la compactación preserva el orden), así que:
 //   - iterar filas = iterar en orden de id (determinista);
 //   - id → fila es una búsqueda binaria, sin estructuras que crezcan con la historia.
-import { type ByteReader, type ByteWriter, SerializeError } from '../serialize/bytes';
+import { hash64 } from '../hash';
+import { type ByteReader, ByteWriter, SerializeError } from '../serialize/bytes';
 import { writeScalar } from '../serialize/scalar-io';
-import type { Serializable } from '../serialize/serializable';
+import type { StatePart } from '../serialize/serializable';
 import { type Id, IdAllocator } from './id';
 import { checkScalar, describeSchema, type Fields, type ScalarType, type Schema } from './schema';
 
@@ -66,7 +67,7 @@ function grown<A extends ColumnArray>(array: A, capacity: number): A {
   return next;
 }
 
-export class Table<K extends string, F extends ScalarFields> implements Serializable {
+export class Table<K extends string, F extends ScalarFields> implements StatePart {
   readonly schema: Schema<F>;
   readonly partName: string;
   readonly schemaDescription: string;
@@ -292,6 +293,26 @@ export class Table<K extends string, F extends ScalarFields> implements Serializ
     this.live = count;
     this.allocator.ensureAbove(next - 1);
     for (const key of this.schema.order) r.numeric(this.column(key), count);
+  }
+
+  /** Huella por campo (guard de contratos). Independiente de la compactación. */
+  fieldFingerprints(): ReadonlyMap<string, string> {
+    const out = new Map<string, string>();
+    const rows = new ByteWriter();
+    rows.varuint(this.allocator.peek());
+    for (let row = 0; row < this.used; row++) {
+      if (this.aliveColumn[row] === 1) rows.u32(this.idColumn[row] ?? 0);
+    }
+    out.set(`${this.schema.name}.#rows`, hash64(rows.finish()));
+    for (const key of this.schema.order) {
+      const col = this.column(key);
+      const w = new ByteWriter();
+      for (let row = 0; row < this.used; row++) {
+        if (this.aliveColumn[row] === 1) w.f64(col[row] ?? 0);
+      }
+      out.set(`${this.schema.name}.${key}`, hash64(w.finish()));
+    }
+    return out;
   }
 
   /** Filas vivas en orden de id. */

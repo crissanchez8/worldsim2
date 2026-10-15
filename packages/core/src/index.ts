@@ -2,6 +2,7 @@ export { ENGINE_VERSION } from './version';
 export * as events from './events';
 export * as hash from './hash';
 export * as math from './math';
+export * as modifiers from './modifiers';
 export * as rng from './rng';
 export * as serialize from './serialize';
 export * as store from './store';

@@ -63,6 +63,7 @@
 - **Qué pasó:** los casos se generaban desde `MATH_ALLOWED` / `FORBIDDEN_GLOBALS`; al agregar `sin` a la allowlist o borrar `process`, el test seguía verde.
 - **Causa raíz:** el oráculo del test era el mismo código bajo prueba (autorreferencia).
 - **Regla:** los tests de reglas de seguridad/determinismo usan **listas canónicas propias** (independientes de la config) + una aserción de igualdad exacta sobre la allowlist; y se valida cada test nuevo de este tipo con **una mutación manual** (aflojar la regla → el test debe fallar).
+- **Recurrencia (P0.9):** el test "orden de alta no importa" de los modificadores tampoco detectaba la mutación: el rango del stat acotaba los resultados y los topes aleatorios aplanaban las diferencias. Ampliación de la regla: el caso de prueba tiene que hacer **observable** la propiedad (sin acotar, sin operaciones que la oculten, permutaciones reales).
 - **Cómo detectarlo antes:** si el test importa la lista que define qué está prohibido y solo itera sobre ella, sospechar.
 - **Promovido a CLAUDE.md:** no (si se repite, sí).
 

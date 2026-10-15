@@ -1,8 +1,9 @@
 // Tabla escasa por id (ADR-004) para entidades pocas y heterogéneas (personajes, guerras,
 // tratados…). Un Map con orden de inserción = orden de id, porque los ids solo crecen.
-import { type ByteReader, type ByteWriter, SerializeError } from '../serialize/bytes';
+import { hash64 } from '../hash';
+import { type ByteReader, ByteWriter, SerializeError } from '../serialize/bytes';
 import { readScalar, writeScalar } from '../serialize/scalar-io';
-import type { Serializable } from '../serialize/serializable';
+import type { StatePart } from '../serialize/serializable';
 import { type Id, IdAllocator } from './id';
 import { checkScalar, describeSchema, type FieldDef, type Fields, type Schema } from './schema';
 
@@ -21,7 +22,7 @@ function defaultOf(def: FieldDef): number | string | readonly number[] {
   return def.default ?? 0;
 }
 
-export class SparseTable<K extends string, F extends Fields> implements Serializable {
+export class SparseTable<K extends string, F extends Fields> implements StatePart {
   readonly schema: Schema<F>;
   readonly partName: string;
   readonly schemaDescription: string;
@@ -117,6 +118,31 @@ export class SparseTable<K extends string, F extends Fields> implements Serializ
 
   ids(): IterableIterator<number> {
     return this.records.keys();
+  }
+
+  /** Huella por campo (guard de contratos). */
+  fieldFingerprints(): ReadonlyMap<string, string> {
+    const out = new Map<string, string>();
+    const rows = new ByteWriter();
+    rows.varuint(this.allocator.peek());
+    for (const id of this.records.keys()) rows.u32(id);
+    out.set(`${this.schema.name}.#rows`, hash64(rows.finish()));
+    for (const key of this.schema.order) {
+      const w = new ByteWriter();
+      for (const record of this.records.values()) {
+        const value: unknown = record[key];
+        if (typeof value === 'string') {
+          w.str(value);
+        } else if (Array.isArray(value)) {
+          w.varuint(value.length);
+          for (const v of value as readonly number[]) w.f64(v);
+        } else {
+          w.f64(value as number);
+        }
+      }
+      out.set(`${this.schema.name}.${key}`, hash64(w.finish()));
+    }
+    return out;
   }
 
   writeState(w: ByteWriter): void {
