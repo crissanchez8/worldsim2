@@ -8,7 +8,7 @@
 | **Última actualización** | 2026-10-16 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | P1.3 Simulación v1 (acá) y P1.2 Mapa v1 en una sesión paralela (propuesta; ver handoff) |
+| **Próximo paso** | P1.8 `ws health` (calibrar con 10 seeds) y P1.4 Historia v1; P1.2 Mapa v1 en una sesión paralela (propuesta) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -34,6 +34,17 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-16 (sesión P1-2, P1.3 hecha):**
+  - **idioma v1** (`packages/lang`, 03b4084): fonología por seed y nombres romanizados;
+  - **guard de contratos por filas comunes** (`core`, 77f9ad7): un campo cambió solo si cambió en una fila que existía antes y después; habilita la propiedad por campo del modelo (p. ej. `Title.holder` de succession en filas que crea statecraft);
+  - **simulación v1** (4d9722a): estado de P1, culturas placeholder con idiomas y 9 sistemas con contrato (production, demography, knowledge, characters, succession, statecraft, diplomacy, military, settlements) + ledger + derive; 17 tipos de evento con plantillas es/en; contenido de 14 innovaciones, 5 eras y niveles de asentamiento;
+  - calibración v1 en el mediano (3 seeds): hierro hacia el 1 d.C., 128–350 M personas, urbanización 3,8–7,9 %, 49–75 polities en el 1 d.C.; 1,5–2,1 ms/año (presupuesto 10);
+  - **determinismo con el motor real:** Chromium y Firefox idénticos a Node en 13.900 años; la corrida completa tarda ~2 min en Node y ~3 en cada navegador, así que en los PR el CI corre 3.000 años y la completa queda para `main` y el cron;
+  - **Δ (para el REPORT y `model.md` v1.1):** `Province.cropShare` en lugar de `landUse` ×5; `Title.heir` (characters); batallas, tratados e invenciones solo como eventos (M2); guerra activa en `war` (diplomacy) + `front` (military) en lugar de `WarSide`; efectos de innovaciones como datos sobre el bitset (no como filas de `Modifier`); invención ∝ población (no ∝ provincia) y difusión ponderada por días; `chronicle` pasa a P1.4;
+  - **riesgos anotados:** al 1900 el estado pesa 1,3 MB y su hash cuesta ~26 ms (nombres y personas): pesa en los keyframes (P1.4) y en el hash por año; la dispersión entre seeds es grande (la calibración fina es P1.8); el mundo chico corre más rápido que el mediano (los requisitos de asentamiento dependen de la resolución);
+  - LEARNINGS L-017 (timeouts de tests pesados bajo `pnpm check`);
+  - **próximo:** `ws health` (P1.8) para calibrar con 10 seeds, después historia (P1.4). El checkpoint 2 necesita además el mapa político (P1.2).
+
 - **2026-10-16 (sesión P1-2, P1.1 hecha):**
   - **worldgen v1** en `packages/worldgen` (commit ed81874): placas sobre el cilindro + ruido (reescrito del spike A), nivel del mar por percentil, erosión térmica; clima con humedad advectada y sombra orográfica; 9 biomas en contenido; priority-flood con lagos y caudal; provincias Poisson + Dijkstra con fusión de diminutas; zonas marítimas; grafo con estrechos; `WorldStatic` v1 con hash y validación;
   - mediano en **3,64 s** en Node (`ws bench`, métrica `worldgen.medium`; presupuesto 20 s); 1.501 provincias, tierra 0,299 para 0,30;
