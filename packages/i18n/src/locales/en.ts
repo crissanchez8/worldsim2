@@ -19,6 +19,11 @@ export const en: Catalog = {
     es: 'Español',
     en: 'English',
   },
+  events: {
+    territory: {
+      changed: '{{province}} passes from {{from}} to {{to}}',
+    },
+  },
   content: {
     worldSize: { small: 'Small', medium: 'Medium' },
     mapType: { continents: 'Continents', pangaea: 'Pangaea', archipelago: 'Archipelago' },

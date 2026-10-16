@@ -12,6 +12,9 @@
     "lint": "eslint --max-warnings=0 .",
     "test": "vitest run"
   },
+  "dependencies": {
+    "@ws/core": "workspace:*"
+  },
   "devDependencies": {
     "vitest": "catalog:"
   }

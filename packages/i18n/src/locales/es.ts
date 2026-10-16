@@ -21,6 +21,12 @@ export const es = {
     es: 'Español',
     en: 'English',
   },
+  /** Plantillas de eventos: `events.<clave del evento>` (las exige un test de @ws/sim). */
+  events: {
+    territory: {
+      changed: '{{province}} pasa de {{from}} a {{to}}',
+    },
+  },
   /** Nombres de las filas de contenido: `content.<tabla>.<clave>` (los exige un test). */
   content: {
     worldSize: { small: 'Chico', medium: 'Mediano' },

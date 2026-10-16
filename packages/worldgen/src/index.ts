@@ -1,2 +1,11 @@
-/** Paquete vacío en P0: el contenido llega en P1 (DEVELOPMENT_PLAN §16). */
-export const PACKAGE_NAME = '@ws/worldgen';
+export { createGridWorld, type GridOptions } from './grid';
+export {
+  hashWorldStatic,
+  neighborsOf,
+  type ProvinceGraph,
+  type ProvinceStatic,
+  validateWorldStatic,
+  type WorldParams,
+  type WorldStatic,
+  type WorldStaticData,
+} from './world-static';
