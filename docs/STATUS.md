@@ -6,9 +6,9 @@
 | | |
 |---|---|
 | **Última actualización** | 2026-10-16 |
-| **Fase actual** | P1 — Rebanada vertical (por abrir) |
-| **Estado** | ✅ P0 cerrada el 2026-10-16 · P1 por abrir |
-| **Próximo paso** | Sesión nueva con `docs/prompts/P01-rebanada-vertical.md` → BRIEF de P1 y esperar aprobación |
+| **Fase actual** | P1 — Rebanada vertical |
+| **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
+| **Próximo paso** | P1.0 (bases) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -17,7 +17,7 @@
 | Fase | Estado | BRIEF | REPORT | Cierre |
 |---|---|---|---|---|
 | P0 Fundaciones de arquitectura | ✅ cerrada | [BRIEF](phases/P00/BRIEF.md) | [REPORT](phases/P00/REPORT.md) | 2026-10-16 |
-| P1 Rebanada vertical | ⚪ | — | — | — |
+| P1 Rebanada vertical | 🟢 en curso | [BRIEF](phases/P01/BRIEF.md) | — | — |
 | P2 Dirección de diseño y DS | ⚪ | — | — | — |
 | P3 El planeta físico | ⚪ | — | — | — |
 | P4 Gente y sustento | ⚪ | — | — | — |
@@ -34,6 +34,15 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-16 (sesión P1-1, apertura de P1):**
+  - leídos los docs de arranque del prompt de P1, `packages/core`, los tres spikes y el CI; confirmado en STATUS y `decisions.md` que P0 está ✅ cerrada (OK registrado, PR #1 mergeado);
+  - **`docs/phases/P01/BRIEF.md` escrito y presentado** (📋 en revisión):
+    - tareas P1.0–P1.10 refinadas con el estado real; Δ: suite de determinismo en `tools/determinism`, guardar = bytes del `.wsim`, tarea de cierre P1.10;
+    - 🔶 D01-a ritmo por era (era dominante + piso de duración); D01-b simulación adelantada con colchón (nueva); D01-c resúmenes mínimos + registros permanentes; D01-d ítems límite del alcance; D01-e borrar `spikes/` al cerrar P1;
+  - **inconsistencia a resolver con Cristian:** el prompt pide reclamos en el ledger de P1, pero en P1 no hay productores y `Claim` es de P7 → propuesta: diferirlos a P7 (D01-d, pregunta 2);
+  - sin código ni commits: el BRIEF y este STATUS quedan sin commitear hasta la aprobación (van a la rama `phase/p01-rebanada`);
+  - **próximo:** respuesta de Cristian → registrar la aprobación (D# nuevas) → rama de fase → P1.0.
+
 - **2026-10-16 (cierre de P0):**
   - OK de cierre de Cristian registrado en `decisions.md`; REPORT y BRIEF marcados como cerrados;
   - PR #1 mergeado a `main` con merge commit; desde `main` corren el deploy de producción y el job nocturno de determinismo;
@@ -116,4 +125,4 @@ Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA
   Plan aprobado como v1.0. No hay código todavía.
 
 ## Decisiones pendientes
-- Las 🔶 de P1 (en su prompt): curva de ritmo por era, lista de lo que queda fuera de la rebanada, resúmenes por entidad para el inspector a la fecha (ADR-008), destino de `spikes/` al cerrar P1.
+- Ninguna. BRIEF de P1 aprobado tal cual (D48–D54). La sesión paralela para P1.2 (mapa) se propone cuando P1.1 fije `WorldStatic`.
