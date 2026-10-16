@@ -21,4 +21,11 @@ export const es = {
     es: 'Español',
     en: 'English',
   },
+  /** Nombres de las filas de contenido: `content.<tabla>.<clave>` (los exige un test). */
+  content: {
+    worldSize: { small: 'Chico', medium: 'Mediano' },
+    mapType: { continents: 'Continentes', pangaea: 'Pangea', archipelago: 'Archipiélago' },
+    stratum: { common: 'Común' },
+    law: { primogeniture: 'Primogenitura' },
+  },
 } as const;

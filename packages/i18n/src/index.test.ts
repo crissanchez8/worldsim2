@@ -1,3 +1,4 @@
+import { CONTENT_TABLES } from '@ws/content';
 import { describe, expect, it } from 'vitest';
 import { createI18n, LANGUAGES, resources } from './index';
 
@@ -19,6 +20,20 @@ describe('@ws/i18n', () => {
       const i18n = createI18n(lng);
       for (const key of keyPaths(resources[lng].common)) {
         expect(i18n.t(key as never)).not.toBe('');
+      }
+    }
+  });
+
+  it('toda fila de contenido tiene nombre en es y en (content.<tabla>.<clave>)', () => {
+    for (const lng of LANGUAGES) {
+      const keys = new Set(keyPaths(resources[lng].common));
+      for (const table of CONTENT_TABLES) {
+        for (const row of table.rows) {
+          expect(
+            keys.has(`content.${table.name}.${row.key}`),
+            `${lng}: ${table.name}.${row.key}`,
+          ).toBe(true);
+        }
       }
     }
   });

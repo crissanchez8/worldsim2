@@ -19,4 +19,10 @@ export const en: Catalog = {
     es: 'Español',
     en: 'English',
   },
+  content: {
+    worldSize: { small: 'Small', medium: 'Medium' },
+    mapType: { continents: 'Continents', pangaea: 'Pangaea', archipelago: 'Archipelago' },
+    stratum: { common: 'Commoners' },
+    law: { primogeniture: 'Primogeniture' },
+  },
 };

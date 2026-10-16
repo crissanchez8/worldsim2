@@ -38,6 +38,9 @@ catalog:
   typescript-eslint: 8.71.2
   vite: 8.3.4
   vitest: 5.0.5
+  # Contenido como datos (D54). 4.6.5 y no la última (4.6.7, de hace 4 días): preferimos
+  # versiones con ≥ 2 semanas publicadas.
+  zod: 4.6.5
 
 # Todas las versiones exactas; el lockfile manda.
 savePrefix: ''
