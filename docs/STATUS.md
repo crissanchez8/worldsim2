@@ -5,11 +5,11 @@
 
 | | |
 |---|---|
-| **Última actualización** | 2026-10-15 |
+| **Última actualización** | 2026-10-16 |
 | **Fase actual** | P0 — Fundaciones de arquitectura |
-| **Estado** | 🟢 En curso — bloques 1–4 hechos (casa, primitivas, modelo aprobado, events/modifiers/scheduler); spike A en sesión paralela |
-| **Próximo paso** | Integrar la rama `p00-spike-terrain` cuando termine su sesión → bloque 5: P0.14 spike B (Worker + deltas + rebobinado) → P0.15 spike C (determinismo entre navegadores) → P0.17 bench |
-| **Bloqueos** | Ninguno |
+| **Estado** | 🟢 En curso — bloques 1–5 hechos (spikes A/B/C, bench, ADR-001…008); checkpoint 3 pendiente |
+| **Próximo paso** | Checkpoint 3 con Cristian: medir el spike A en Chrome/Safari/Firefox visibles, abrir `/spikes/determinism/` en Safari, decidir ADR-006, política de keyframes (ADR-008) y métricas de §2 (`spikes.md`, sección final). Después: QA gate, REPORT de P0, prompt de P1 |
+| **Bloqueos** | Checkpoint 3 (mediciones manuales y 3 decisiones 🔶) · prueba del README en clon nuevo (checkpoint 1) |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · rama `phase/p00-fundaciones` · PR #1 (draft) |
 
 ## Fases
@@ -34,6 +34,14 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-16 (sesión P0-6):**
+  - spike A integrado (merge de la sesión paralela; LEARNINGS renumeradas);
+  - **spike B** (`spikes/worker`): 14.000 años en 45 s (Chromium) y 60 s (Firefox) en un Worker, UI a 60 fps; rebobinado del mapa 0,03 ms, estado completo a una fecha 250–460 ms; keyframes cada 100 años = 13 MB con un estado mínimo → ADR-008 propone keyframes cada 1.000 años en el archivo;
+  - **spike C** (`spikes/determinism`): idéntico a Node en Chromium y Firefox (14.000 años, 18 funciones de math, RNG) y en WebKit sobre Linux en el CI; job `determinism` por PR; Safari pendiente;
+  - **P0.17** `ws bench` con línea base del M1 Pro y chequeo de regresión normalizado en el CI;
+  - ADR-005…008 escritos (006 y 008 propuestos, esperan el checkpoint 3);
+  - `CLAUDE.md` con comandos reales; LEARNINGS L-012 (WebKit de Playwright en macOS 26.0), L-013 (promovida a CLAUDE.md), L-014.
+
 - **2026-10-15 (sesión P0-5):**
   - `model.md` v1.0 **aprobado** con M1–M8 (D42);
   - **bloque 4 hecho** en `packages/core` (244 tests):

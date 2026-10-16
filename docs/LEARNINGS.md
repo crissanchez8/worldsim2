@@ -173,6 +173,16 @@
 - **Cómo detectarlo antes:** un `;` después de `pnpm check` en el mismo comando que un `git push`.
 - **Promovido a CLAUDE.md:** sí (regla de "verificar antes de publicar"; ver Convenciones).
 
+### L-014 · Lo que funciona en mi checkout puede no existir en un clon limpio
+- **Fecha / fase:** 2026-10-16 · P0
+- **Origen:** observación propia (CI)
+- **Contexto:** el build del spike C escribe `public/expected.json`, que está en `.gitignore`.
+- **Qué pasó:** en mi máquina `public/` existía; en el CI (clon limpio) no, y el build falló en dos jobs.
+- **Causa raíz:** una carpeta cuyo único contenido está ignorado no viaja con git.
+- **Regla:** los generadores crean sus carpetas (`mkdirSync(..., { recursive: true })`); ante un cambio de build, probar en un clon nuevo (`git clone . /tmp/x && pnpm i --frozen-lockfile && pnpm build`).
+- **Cómo detectarlo antes:** un archivo generado en una carpeta que no tiene ningún archivo versionado.
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)

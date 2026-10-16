@@ -45,7 +45,8 @@ pnpm dev
 | `pnpm lint:deps`     | Solo fronteras entre paquetes (dependency-cruiser)                  |
 | `pnpm test`          | Tests (Vitest) de todos los paquetes                                |
 | `pnpm format`        | Formatea con Prettier                                               |
-| `pnpm ws --version`  | CLI de desarrollo (`ws bench` llega en P0.17)                       |
+| `pnpm ws bench`      | Bench del core y año sintético (`--compare` contra la línea base)   |
+| `pnpm --filter @ws/spike-determinism e2e` | Determinismo en Chromium, Firefox y WebKit (Playwright) |
 | `pnpm site`          | Arma `site/` (web + spikes) para desplegar; requiere `pnpm build`   |
 
 ## Estructura
@@ -65,7 +66,7 @@ packages/
 tools/
   cli/           ws: CLI de desarrollo
   lint/          reglas de determinismo y texto de UI + sus tests
-spikes/          experimentos descartables de P0
+spikes/          experimentos descartables de P0: terrain (A), worker (B), determinism (C)
 docs/            plan, estado, decisiones, aprendizajes, fases, prompts, ADRs
 ```
 

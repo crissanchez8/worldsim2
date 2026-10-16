@@ -443,3 +443,30 @@ manual en Safari.
   permanente (§14.2 del plan: "Chromium/WebKit/Firefox/Node idénticos"), corriendo sobre el
   motor real en lugar de la simulación ficticia.
 - El job de CI con horizonte corto por PR y completo por la noche.
+
+---
+
+## Checkpoint 3 · decisiones con datos
+
+### 🔶 Confirmar el ADR-006 (WebGPU primero + fallback WebGL2)
+Recomendación: **confirmar**. WebGPU da ≥ 4× de margen a dpr 2; el fallback funciona; un solo
+código de material (TSL). Falta tu medición en Chrome, Safari y Firefox visibles
+(`/spikes/terrain/`, recorrido de 60 s con el botón del HUD).
+
+### 🔶 Política de keyframes del `.wsim` (ADR-008)
+Recomendación: **B**. En memoria, keyframes completos cada 100 años; en el archivo, cada 1.000
+años más el estado final exacto. Mapa a la fecha siempre instantáneo; inspector a la fecha con
+resúmenes. Con A (cada 100 años en el archivo) no se cumple el presupuesto de 20 MB.
+
+### 🔶 Ajuste de las métricas objetivo de §2
+| Métrica | Objetivo actual | Medido en P0 | Propuesta |
+|---|---|---|---|
+| Corrida headless completa (mundo mediano) | ≤ 3 min | 45–60 s con la carga ficticia (3,2–4,2 ms/año) | **Mantener** (el mundo real es más pesado: se mide en P1) |
+| Costo por año | prom ≤ 10 ms, p95 ≤ 25 ms | andamiaje del core: 2,4 ms/año (año sintético) | **Mantener** |
+| Render en vivo | 60 fps prom, p5 ≥ 45 | WebGPU 60 / 59,9 con ≥ 4× de margen; WebGL2 60 / 57 con ~2× | **Mantener**; 120 Hz no es objetivo |
+| Memoria del navegador | ≤ 1,5 GB pico | sin presión en P0 (historia 13 MB, terreno 8,5 MB de GPU) | **Mantener** |
+| Archivo `.wsim` | ≤ 20 MB comprimido | 13 MB solo en keyframes con un estado mínimo | **Mantener**, con la política B del ADR-008 |
+| Determinismo | 100% idéntico en Chromium, WebKit, Firefox y Node | idéntico en los 4 (WebKit en Linux); Safari pendiente | **Mantener**, y sumar **"verificado por año en CI"** |
+| Generación de mundo | ≤ 20 s | sin medir (worldgen en P1/P3); heightmap de ruido: 1–2 s | **Mantener** |
+| **Nuevo:** rebobinar el mapa | — | 0,03 ms | **≤ 16 ms** (un cuadro) |
+| **Nuevo:** estado completo a una fecha (en vivo) | — | 250–460 ms | **≤ 500 ms** con keyframes cada 100 años en memoria |
