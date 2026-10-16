@@ -51,6 +51,8 @@
 | D43 | 2026-10-16 | ADR-006 confirmado: Three.js `WebGPURenderer` + TSL, fallback automático a WebGL2, `?backend=webgl2` para depurar | Spike A: WebGPU ≥ 4× de margen a dpr 2 vs ~2× de WebGL2; un solo código de material. La medición en navegadores visibles la hace Cristian (checkpoint 3) | P0 |
 | D44 | 2026-10-16 | ADR-008 opción B: keyframes completos cada 100 años en memoria; en el `.wsim`, cada 1.000 años + el estado final exacto; mapa a la fecha con keyframes visuales + deltas; inspector a la fecha con resúmenes | Spike B: keyframes cada 100 años = 13 MB con un estado mínimo; el presupuesto del archivo es 20 MB. Reemplaza "keyframes cada 100 años" del plan §8.4 para el archivo | P0 |
 | D45 | 2026-10-16 | Métricas de §2: se mantienen todas; se suman rebobinar el mapa ≤ 16 ms y estado completo a una fecha (en vivo) ≤ 500 ms; el determinismo se verifica por año en CI | Mediciones de los spikes A, B y C (`docs/phases/P00/spikes.md`) | P0 |
+| D46 | 2026-10-16 | El criterio "clon nuevo → pnpm i → pnpm dev en ≤ 10 min (lo prueba Cristian)" se difiere a las últimas fases (P13) | Decisión de Cristian: el repo es público pero no se comparte todavía. Evidencia mientras tanto: clon limpio verificado por Claude (`pnpm install --frozen-lockfile` + build) y `pnpm dev` probado por Cristian en su checkout | P0 |
+| D47 | 2026-10-16 | Promoción de spikes (REPORT P0 §9) aprobada como se recomendó: en P1 se reescriben el terreno y wrap del spike A, el ledger con buffers SoA, el Worker por tandas y la historia del spike B, y la batería de determinismo del spike C; ninguna carpeta pasa tal cual | Cristian delegó la decisión en Claude ("seguí tu recomendación") | P0 |
 
 ## Aprobaciones de fase
 

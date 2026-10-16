@@ -7,16 +7,16 @@
 |---|---|
 | **Última actualización** | 2026-10-16 |
 | **Fase actual** | P0 — Fundaciones de arquitectura |
-| **Estado** | 🧪 QA de P0 — decisiones del checkpoint 3 aprobadas (D43–D45); REPORT en borrador |
-| **Próximo paso** | Cristian: repetir el spike A en Safari (sin modo de bajo consumo) y en Firefox (anotar backend; ver si se repite el congelamiento de 8 s), recorrer el README en un clon nuevo (o dispensarlo) y decidir la promoción de spikes (REPORT §9) → REPORT final, prompt de P1, OK de cierre y merge |
-| **Bloqueos** | Re-mediciones del spike A (Safari, Firefox) · README en clon nuevo · decisión §9 del REPORT |
+| **Estado** | 🧪 P0 terminada — REPORT final escrito; esperando el OK de cierre de Cristian y el merge del PR #1 |
+| **Próximo paso** | OK de cierre de Cristian → registrar en `decisions.md` → PR #1 listo para revisión → merge a `main` → P1 en una sesión nueva con `docs/prompts/P01-rebanada-vertical.md` |
+| **Bloqueos** | OK de cierre de P0 |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · rama `phase/p00-fundaciones` · PR #1 (draft) |
 
 ## Fases
 
 | Fase | Estado | BRIEF | REPORT | Cierre |
 |---|---|---|---|---|
-| P0 Fundaciones de arquitectura | 🧪 en QA | [BRIEF](phases/P00/BRIEF.md) | [borrador](phases/P00/REPORT.md) | — |
+| P0 Fundaciones de arquitectura | 🧪 esperando OK | [BRIEF](phases/P00/BRIEF.md) | [REPORT](phases/P00/REPORT.md) | — |
 | P1 Rebanada vertical | ⚪ | — | — | — |
 | P2 Dirección de diseño y DS | ⚪ | — | — | — |
 | P3 El planeta físico | ⚪ | — | — | — |
@@ -34,6 +34,11 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-16 (sesión P0-9):**
+  - Safari sin modo de bajo consumo: 60,0 fps → spike A cumple en los tres navegadores;
+  - D46: prueba del README en clon nuevo diferida a P13; D47: promoción de spikes aprobada (§9 del REPORT);
+  - REPORT de P0 final y prompt de P1 refrescado; solo falta el OK de cierre y el merge.
+
 - **2026-10-16 (sesión P0-8):**
   - mediciones de Cristian registradas: Chrome visible 118,8 fps (120 Hz) ✅; Safari 29,9 fps con la GPU al 30% (tope de 30 Hz del sistema, probable modo de bajo consumo) → repetir; Firefox p5 107 con un congelamiento de 8 s → repetir y anotar backend;
   - **spike C completo:** Safari 26 real idéntico a Node en los 14.000 años;

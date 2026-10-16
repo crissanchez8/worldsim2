@@ -178,20 +178,20 @@ ProMotion de 120 Hz).
 | Navegador | fps prom / p5 / p1 | Cuadro prom / p95 / máx (ms) | Tirones > 25 ms | CPU prom (ms) | GPU prom / p95 (ms) | Cola GPU prom (máx) |
 |---|---|---|---|---|---|---|
 | Chrome | **118,8** / 107,5 / 86,2 | 8,42 / 9,30 / 24,4 | 0 | 0,47 | 7,99 / 11,93 | 1,08 (4) |
-| Safari 26 | 29,9 / 28,6 / 25,6 | 33,46 / 35,00 / 189,0 | 1.776 | 1,74 | 9,62 / 19,20 | 1,00 (1) |
+| Safari 26 (modo de bajo consumo) | 29,9 / 28,6 / 25,6 | 33,46 / 35,00 / 189,0 | 1.776 | 1,74 | 9,62 / 19,20 | 1,00 (1) |
+| **Safari 26 (sin bajo consumo)** | **60,0** / 55,6 / 50,0 | 16,68 / 18,00 / 38,0 | 4 | 1,23 | 10,37 / 15,55 | 1,00 (1) |
 | Firefox | 86,5 / **107,3** / 57,5 | 11,55 / 9,32 / **8.001,1** | 35 | 2,08 | n/d | 2,04 (5) |
 
 Lectura:
 - **Chrome:** 120 Hz casi sostenidos, sin tirones y con la cola de la GPU en 1: cumple con margen
   aun al doble del objetivo.
-- **Safari: tope de 30 fps, no falta de rendimiento.** El cuadro dura 33,5 ms parejo mientras la
-  GPU usa 9,6 ms, la CPU 1,7 ms y nunca hay más de un cuadro en vuelo: nada está saturado. Es la
-  firma de un `requestAnimationFrame` limitado a 30 Hz, lo que Safari hace en modo de bajo
-  consumo. **Hay que repetir la medición** con el Mac enchufado y sin modo de bajo consumo.
-- **Firefox: rinde, pero hubo un congelamiento de 8 s.** El 95% de los cuadros va a ≥ 107 fps
-  (p5 107,3); el promedio de 86,5 lo arrastra un único cuadro de 8.001 ms. Hipótesis: compilación
-  de pipelines con la caché fría, ya visto en Firefox (problema 3). **Hay que repetir** para ver
-  si se repite con la caché caliente, y anotar el backend (Firefox 137 = WebGL2; ≥ 147 = WebGPU).
+- **Safari: cumple (60 fps).** La primera corrida quedó topeada en 30 Hz por el modo de bajo
+  consumo (cuadro de 33,5 ms parejo con la GPU al 30%); sin él da 60,0 fps (Safari no pasa de
+  60 Hz en la web) con la GPU a 10,4 ms. **Al medir en Safari, apagar el modo de bajo consumo.**
+- **Firefox: cumple (promedio 86,5, p5 107,3), con un congelamiento de 8 s.** El 95% de los
+  cuadros va a ≥ 107 fps; el promedio lo arrastra un único cuadro de 8.001 ms. Hipótesis:
+  compilación de pipelines con la caché fría (problema 3). No se repitió la medición ni se anotó
+  el backend: **queda como riesgo a medir en P1.2** (primera carga del mapa en Firefox).
 
 ### ¿Cumple el criterio de salida?
 Criterio (BRIEF §8): ≥ 60 fps promedio en M1 Pro con heightmap 2048×1024 + wrap; fallback WebGL2
@@ -203,9 +203,9 @@ funcional.
 - **Fallback WebGL2: sí.**
   - forzado en Chrome y automático en Firefox 137;
   - 60 fps promedio en dpr 1 y 2, con ~2× de margen.
-- **Visibles (checkpoint 3):** Chrome cumple a 120 Hz; Firefox cumple en el 95% de los cuadros
-  con un congelamiento de 8 s a investigar; Safari quedó topeado en 30 fps por el sistema y se
-  repite la medición (ver arriba).
+- **Visibles (checkpoint 3): sí en los tres.** Chrome 118,8 fps (120 Hz), Safari 60,0 fps (sin
+  modo de bajo consumo), Firefox 86,5 fps de promedio con p5 107 y un congelamiento de 8 s que
+  queda como riesgo para P1.2.
 - **Antes del checkpoint 3:** el Firefox instalado es la **137**, anterior a la 147, que trae WebGPU
   en macOS. Para medir WebGPU en Firefox hay que actualizarlo; con la 137 se mide el fallback.
 
