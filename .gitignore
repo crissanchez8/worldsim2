@@ -33,3 +33,4 @@ tmp/
 .claude/settings.local.json
 site/
 spikes/determinism/public/expected.json
+tools/determinism/public/expected.json

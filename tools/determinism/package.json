@@ -1,0 +1,30 @@
+{
+  "name": "@ws/determinism",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Suite de determinismo permanente (P1.0): mismo hash por año en Node, Chromium, Firefox y WebKit con el motor real",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsx src/node-expected.ts && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit -p .",
+    "lint": "eslint --max-warnings=0 .",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "expected": "tsx src/node-expected.ts"
+  },
+  "dependencies": {
+    "@ws/content": "workspace:*",
+    "@ws/core": "workspace:*",
+    "@ws/sim": "workspace:*",
+    "@ws/worldgen": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

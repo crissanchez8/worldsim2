@@ -75,13 +75,13 @@ jobs:
 
   determinism:
     name: determinism
-    # Spike C (P0.15): mismo hash por año en Chromium, Firefox y WebKit que en Node.
+    # Suite permanente (P1.0, tools/determinism): mismo hash por año en Chromium, Firefox y WebKit
+    # que en Node, con el motor real; además contenido, mundo estático, core/math y RNG.
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      # Los 14.000 años completos: los tres motores corren en paralelo (≈ 25 s cada 2.000 años).
-      # Si el job pasa de 5 min, bajar el PR a 2.000 y dejar los 14.000 al cron (BRIEF P0.15).
-      DETERMINISM_YEARS: '14000'
+    # Sin DETERMINISM_YEARS corre la corrida completa (12.000 a.C. → 1900). Si el job pasa de
+    # 5 min con el motor real, fijar DETERMINISM_YEARS: '2000' para los PR y dejar la completa al
+    # cron (BRIEF P1.0).
     steps:
       - uses: actions/checkout@v7
 
@@ -102,14 +102,14 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Navegadores de Playwright
-        working-directory: spikes/determinism
+        working-directory: tools/determinism
         run: pnpm exec playwright install --with-deps chromium firefox webkit
 
       - name: Referencia de Node + build (sin caché de Turbo)
-        run: pnpm --filter @ws/spike-determinism build
+        run: pnpm --filter @ws/determinism build
 
       - name: Comparar en los tres motores
-        working-directory: spikes/determinism
+        working-directory: tools/determinism
         run: pnpm exec playwright test
 
   deploy:
