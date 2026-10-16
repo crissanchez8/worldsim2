@@ -77,7 +77,8 @@ Si el usuario no indicó tarea, proponé el próximo paso según `STATUS.md`. Si
 | `pnpm build` · `pnpm site` | Build de todo · arma `site/` (web + spikes) para desplegar |
 | `pnpm ws bench [--compare docs/phases/P00/bench-baseline.json]` | Bench del core y año sintético (normalizado por calibración) |
 | `pnpm --filter @ws/core exec vitest run` | Tests de un paquete |
-| `pnpm --filter @ws/spike-determinism e2e` | Playwright: hash idéntico a Node en Chromium/Firefox/WebKit (WebKit local no anda en macOS 26.0: L-012) |
+| `pnpm ws run [--seed N] [--years N] [--every N] [--checks]` | Simulación headless: hash cada N años y resumen (`--checks`: guard e invariantes) |
+| `pnpm --filter @ws/determinism build && pnpm --filter @ws/determinism e2e` | Suite de determinismo del motor real: referencia de Node + Playwright en Chromium/Firefox/WebKit (WebKit local no anda en macOS 26.0: L-012) |
 | `pnpm --filter @ws/spike-worker measure:node [años] [--hash]` | Medición headless del spike B |
 
 Previews: el CI comenta el link en cada PR (`<rama>.worldsim2.pages.dev`; spikes en `/spikes/<nombre>/`).

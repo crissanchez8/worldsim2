@@ -8,7 +8,7 @@
 | **Última actualización** | 2026-10-16 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | P1.0 (bases) |
+| **Próximo paso** | P1.1 Worldgen v1 (P1.0 hecha) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -34,6 +34,20 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-16 (sesión P1-2, P1.0 bases):**
+  - BRIEF aprobado tal cual (D48–D54) y registrado; rama `phase/p01-rebanada`;
+  - **P1.0 hecha** (commits en la rama):
+    - `core/scheduler`: `SoaBuffer` (columnas tipadas, `reserve`/`append`/`clear`; `append` nunca reasigna, L-007); bench 30.000 deltas: SoA 0,40 ms vs objetos 0,55 ms;
+    - `@ws/content`: tablas con zod, índice = enum del estado, hash de contenido (golden `5f7ebcad944a9320`); tablas `worldSize`, `mapType`, `stratum`, `law`; nombres es/en exigidos por test;
+    - `@ws/worldgen`: contrato `WorldStatic` v0 (provincias SoA, grafo CSR en días/km, hash, validación) + mundo de grilla para tests;
+    - `@ws/sim`: estado (world, province, pop, polity), `Sim.create/load/step`, snapshot versionado por motor + contenido + hash del mundo; `ledger` (M1) con contabilidad por causa, escalado de excesos, fusión de pops < 1 persona y territorio por prioridad; `derive` con CSR; invariantes I2–I6 e I10 por tick; tests con carga de prueba de 300 años con guard, guardar/cargar idéntico, propiedades y mutaciones;
+    - `ws run` (hashes por año y resumen); `ENGINE_VERSION` 0.1.0;
+    - `tools/determinism` reemplaza al spike C en el job `determinism` (contenido, mundo, math, RNG y hash por año de la sim real; Chromium y Firefox idénticos a Node localmente; página para Safari en `/tools/determinism/`);
+  - **Δ respecto del BRIEF (técnicos, informar en el REPORT):** las tablas de contenido y los campos de cada entidad se crean con el sistema que los usa (P1.1/P1.3), no todos en P1.0; el escenario de la suite de determinismo es la grilla hasta P1.1, y con solo ledger + derive el hash por año todavía cubre poco (crece con cada sistema);
+  - LEARNINGS L-015 (`not.toThrow(Clase)` pasa con otro error);
+  - verificado en un clon limpio: `pnpm install --frozen-lockfile` + build + tests;
+  - **próximo:** P1.1 Worldgen v1 en el Worker de worldgen; al fijar `WorldStatic`, proponer la sesión paralela de P1.2 (mapa).
+
 - **2026-10-16 (sesión P1-1, apertura de P1):**
   - leídos los docs de arranque del prompt de P1, `packages/core`, los tres spikes y el CI; confirmado en STATUS y `decisions.md` que P0 está ✅ cerrada (OK registrado, PR #1 mergeado);
   - **`docs/phases/P01/BRIEF.md` escrito y presentado** (📋 en revisión):

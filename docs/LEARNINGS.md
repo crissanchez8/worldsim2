@@ -183,6 +183,16 @@
 - **Cómo detectarlo antes:** un archivo generado en una carpeta que no tiene ningún archivo versionado.
 - **Promovido a CLAUDE.md:** no.
 
+### L-015 · `expect(fn).not.toThrow(Clase)` pasa si se lanza OTRO error
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.0, test de propiedades del ledger)
+- **Contexto:** el test de propiedades verificaba cada tick con `expect(() => sim.step()).not.toThrow(InvariantError)`.
+- **Qué pasó:** revisándolo, sospeché que un `LedgerError` (u otro) no haría fallar el test; lo confirmé con una prueba mínima en Vitest 5: `not.toThrow(A)` pasa cuando se lanza un `TypeError`.
+- **Causa raíz:** la forma negada con clase solo afirma "no se lanzó un A", no "no se lanzó nada".
+- **Regla:** para afirmar que algo no falla, usar `.not.toThrow()` sin argumentos; la forma con clase o mensaje se usa solo en positivo (`.toThrow(Clase)`).
+- **Cómo detectarlo antes:** cualquier `.not.toThrow(` con argumento.
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)
