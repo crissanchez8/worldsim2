@@ -358,6 +358,12 @@ importers:
       '@ws/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@ws/sim':
+        specifier: workspace:*
+        version: link:../../packages/sim
+      '@ws/worldgen':
+        specifier: workspace:*
+        version: link:../../packages/worldgen
       tsx:
         specifier: 'catalog:'
         version: 4.23.15

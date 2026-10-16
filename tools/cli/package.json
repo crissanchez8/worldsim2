@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "CLI de desarrollo: ws --version · ws bench (P0.17) · ws run/health/inspect (P1)",
+  "description": "CLI de desarrollo: ws --version · ws bench · ws run (P1.0) · ws health (P1.8)",
   "bin": {
     "ws": "./bin/ws.js"
   },
@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "@ws/core": "workspace:*",
+    "@ws/sim": "workspace:*",
+    "@ws/worldgen": "workspace:*",
     "tsx": "catalog:"
   },
   "devDependencies": {
