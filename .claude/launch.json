@@ -8,6 +8,12 @@
       "port": 5173
     },
     {
+      "name": "web-build",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@ws/web", "preview", "--port", "4176", "--strictPort"],
+      "port": 4176
+    },
+    {
       "name": "spike-terrain",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@ws/spike-terrain", "dev", "--port", "5174", "--strictPort"],
