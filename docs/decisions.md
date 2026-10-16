@@ -60,6 +60,7 @@
 | D52 | 2026-10-16 | D01-e `spikes/` se borra al cerrar P1, cuando todo lo de D47 esté reescrito y el job `determinism` corra sobre el motor real (tag `p00-spikes` opcional, se publica solo con OK) | BRIEF P1 §5 | P1 |
 | D53 | 2026-10-16 | Cambios al modelo para P1 (BRIEF §6): `Settlement.name` pasa a P1; `Title` mínimo en P1 para alojar al gobernante; `Person` sin rasgos ni casa en P1; el ledger implementa transferencias sin productor hasta P4. Se reflejan en `model.md` v1.1 al cerrar la fase | BRIEF P1 pregunta 3 | P1 |
 | D54 | 2026-10-16 | Dependencias nuevas autorizadas: `zod`, `@tanstack/react-router`, `zustand`, `@tanstack/react-virtual`, `uplot` (versiones exactas en el catálogo) | BRIEF P1 pregunta 4 | P1 |
+| D55 | 2026-10-16 | Cambios al modelo de P1.3 aprobados tal como se propusieron: `Province.cropShare` en lugar de `landUse` ×5; `Title.heir` (dueño characters); batallas, tratados e invenciones solo como eventos (M2: sin consecuencias futuras en P1); guerra activa en `war` (diplomacy) + `front` (military) en lugar de `WarSide`; efectos de innovaciones como datos de contenido aplicados sobre el bitset de la provincia (fuente = la innovación en `explain`), no como filas de `Modifier`; invención ∝ población y difusión ponderada por días de arista. Se reflejan en `model.md` v1.1 al cerrar la fase | Handoff de P1.3 en STATUS; materializar un modificador por provincia × innovación serían cientos de miles de filas con las ≈150 innovaciones de P5 | P1 |
 
 ## Aprobaciones de fase
 

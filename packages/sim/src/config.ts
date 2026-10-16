@@ -45,8 +45,12 @@ export const PRODUCTION = {
   cropAdoptionRate: 0.003,
   /** Fracción cultivada inicial al conocer la agricultura (fraction). */
   cropAdoptionSeed: 0.02,
-  /** Umbral de "subsistencia agrícola" para el evento subsistence.shifted (fraction). */
-  agriculturalMajority: 0.5,
+  /**
+   * Parte de la tierra cultivable que se puede trabajar con azada (fraction); el arado, el
+   * hierro y la rotación la amplían (stat cropReach): la agricultura crece hacia afuera a lo
+   * largo de milenios, no de una vez.
+   */
+  cropReachBase: 0.4,
 } as const;
 
 export const DEMOGRAPHY = {
@@ -66,14 +70,22 @@ export const DEMOGRAPHY = {
 } as const;
 
 export const KNOWLEDGE = {
-  /** Población de referencia de la probabilidad de invención (persons): escala con pob/ref. */
-  inventionPopulationRef: 10_000,
+  /**
+   * La probabilidad de invención escala con el área de la provincia / esta referencia (km2; la
+   * provincia típica del mundo mediano): la suma mundial no depende de la resolución del mapa.
+   */
+  inventionAreaRefKm2: 160_000,
+  /**
+   * …y con √(densidad / esta referencia) (persons_per_km2; forrajeros): más gente inventa más,
+   * pero con rendimientos decrecientes (sin el bucle explosivo población ↔ técnica).
+   */
+  inventionDensityRef: 0.1,
   /**
    * Probabilidad anual de adoptar una innovación por cada vecina que la conoce, a la distancia de
    * referencia (per_year); se divide por (días de la arista / referencia): la difusión avanza en
    * km por año parecidos en mundos de distinta resolución.
    */
-  diffusionBase: 0.004,
+  diffusionBase: 0.006,
   /** Distancia de referencia de la difusión (days): mediana de las aristas del mundo mediano. */
   diffusionRefDays: 23,
   /** Multiplicador de la difusión entre provincias de la misma polity (ratio). */
@@ -82,10 +94,10 @@ export const KNOWLEDGE = {
 
 export const SETTLEMENTS = {
   /** Fracción urbana base de una provincia agrícola (fraction, por unidad de cultivo). */
-  urbanBase: 0.025,
+  urbanBase: 0.03,
   /** Densidad de referencia para la fracción urbana (persons_per_km2) y sus límites (ratio). */
   urbanDensityRef: 1,
-  urbanDensityMin: 0.3,
+  urbanDensityMin: 0.6,
   urbanDensityMax: 2,
   /** Tope de la fracción urbana (fraction). */
   urbanMax: 0.3,
@@ -98,7 +110,7 @@ export const SETTLEMENTS = {
 export const STATECRAFT = {
   /** Probabilidad anual de formar una jefatura desde un pueblo agrícola (per_year). */
   formationChance: 0.001,
-  /** Cultivo mínimo para formar una polity (fraction). */
+  /** Cultivo mínimo para formar una polity (fraction de `agrarianShare`). */
   formationMinCrop: 0.5,
   /**
    * Alcance administrativo base de una polity (days) antes de innovaciones. Una arista del mundo
@@ -141,7 +153,7 @@ export const WAR = {
   cooldownYears: 15,
   /** Relación de fuerzas mínima para declarar (ratio) y chance anual por unidad de ventaja. */
   declareMinRatio: 1.2,
-  declareChance: 0.015,
+  declareChance: 0.005,
   /** Ejército = esta fracción de la población (fraction). */
   armyShare: 0.01,
   /** Ventaja del defensor (ratio). */

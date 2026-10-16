@@ -9,6 +9,7 @@ import { SETTLEMENTS } from '../config';
 import type { SimSystem } from '../context';
 import { assignName } from '../names';
 import { withInnovations } from '../stats';
+import { agrarianShare } from './production';
 
 const MIN_URBAN = SettlementLevels.rows.map((r) => r.minUrban);
 const UP = 1 + SETTLEMENTS.hysteresis;
@@ -22,7 +23,7 @@ export function urbanTarget(cropShare: number, bits: number, density: number): n
     SETTLEMENTS.urbanDensityMin,
     SETTLEMENTS.urbanDensityMax,
   );
-  return Math.min(SETTLEMENTS.urbanMax, cropShare * base * densityFactor);
+  return Math.min(SETTLEMENTS.urbanMax, agrarianShare(cropShare) * base * densityFactor);
 }
 
 export const settlements: SimSystem = {

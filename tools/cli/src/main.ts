@@ -1,5 +1,6 @@
 import { ENGINE_VERSION } from '@ws/core';
 import { parseBenchArgs, runBench } from './bench';
+import { parseHealthArgs, runHealth, writeHealth } from './health';
 import { formatRun, parseRunArgs, runSim } from './run';
 
 export interface Io {
@@ -27,6 +28,9 @@ const HELP = [
   '                  --seed N · --size small|medium · --map continents|pangaea|archipelago',
   '                  --land 0.3 · --grid AxB (grilla de prueba) · --years N · --every 1000',
   '                  --json · --checks',
+  '  health          Salud histórica (P1.8): N seeds en paralelo contra el Apéndice A',
+  '                  --seeds 10 · --seed-list 1,2 · --size · --map · --land · --sample 100',
+  '                  --years N · --workers N · --out out/health · --compare base.json · --save base.json',
   '  --help, -h      Esta ayuda',
 ].join('\n');
 
@@ -43,6 +47,8 @@ export function main(args: readonly string[], io: Io = consoleIo): Promise<numbe
       io.out(text);
       return Promise.resolve(regressions > 0 ? 1 : 0);
     }
+    case 'health':
+      return health(args.slice(1), io);
     case 'run': {
       let options;
       try {
@@ -64,4 +70,18 @@ export function main(args: readonly string[], io: Io = consoleIo): Promise<numbe
       io.err(`Comando desconocido: ${command}\n\n${HELP}`);
       return Promise.resolve(1);
   }
+}
+
+async function health(args: readonly string[], io: Io): Promise<number> {
+  let options;
+  try {
+    options = parseHealthArgs(args);
+  } catch (error) {
+    io.err(error instanceof Error ? error.message : String(error));
+    return 1;
+  }
+  const report = await runHealth(options, io.out);
+  io.out(writeHealth(report, options));
+  io.out(`reporte en ${options.out}/report.{md,html,json}`);
+  return report.summary.failures > 0 ? 1 : 0;
 }

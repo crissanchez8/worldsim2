@@ -23,6 +23,8 @@ export const STATE_VERSION = `${ENGINE_VERSION}+${CONTENT_HASH}`;
 export interface SimOptions {
   /** Guard de contratos, validación de eventos e invariantes por tick (dev y tests; lento). */
   readonly checks?: boolean;
+  /** Solo los invariantes por tick, sin el guard (barato: `ws health`). Por defecto = checks. */
+  readonly invariants?: boolean;
   /** Sistemas del pipeline (por defecto los de esta versión; los tests suman productores). */
   readonly systems?: readonly SimSystem[];
 }
@@ -39,6 +41,7 @@ export class Sim {
   private readonly pipeline: scheduler.Pipeline<SimContext>;
   private readonly parts: ReturnType<typeof partsOf>;
   private readonly checks: boolean;
+  private readonly invariants: boolean;
 
   private constructor(world: WorldStatic, state: SimState, options: SimOptions) {
     const buffers = createBuffers();
@@ -57,6 +60,7 @@ export class Sim {
     ]);
     this.parts = partsOf(state);
     this.checks = options.checks ?? false;
+    this.invariants = options.invariants ?? this.checks;
   }
 
   /** Corrida nueva sobre un mundo estático. */
@@ -100,7 +104,7 @@ export class Sim {
     const year = state.world.get('year');
     const ids = new store.IdAllocator<'event'>(state.world.get('nextEventId'));
     const bus = new events.EventBus({ year, ids, checks: this.checks });
-    const before = this.checks ? totalPopulation(state) : 0;
+    const before = this.invariants ? totalPopulation(state) : 0;
     this.pipeline.runTick(this.ctx, {
       year,
       events: bus,
@@ -108,7 +112,7 @@ export class Sim {
     });
     state.world.set('nextEventId', ids.peek());
     state.world.set('year', time.nextYear(year));
-    if (this.checks) checkInvariants(this.ctx, before);
+    if (this.invariants) checkInvariants(this.ctx, before);
     return { year, events: bus.drain(), tally: this.ctx.ledger };
   }
 

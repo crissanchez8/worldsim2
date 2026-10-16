@@ -23,6 +23,7 @@ export const P1_STATS = modifiers.defineStats({
   combatStrength: { unit: 'score', combine: 'multiplicative', min: 0, doc: 'military' },
   urbanShare: { unit: 'fraction', combine: 'additive', min: 0, max: 1, doc: 'settlements' },
   reach: { unit: 'days', combine: 'additive', min: 0, doc: 'statecraft' },
+  cropReach: { unit: 'fraction', combine: 'additive', min: 0, max: 1, doc: 'production' },
 });
 
 export type P1Stat = keyof typeof P1_STATS;

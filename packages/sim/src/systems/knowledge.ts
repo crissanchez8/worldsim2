@@ -56,7 +56,7 @@ export const knowledge: SimSystem = {
   },
   run(w, tick) {
     const { province } = w.state;
-    const { count, arableFraction, coastal } = w.world.provinces;
+    const { count, area, arableFraction, coastal } = w.world.provinces;
     const { offsets, neighbors, baseCost } = w.world.graph;
     const bitsColumn = province.column('knownInnovations');
     const before = bitsColumn.slice(0, count); // conocimiento del inicio del tick (fila = id − 1)
@@ -69,7 +69,11 @@ export const knowledge: SimSystem = {
       const population = w.derived.provincePopulation[p] ?? 0;
       if (population <= 0) continue;
       const bits = before[p - 1] ?? 0;
-      const sizeFactor = population / KNOWLEDGE.inventionPopulationRef;
+      const areaKm2 = area[p] ?? 0;
+      const density = areaKm2 > 0 ? population / areaKm2 : 0;
+      const sizeFactor =
+        (areaKm2 / KNOWLEDGE.inventionAreaRefKm2) *
+        Math.sqrt(density / KNOWLEDGE.inventionDensityRef);
       const diffusion = KNOWLEDGE.diffusionBase * withInnovations('diffusionRate', 1, bits);
       let learned = 0;
       RULES.forEach((rule, i) => {

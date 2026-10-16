@@ -12,6 +12,7 @@ import { assignName } from '../names';
 import { POLITY_END_REASONS } from '../state';
 import { settlementLevels } from './knowledge';
 import { administrativeReach, capitalDistances, neighborsOfPolity, provincesOf } from './power';
+import { agrarianShare } from './production';
 
 const TOWN = SettlementLevels.indexOf('town');
 const PRIMOGENITURE = Laws.indexOf('primogeniture');
@@ -183,7 +184,7 @@ export const statecraft: SimSystem = {
     const crop = province.column('cropShare');
     for (let p = 1; p <= count; p++) {
       if ((owner[p - 1] ?? 0) !== 0 || (levels[p] ?? -1) < TOWN) continue;
-      if ((crop[p - 1] ?? 0) < STATECRAFT.formationMinCrop) continue;
+      if (agrarianShare(crop[p - 1] ?? 0) < STATECRAFT.formationMinCrop) continue;
       if (
         rng.rngUniform(seed, rng.Streams.statecraft, SUB_FORMATION, p, year, 0) >=
         STATECRAFT.formationChance

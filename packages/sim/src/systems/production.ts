@@ -23,6 +23,20 @@ export function provinceFood(
   return foraged * forage + cultivated * crop;
 }
 
+/** ¿El cultivo rinde más que el forrajeo? */
+function farmingFeedsMost(area: number, arable: number, hab: number, share: number, bits: number) {
+  const cultivated = area * arable * share;
+  const crop = withInnovations('cropYield', PRODUCTION.cropYieldT, bits) * cultivated;
+  const forage =
+    withInnovations('forageYield', PRODUCTION.forageYieldT, bits) * hab * (area - cultivated);
+  return crop > forage;
+}
+
+/** Cuán agrícola es una provincia (fraction): cultivo relativo a lo que se trabaja con azada. */
+export function agrarianShare(cropShare: number): number {
+  return Math.min(1, cropShare / PRODUCTION.cropReachBase);
+}
+
 export const production: SimSystem = {
   contract: {
     name: 'production',
@@ -44,13 +58,21 @@ export const production: SimSystem = {
     const outFood = out.column('food');
     for (let p = 1; p <= count; p++) {
       const b = bits[p - 1] ?? 0;
+      const area_ = area[p] ?? 0;
+      const arable = arableFraction[p] ?? 0;
+      const hab = habitability[p] ?? 0;
       let share = crop[p - 1] ?? 0;
-      if (knows(b, AGRICULTURE) && (arableFraction[p] ?? 0) > 0) {
+      if (knows(b, AGRICULTURE) && arable > 0) {
         const before = share;
+        const reach = Math.min(1, withInnovations('cropReach', PRODUCTION.cropReachBase, b));
         share = Math.max(share, PRODUCTION.cropAdoptionSeed);
-        share += PRODUCTION.cropAdoptionRate * (1 - share);
+        if (share < reach) share += PRODUCTION.cropAdoptionRate * (reach - share);
         crop[p - 1] = share;
-        if (before < PRODUCTION.agriculturalMajority && share >= PRODUCTION.agriculturalMajority) {
+        // "La agricultura ya alimenta a la mayoría": el cultivo supera al forrajeo por primera vez.
+        if (
+          !farmingFeedsMost(area_, arable, hab, before, b) &&
+          farmingFeedsMost(area_, arable, hab, share, b)
+        ) {
           tick.events.emit(w.types.subsistenceShifted, {
             actors: [],
             place: { kind: 'province', id: p },
@@ -68,13 +90,7 @@ export const production: SimSystem = {
       }
       const i = out.append();
       outProvince[i] = p;
-      outFood[i] = provinceFood(
-        area[p] ?? 0,
-        arableFraction[p] ?? 0,
-        habitability[p] ?? 0,
-        share,
-        b,
-      );
+      outFood[i] = provinceFood(area_, arable, hab, share, b);
     }
   },
 };

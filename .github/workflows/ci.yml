@@ -117,6 +117,35 @@ jobs:
         working-directory: tools/determinism
         run: pnpm exec playwright test
 
+  health:
+    name: health
+    # Salud histórica (P1.8): 10 seeds del mundo mediano contra el Apéndice A. Falla solo si una
+    # seed rompe un invariante; las métricas son informativas en P1 y van al artefacto.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: ws health (10 seeds)
+        run: pnpm ws health --seeds 10 --compare docs/phases/P01/health-baseline.json --out out/health
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: health
+          path: out/health/
+          retention-days: 14
+          if-no-files-found: warn
+
   deploy:
     name: deploy
     needs: check

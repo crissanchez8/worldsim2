@@ -1,0 +1,178 @@
+{
+ "engine": "0.1.2",
+ "stateVersion": "0.1.2+15186f8acc4f4229",
+ "generatedAt": "2026-10-16T23:42:40.379Z",
+ "summary": {
+  "seeds": 10,
+  "failures": 0,
+  "population": [
+   {
+    "year": -10000,
+    "min": 1000000,
+    "max": 10000000,
+    "median": 10301307.686797386,
+    "inside": 7
+   },
+   {
+    "year": -5000,
+    "min": 3000000,
+    "max": 30000000,
+    "median": 37204031.117512874,
+    "inside": 6
+   },
+   {
+    "year": -3000,
+    "min": 8000000,
+    "max": 60000000,
+    "median": 93098092.48579428,
+    "inside": 4
+   },
+   {
+    "year": -1000,
+    "min": 25000000,
+    "max": 100000000,
+    "median": 206162242.47251394,
+    "inside": 3
+   },
+   {
+    "year": 1,
+    "min": 100000000,
+    "max": 400000000,
+    "median": 235329418.5571478,
+    "inside": 7
+   },
+   {
+    "year": 1000,
+    "min": 150000000,
+    "max": 450000000,
+    "median": 302542297.5478947,
+    "inside": 6
+   },
+   {
+    "year": 1500,
+    "min": 250000000,
+    "max": 700000000,
+    "median": 342817172.4315438,
+    "inside": 4
+   },
+   {
+    "year": 1800,
+    "min": 500000000,
+    "max": 1400000000,
+    "median": 360242135.3919302,
+    "inside": 0
+   },
+   {
+    "year": 1900,
+    "min": 900000000,
+    "max": 2200000000,
+    "median": 366047959.52104354,
+    "inside": 0
+   }
+  ],
+  "milestones": [
+   {
+    "key": "agriculture",
+    "from": -11000,
+    "to": -6000,
+    "median": -10194.5,
+    "inside": 3,
+    "missing": 0
+   },
+   {
+    "key": "firstCity",
+    "from": -5500,
+    "to": -2500,
+    "median": -4218,
+    "inside": 2,
+    "missing": 1
+   },
+   {
+    "key": "writing",
+    "from": -4500,
+    "to": -1500,
+    "median": -3268,
+    "inside": 2,
+    "missing": 1
+   },
+   {
+    "key": "bronze",
+    "from": -4500,
+    "to": -2000,
+    "median": -3655,
+    "inside": 4,
+    "missing": 1
+   },
+   {
+    "key": "iron",
+    "from": -2000,
+    "to": 200,
+    "median": -3268,
+    "inside": 3,
+    "missing": 1
+   },
+   {
+    "key": "coinage",
+    "from": -1500,
+    "to": 500,
+    "median": -3919,
+    "inside": 3,
+    "missing": 2
+   },
+   {
+    "key": "printing",
+    "from": 500,
+    "to": 1700,
+    "median": -5926,
+    "inside": 1,
+    "missing": 3
+   },
+   {
+    "key": "gunpowder",
+    "from": 300,
+    "to": 1500,
+    "median": -4744.5,
+    "inside": 1,
+    "missing": 4
+   },
+   {
+    "key": "oceanNavigation",
+    "from": 900,
+    "to": 1700,
+    "median": -311,
+    "inside": 1,
+    "missing": 5
+   }
+  ],
+  "hegemons": 0,
+  "politiesAt1": 44,
+  "politiesAt1500": 43.5,
+  "ownedAt1500": 0.7421718854097268,
+  "urbanizationAt1": 0.1003321019332695,
+  "warsPerSeed": 961.5,
+  "warYears": 5.4741387146623035,
+  "reignYears": 31.463325379520764,
+  "msPerYear": 2.64700439147482,
+  "worldgenSeconds": 6.809016750000002,
+  "events": {
+   "battle.fought": 5402.5,
+   "famine.ended": 8042,
+   "famine.started": 1507,
+   "innovation.invented": 93,
+   "person.died": 12954.5,
+   "polity.absorbed": 101.5,
+   "polity.collapsed": 80.5,
+   "polity.formed": 251,
+   "ruler.succeeded": 13212,
+   "settlement.declined": 2,
+   "settlement.founded": 1185.5,
+   "settlement.grew": 1775.5,
+   "subsistence.shifted": 1377,
+   "territory.changed": 1763,
+   "treaty.signed": 961.5,
+   "war.declared": 964,
+   "war.ended": 961.5
+  }
+ },
+ "results": []
+}

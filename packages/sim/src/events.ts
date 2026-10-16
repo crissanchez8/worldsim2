@@ -56,7 +56,7 @@ export function createEventTypes() {
     }),
     famineEnded: registry.define<{ readonly population: number }>({
       key: 'famine.ended',
-      threshold: 0.6,
+      threshold: 0.4,
       significance: (d) => logScale(d.data.population, 200_000),
     }),
     innovationInvented: registry.define<{
