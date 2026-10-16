@@ -448,17 +448,17 @@ manual en Safari.
 
 ## Checkpoint 3 · decisiones con datos
 
-### 🔶 Confirmar el ADR-006 (WebGPU primero + fallback WebGL2)
+### ✅ Confirmar el ADR-006 (WebGPU primero + fallback WebGL2) · aprobado (D43)
 Recomendación: **confirmar**. WebGPU da ≥ 4× de margen a dpr 2; el fallback funciona; un solo
 código de material (TSL). Falta tu medición en Chrome, Safari y Firefox visibles
 (`/spikes/terrain/`, recorrido de 60 s con el botón del HUD).
 
-### 🔶 Política de keyframes del `.wsim` (ADR-008)
+### ✅ Política de keyframes del `.wsim` (ADR-008) · opción B aprobada (D44)
 Recomendación: **B**. En memoria, keyframes completos cada 100 años; en el archivo, cada 1.000
 años más el estado final exacto. Mapa a la fecha siempre instantáneo; inspector a la fecha con
 resúmenes. Con A (cada 100 años en el archivo) no se cumple el presupuesto de 20 MB.
 
-### 🔶 Ajuste de las métricas objetivo de §2
+### ✅ Ajuste de las métricas objetivo de §2 · aprobado (D45)
 | Métrica | Objetivo actual | Medido en P0 | Propuesta |
 |---|---|---|---|
 | Corrida headless completa (mundo mediano) | ≤ 3 min | 45–60 s con la carga ficticia (3,2–4,2 ms/año) | **Mantener** (el mundo real es más pesado: se mide en P1) |

@@ -54,9 +54,11 @@ jobs:
       - name: Tests
         run: pnpm test
 
-      - name: Bench (regresión gruesa, normalizada por calibración)
-        # La línea base es del M1 Pro (P0.17): en el runner solo se atrapan regresiones grandes.
-        run: pnpm ws bench --compare docs/phases/P00/bench-baseline.json --tolerance 1.0
+      - name: Bench (regresión contra la línea base del runner)
+        # Base propia del runner (x86, linux): comparar contra la del M1 Pro daba falsos positivos
+        # en operaciones limitadas por memoria. Si GitHub cambia el hardware del runner, regenerar
+        # docs/phases/P00/bench-baseline-ci.json desde el log de una corrida.
+        run: pnpm ws bench --compare docs/phases/P00/bench-baseline-ci.json --tolerance 1.0
 
       - name: Build
         run: pnpm build

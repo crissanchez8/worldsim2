@@ -1,0 +1,53 @@
+{
+  "engine": "0.0.0",
+  "machine": {
+    "cpu": "Intel(R) Xeon(R) 6973P-C",
+    "platform": "linux-x64",
+    "node": "v24.21.0"
+  },
+  "calibrationMs": 4.97,
+  "worldgenSeconds": null,
+  "peakHeapMB": 32,
+  "metrics": [
+    {
+      "key": "core.rng.uniform",
+      "value": 42.613,
+      "unit": "ns/llamada"
+    },
+    {
+      "key": "core.math.exp",
+      "value": 15.416,
+      "unit": "ns/llamada"
+    },
+    {
+      "key": "core.math.sin",
+      "value": 20.711,
+      "unit": "ns/llamada"
+    },
+    {
+      "key": "core.serialize.15kPops",
+      "value": 1.216,
+      "unit": "ms"
+    },
+    {
+      "key": "core.hashState.15kPops",
+      "value": 0.514,
+      "unit": "ms"
+    },
+    {
+      "key": "core.scheduler.tick8Systems",
+      "value": 0.544,
+      "unit": "µs/tick"
+    },
+    {
+      "key": "synthetic.msPerYear.avg",
+      "value": 2.298,
+      "unit": "ms/año"
+    },
+    {
+      "key": "synthetic.msPerYear.p95",
+      "value": 2.788,
+      "unit": "ms/año"
+    }
+  ]
+}

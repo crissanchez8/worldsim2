@@ -7,16 +7,16 @@
 |---|---|
 | **Última actualización** | 2026-10-16 |
 | **Fase actual** | P0 — Fundaciones de arquitectura |
-| **Estado** | 🟢 En curso — bloques 1–5 hechos (spikes A/B/C, bench, ADR-001…008); checkpoint 3 pendiente |
-| **Próximo paso** | Checkpoint 3 con Cristian: medir el spike A en Chrome/Safari/Firefox visibles, abrir `/spikes/determinism/` en Safari, decidir ADR-006, política de keyframes (ADR-008) y métricas de §2 (`spikes.md`, sección final). Después: QA gate, REPORT de P0, prompt de P1 |
-| **Bloqueos** | Checkpoint 3 (mediciones manuales y 3 decisiones 🔶) · prueba del README en clon nuevo (checkpoint 1) |
+| **Estado** | 🧪 QA de P0 — decisiones del checkpoint 3 aprobadas (D43–D45); REPORT en borrador |
+| **Próximo paso** | Cristian pasa las mediciones manuales (spike A en Chrome/Safari/Firefox visibles; Safari en `/spikes/determinism/`; README en clon nuevo) → completar `REPORT.md` → decidir la promoción de spikes (REPORT §9) → refrescar el prompt de P1 → OK de cierre y merge |
+| **Bloqueos** | Mediciones manuales de Cristian |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · rama `phase/p00-fundaciones` · PR #1 (draft) |
 
 ## Fases
 
 | Fase | Estado | BRIEF | REPORT | Cierre |
 |---|---|---|---|---|
-| P0 Fundaciones de arquitectura | 🟢 en curso | [BRIEF](phases/P00/BRIEF.md) | — | — |
+| P0 Fundaciones de arquitectura | 🧪 en QA | [BRIEF](phases/P00/BRIEF.md) | [borrador](phases/P00/REPORT.md) | — |
 | P1 Rebanada vertical | ⚪ | — | — | — |
 | P2 Dirección de diseño y DS | ⚪ | — | — | — |
 | P3 El planeta físico | ⚪ | — | — | — |
@@ -34,6 +34,11 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-16 (sesión P0-7):**
+  - checkpoint 3: Cristian aprobó ADR-006 (D43), opción B de keyframes del ADR-008 (D44) y las métricas de §2 + 2 nuevas (D45); plan a v1.1;
+  - CI: el job `determinism` corre 14.000 años en Chromium, Firefox y WebKit (Linux) en ~4 min, todo idéntico a Node; el bench del CI compara contra una base del propio runner (`bench-baseline-ci.json`);
+  - `REPORT.md` de P0 en borrador (faltan las mediciones manuales y la decisión de promoción de spikes).
+
 - **2026-10-16 (sesión P0-6):**
   - spike A integrado (merge de la sesión paralela; LEARNINGS renumeradas);
   - **spike B** (`spikes/worker`): 14.000 años en 45 s (Chromium) y 60 s (Firefox) en un Worker, UI a 60 fps; rebobinado del mapa 0,03 ms, estado completo a una fecha 250–460 ms; keyframes cada 100 años = 13 MB con un estado mínimo → ADR-008 propone keyframes cada 1.000 años en el archivo;

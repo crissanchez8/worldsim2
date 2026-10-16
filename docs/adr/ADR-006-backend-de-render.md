@@ -3,9 +3,9 @@
 | | |
 |---|---|
 | **Fecha** | 2026-10-16 |
-| **Estado** | Propuesto con los datos del spike A (🔶 confirmación de Cristian en el checkpoint 3, después de medir en navegadores visibles) |
+| **Estado** | Aceptado el 2026-10-16 (D43) · medición en navegadores visibles a cargo de Cristian |
 | **Fase** | P0 |
-| **Decisión en log** | D2 (plataforma) · confirmación pendiente |
+| **Decisión en log** | D2 (plataforma) · D43 |
 
 ## Contexto
 Mapa 3D que de lejos se vuelve atlas (D5), terreno de 2048×1024 con wrap E-O (D6), 60 fps en

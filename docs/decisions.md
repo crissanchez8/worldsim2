@@ -48,6 +48,9 @@
 | D40 | 2026-10-15 | `core/math` = port de fdlibm + allowlist de `Math` en el motor | < 2,2 ulp vs V8; bit a bit entre motores a confirmar en spike C (ADR-003) | P0 |
 | D41 | 2026-10-15 | Estado en SoA + tablas escasas; snapshot binario `WSST`; hash de estado = 2×XXH32 de los bytes serializados | XXH64 emulado medía 50 MB/s vs 3,3 GB/s; el hash sobre bytes garantiza que todo el estado esté en el hash (ADR-004) | P0 |
 | D42 | 2026-10-15 | `docs/model.md` v1.0 aprobado con las decisiones de modelo M1–M8 tal como se recomendaron | M1 libro mayor (`ledger`) para población, territorio y reclamos · M2 log de eventos fuera del hash · M3 vistas derivadas fuera del snapshot · M4 lo que cruza el tick es estado · M5 sistema `factions` · M6 `Person` permanente + `CharacterDetail` · M7 costo de movimiento en días · M8 moneda de cuenta única (plata) | P0 |
+| D43 | 2026-10-16 | ADR-006 confirmado: Three.js `WebGPURenderer` + TSL, fallback automático a WebGL2, `?backend=webgl2` para depurar | Spike A: WebGPU ≥ 4× de margen a dpr 2 vs ~2× de WebGL2; un solo código de material. La medición en navegadores visibles la hace Cristian (checkpoint 3) | P0 |
+| D44 | 2026-10-16 | ADR-008 opción B: keyframes completos cada 100 años en memoria; en el `.wsim`, cada 1.000 años + el estado final exacto; mapa a la fecha con keyframes visuales + deltas; inspector a la fecha con resúmenes | Spike B: keyframes cada 100 años = 13 MB con un estado mínimo; el presupuesto del archivo es 20 MB. Reemplaza "keyframes cada 100 años" del plan §8.4 para el archivo | P0 |
+| D45 | 2026-10-16 | Métricas de §2: se mantienen todas; se suman rebobinar el mapa ≤ 16 ms y estado completo a una fecha (en vivo) ≤ 500 ms; el determinismo se verifica por año en CI | Mediciones de los spikes A, B y C (`docs/phases/P00/spikes.md`) | P0 |
 
 ## Aprobaciones de fase
 
@@ -56,3 +59,4 @@
 | 2026-10-14 | Plan | DEVELOPMENT_PLAN aprobado como v1.0 | Q1–Q4 quedan para el BRIEF de P0 |
 | 2026-10-15 | P0 | BRIEF aprobado tal cual | D30–D37; descargas de dependencias npm y navegadores de Playwright autorizadas |
 | 2026-10-15 | P0 | `docs/model.md` v1.0 aprobado (gate P0.11) | D42; se habilita el bloque 4 (P0.8–P0.10) |
+| 2026-10-16 | P0 | Checkpoint 3: decisiones aprobadas (D43–D45) | Mediciones manuales (navegadores visibles, Safari) en curso por Cristian |

@@ -3,9 +3,9 @@
 | | |
 |---|---|
 | **Fecha** | 2026-10-16 |
-| **Estado** | Propuesto (🔶 política de keyframes a decidir con Cristian en el checkpoint 3) |
+| **Estado** | Aceptado el 2026-10-16 con la opción B (D44) |
 | **Fase** | P0 (especificación; se implementa en P1.4) |
-| **Decisión en log** | — (pendiente) |
+| **Decisión en log** | D44 |
 
 ## Contexto
 Compartir sin backend (D18): la historia de un mundo como archivo, ≤ 20 MB comprimido (§2 del
@@ -43,7 +43,7 @@ bloques: [tipo 4 bytes · largo · datos]
 | **B · En memoria cada 100 años; en el archivo cada 1.000 años + el estado final exacto (recomendada)** | Archivo dentro de presupuesto (~14 keyframes); en la sesión en vivo el rebobinado completo sigue siendo rápido; el mapa a la fecha siempre es instantáneo (VKEY + DELT) | Con un archivo cargado, el estado completo de un año arbitrario cuesta hasta 999 años de re-simulación (varios segundos); el inspector "a la fecha" tiene que vivir de resúmenes en DELT/EVNT, no del estado completo |
 | C · Keyframes con floats cuantizados (f32) | Más chicos | El estado deja de ser exacto: rompe "continuar con hash idéntico"; solo sirve para mostrar |
 
-**Recomiendo B**, con el **inspector "a la fecha" alimentado por resúmenes** por entidad en los
+**Se eligió B** (D44), con el **inspector "a la fecha" alimentado por resúmenes** por entidad en los
 deltas (población, dueño, nivel, régimen…: lo define P1.4/P11), y el estado completo exacto solo
 al final (continuar) y cada 1.000 años (re-simulación).
 **No recomiendo C:** un estado inexacto contradice la regla "si está en el estado, está en el
