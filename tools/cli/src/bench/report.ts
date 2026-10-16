@@ -14,7 +14,8 @@ export interface BenchReport {
   readonly machine: { readonly cpu: string; readonly platform: string; readonly node: string };
   /** ms del lazo de calibración (más rápido = máquina más rápida). */
   readonly calibrationMs: number;
-  readonly worldgenSeconds: null;
+  /** Generación del mundo mediano (s); null en reportes de P0. */
+  readonly worldgenSeconds: number | null;
   readonly peakHeapMB: number;
   readonly metrics: readonly Metric[];
 }
@@ -31,13 +32,13 @@ export function makeReport(
   calibrationMs: number,
   metrics: readonly Metric[],
   peakHeapMB: number,
+  worldgenSeconds: number | null = null,
 ): BenchReport {
-  // worldgen llega en P1 (P1.1); el campo existe desde ahora para que el formato no cambie.
   return {
     engine: ENGINE_VERSION,
     machine: machine(),
     calibrationMs,
-    worldgenSeconds: null,
+    worldgenSeconds,
     peakHeapMB,
     metrics,
   };
@@ -87,7 +88,7 @@ export function formatTable(report: BenchReport, baseline?: BenchReport): string
       .trimEnd();
   return [
     `${report.machine.cpu} · ${report.machine.platform} · node ${report.machine.node} · motor ${report.engine}`,
-    `calibración ${report.calibrationMs.toFixed(2)} ms · heap pico ${report.peakHeapMB} MB · worldgen: P1`,
+    `calibración ${report.calibrationMs.toFixed(2)} ms · heap pico ${report.peakHeapMB} MB · worldgen mediano: ${report.worldgenSeconds === null ? '—' : `${report.worldgenSeconds.toFixed(2)} s`}`,
     line(header),
     ...rows.map(line),
   ].join('\n');

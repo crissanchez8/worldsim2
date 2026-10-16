@@ -3,6 +3,7 @@ import { calibrate } from './measure';
 import { type BenchReport, compare, formatTable, makeReport, type Metric } from './report';
 import { coreScenario } from './scenarios/core';
 import { syntheticScenario } from './scenarios/synthetic';
+import { worldgenScenario } from './scenarios/worldgen';
 
 export interface BenchOptions {
   readonly json: boolean;
@@ -43,7 +44,10 @@ export function runBench(options: BenchOptions): {
   sample();
   metrics.push(...syntheticScenario(options.years));
   sample();
-  const report = makeReport(calibrationMs, metrics, Math.round(peak / 1048576));
+  const worldgen = worldgenScenario();
+  metrics.push(worldgen);
+  sample();
+  const report = makeReport(calibrationMs, metrics, Math.round(peak / 1048576), worldgen.value);
   if (options.out) writeFileSync(options.out, `${JSON.stringify(report, null, 2)}\n`);
 
   let baseline: BenchReport | undefined;

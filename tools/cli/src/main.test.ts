@@ -49,6 +49,20 @@ describe('ws', () => {
     expect(io.errors.join('\n')).toContain('--grid');
   });
 
+  it('run: genera el mundo con el worldgen real y valida sus parámetros', async () => {
+    const io = capture();
+    const args = ['run', '--size', 'small', '--map', 'pangaea', '--years', '3', '--json'];
+    expect(await main(args, io)).toBe(0);
+    const report = JSON.parse(io.lines.join('\n')) as {
+      world: { kind: string; provinces: number };
+    };
+    expect(report.world.kind).toBe('generated');
+    expect(report.world.provinces).toBeGreaterThan(300);
+    const bad = capture();
+    expect(await main(['run', '--size', 'huge'], bad)).toBe(1);
+    expect(bad.errors.join('\n')).toContain('huge');
+  });
+
   it('un comando desconocido sale con 1', async () => {
     const io = capture();
     expect(await main(['nope'], io)).toBe(1);

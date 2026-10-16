@@ -23,8 +23,10 @@ const HELP = [
   '  --version, -v   Versión del motor',
   '  bench           Bench: primitivas del core y año sintético (P0.17)',
   '                  --json · --years N · --out archivo · --compare base.json · --tolerance 0.5',
-  '  run             Corre una simulación headless: hashes por año y resumen (P1.0)',
-  '                  --seed N · --grid 50x30 · --years N · --every 1000 · --json · --checks',
+  '  run             Genera un mundo y lo simula headless: hashes por año y resumen',
+  '                  --seed N · --size small|medium · --map continents|pangaea|archipelago',
+  '                  --land 0.3 · --grid AxB (grilla de prueba) · --years N · --every 1000',
+  '                  --json · --checks',
   '  --help, -h      Esta ayuda',
 ].join('\n');
 

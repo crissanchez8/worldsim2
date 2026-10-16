@@ -193,6 +193,16 @@
 - **Cómo detectarlo antes:** cualquier `.not.toThrow(` con argumento.
 - **Promovido a CLAUDE.md:** no.
 
+### L-016 · `Stream.sub(n)` reemplaza el sub-stream, no lo anida
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.1, semillas de provincias y de zonas marítimas)
+- **Contexto:** `placeSeeds` recibía un stream y hacía `stream.sub(1)` adentro; las zonas marítimas le pasaban `…stream(worldgenProvinces).sub(2)` para tener azar propio.
+- **Qué pasó:** revisando `core/rng` vi que `sub` crea un stream con ESE sub-id, descartando el anterior: `sub(2).sub(1)` es `sub(1)`. Provincias y mares habrían usado la misma secuencia (semillas correlacionadas, sin error visible).
+- **Causa raíz:** asumí semántica de anidado ("sub-stream de un sub-stream") por el nombre.
+- **Regla:** el sub-stream lo elige quien llama, con constantes nombradas por módulo (`SUB_…`); una función que recibe un `Stream` lo usa con `at(entidad, k)` y nunca vuelve a llamar a `sub`.
+- **Cómo detectarlo antes:** un `.sub(` aplicado sobre un `Stream` que vino por parámetro.
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)

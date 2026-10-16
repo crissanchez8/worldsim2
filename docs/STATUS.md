@@ -8,7 +8,7 @@
 | **Última actualización** | 2026-10-16 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | Terminar P1.1 (ws run con mundos reales, bench de worldgen, L-016) y pasar a P1.2 |
+| **Próximo paso** | P1.3 Simulación v1 (acá) y P1.2 Mapa v1 en una sesión paralela (propuesta; ver handoff) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -34,14 +34,15 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
-- **2026-10-16 (sesión P1-2, P1.1 en curso; se cortó por límite de uso):**
-  - **hecho (commit ed81874):** worldgen v1 completo en `packages/worldgen` (placas, relieve, erosión, clima, hidrología, 9 biomas en contenido, provincias, zonas marítimas, grafo con estrechos); `WorldStatic` v1; mediano en ~3,9 s en Node; tests validados con mutaciones; suite de determinismo sobre el mundo chico real (Chromium y Firefox idénticos a Node); `ENGINE_VERSION` 0.1.1;
-  - **falta de P1.1:**
-    - `ws run` con `--size/--map/--land` (hoy solo grilla);
-    - tiempo de worldgen en `ws bench` (`worldgenSeconds`);
-    - LEARNINGS L-016: `Stream.sub` REEMPLAZA el sub-stream, no anida (casi hace que provincias y mares compartieran azar);
-    - el host del Worker de worldgen en `apps/web` va con P1.2;
-  - **próximo:** cerrar lo que falta de P1.1, pushear y proponer la sesión paralela de P1.2 (mapa) sobre `WorldStatic` v1.
+- **2026-10-16 (sesión P1-2, P1.1 hecha):**
+  - **worldgen v1** en `packages/worldgen` (commit ed81874): placas sobre el cilindro + ruido (reescrito del spike A), nivel del mar por percentil, erosión térmica; clima con humedad advectada y sombra orográfica; 9 biomas en contenido; priority-flood con lagos y caudal; provincias Poisson + Dijkstra con fusión de diminutas; zonas marítimas; grafo con estrechos; `WorldStatic` v1 con hash y validación;
+  - mediano en **3,64 s** en Node (`ws bench`, métrica `worldgen.medium`; presupuesto 20 s); 1.501 provincias, tierra 0,299 para 0,30;
+  - calibración v1: hundimiento polar (el cilindro sobrerrepresenta los polos), lagos solo con más de 150 m de relleno (sin erosión hidráulica sobraban); el clima fino es P3;
+  - suite de determinismo sobre el mundo chico real, generado en el Worker de la página (Chromium y Firefox idénticos a Node); `ENGINE_VERSION` 0.1.1;
+  - `ws run` genera mundos reales (`--size`, `--map`, `--land`; `--grid` para la grilla de prueba);
+  - LEARNINGS L-016 (`Stream.sub` reemplaza, no anida);
+  - **Δ:** el host del Worker de worldgen en `apps/web` va con P1.2 (lo consume el mapa); en P1.1 el worldgen corre en un Worker en la página de determinismo;
+  - **próximo:** P1.3 acá; P1.2 en una sesión paralela que toca solo `apps/web` (propuesta como tarjeta).
 
 - **2026-10-16 (sesión P1-2, P1.0 bases):**
   - BRIEF aprobado tal cual (D48–D54) y registrado; rama `phase/p01-rebanada`;
