@@ -62,3 +62,4 @@
 | 2026-10-15 | P0 | BRIEF aprobado tal cual | D30–D37; descargas de dependencias npm y navegadores de Playwright autorizadas |
 | 2026-10-15 | P0 | `docs/model.md` v1.0 aprobado (gate P0.11) | D42; se habilita el bloque 4 (P0.8–P0.10) |
 | 2026-10-16 | P0 | Checkpoint 3: decisiones aprobadas (D43–D45) | Mediciones manuales (navegadores visibles, Safari) en curso por Cristian |
+| 2026-10-16 | P0 | **Fase cerrada** (OK de Cristian) | REPORT en `docs/phases/P00/REPORT.md`; merge del PR #1 a `main` con merge commit; próxima fase: P1 con `docs/prompts/P01-rebanada-vertical.md` |

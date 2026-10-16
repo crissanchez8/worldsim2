@@ -6,17 +6,17 @@
 | | |
 |---|---|
 | **Última actualización** | 2026-10-16 |
-| **Fase actual** | P0 — Fundaciones de arquitectura |
-| **Estado** | 🧪 P0 terminada — REPORT final escrito; esperando el OK de cierre de Cristian y el merge del PR #1 |
-| **Próximo paso** | OK de cierre de Cristian → registrar en `decisions.md` → PR #1 listo para revisión → merge a `main` → P1 en una sesión nueva con `docs/prompts/P01-rebanada-vertical.md` |
-| **Bloqueos** | OK de cierre de P0 |
-| **Repo** | https://github.com/crissanchez8/worldsim2 · rama `phase/p00-fundaciones` · PR #1 (draft) |
+| **Fase actual** | P1 — Rebanada vertical (por abrir) |
+| **Estado** | ✅ P0 cerrada el 2026-10-16 · P1 por abrir |
+| **Próximo paso** | Sesión nueva con `docs/prompts/P01-rebanada-vertical.md` → BRIEF de P1 y esperar aprobación |
+| **Bloqueos** | Ninguno |
+| **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
 ## Fases
 
 | Fase | Estado | BRIEF | REPORT | Cierre |
 |---|---|---|---|---|
-| P0 Fundaciones de arquitectura | 🧪 esperando OK | [BRIEF](phases/P00/BRIEF.md) | [REPORT](phases/P00/REPORT.md) | — |
+| P0 Fundaciones de arquitectura | ✅ cerrada | [BRIEF](phases/P00/BRIEF.md) | [REPORT](phases/P00/REPORT.md) | 2026-10-16 |
 | P1 Rebanada vertical | ⚪ | — | — | — |
 | P2 Dirección de diseño y DS | ⚪ | — | — | — |
 | P3 El planeta físico | ⚪ | — | — | — |
@@ -34,6 +34,11 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-16 (cierre de P0):**
+  - OK de cierre de Cristian registrado en `decisions.md`; REPORT y BRIEF marcados como cerrados;
+  - PR #1 mergeado a `main` con merge commit; desde `main` corren el deploy de producción y el job nocturno de determinismo;
+  - **próximo:** abrir P1 en una sesión nueva con `docs/prompts/P01-rebanada-vertical.md`.
+
 - **2026-10-16 (sesión P0-9):**
   - Safari sin modo de bajo consumo: 60,0 fps → spike A cumple en los tres navegadores;
   - D46: prueba del README en clon nuevo diferida a P13; D47: promoción de spikes aprobada (§9 del REPORT);
@@ -111,4 +116,4 @@ Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA
   Plan aprobado como v1.0. No hay código todavía.
 
 ## Decisiones pendientes
-- Ninguna bloqueante. Próximas con datos: ADR-006 (tras spike A), métricas de §2 (tras spikes A/B y bench), hash XXH64 vs 2×XXH32 (P0.7, técnica).
+- Las 🔶 de P1 (en su prompt): curva de ritmo por era, lista de lo que queda fuera de la rebanada, resúmenes por entidad para el inspector a la fecha (ADR-008), destino de `spikes/` al cerrar P1.

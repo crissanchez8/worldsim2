@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| **Fecha de cierre** | 2026-10-16 (pendiente el OK de Cristian) |
-| **Estado** | 🧪 Esperando OK de Cristian |
+| **Fecha de cierre** | 2026-10-16 |
+| **Estado** | ✅ Cerrada el 2026-10-16 (OK de Cristian en `decisions.md`) |
 | **BRIEF** | [`docs/phases/P00/BRIEF.md`](BRIEF.md) (aprobado el 2026-10-15, D30–D37) |
 | **PR / rama** | [crissanchez8/worldsim2#1](https://github.com/crissanchez8/worldsim2/pull/1) · `phase/p00-fundaciones` |
 | **Preview** | https://phase-p00-fundaciones.worldsim2.pages.dev · spikes en `/spikes/terrain/`, `/spikes/worker/`, `/spikes/determinism/` |

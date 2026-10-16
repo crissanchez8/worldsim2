@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Fecha** | 2026-10-14 |
-| **Estado** | ✅ Aprobado el 2026-10-15 (tal cual; decisiones D30–D37) |
+| **Estado** | ✅ Aprobado el 2026-10-15 (tal cual; decisiones D30–D37) · fase cerrada el 2026-10-16 ([REPORT](REPORT.md)) |
 | **Tamaño** | M |
 | **Fase anterior** | — (primera fase; plan v1.0 aprobado el 2026-10-14) |
 
