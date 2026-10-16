@@ -6,6 +6,10 @@ on:
   pull_request:
   push:
     branches: [main]
+  # Determinismo completo (14.000 años en 3 motores) todas las noches y a pedido.
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
@@ -63,11 +67,49 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
+  determinism:
+    name: determinism
+    # Spike C (P0.15): mismo hash por año en Chromium, Firefox y WebKit que en Node.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # PR: 2.000 años (rápido); nocturno o manual: los 14.000 completos.
+      DETERMINISM_YEARS: ${{ github.event_name == 'pull_request' && '2000' || '14000' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Caché de navegadores de Playwright
+        id: pw-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Navegadores de Playwright
+        working-directory: spikes/determinism
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Referencia de Node + build (sin caché de Turbo)
+        run: pnpm --filter @ws/spike-determinism build
+
+      - name: Comparar en los tres motores
+        working-directory: spikes/determinism
+        run: pnpm exec playwright test
+
   deploy:
     name: deploy
     needs: check
     # Los PRs desde forks no tienen acceso a los secretos: no se despliegan.
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
