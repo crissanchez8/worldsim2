@@ -41,7 +41,7 @@ Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA
     - P0.9 `modifiers`: stats con forma de agregación, dueño por fila, vencimiento, `explain()`, resultado independiente del orden de alta;
     - P0.10 `time` (calendario sin año 0) + `scheduler` (14 fases, cadencias, escritor único estático, buffers, guard por huella de campo);
     - `@ws/i18n`: `formatYear` / `formatNumber` (es/en);
-  - tests débiles detectados con mutación y corregidos (L-004 ampliada); L-009;
+  - tests débiles detectados con mutación y corregidos (L-004 ampliada); L-011 (resúmenes con grep);
   - la sesión del spike A sigue trabajando en `p00-spike-terrain`.
 
 - **2026-10-15 (sesión P0-4):**

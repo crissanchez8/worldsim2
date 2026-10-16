@@ -107,7 +107,43 @@
 - **Cómo detectarlo antes:** un cambio de rendimiento que no cambia las mediciones.
 - **Promovido a CLAUDE.md:** no.
 
-### L-009 · Un resumen con grep puede esconder la falla
+### L-009 · Medir rendimiento contra el dev server invalida corridas
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia (spike A, P0.13)
+- **Contexto:** recorridos de 60 s del spike de terreno contra `vite dev`.
+- **Qué pasó:** edité código mientras corría la medición; el HMR de Vite recargó la página en
+  medio de dos corridas y tuve que tirarlas.
+- **Causa raíz:** el dev server reacciona a cualquier cambio en disco; además sirve código sin
+  minificar, que no es lo que se despliega.
+- **Regla:** las mediciones de rendimiento corren contra el **build** (`vite build` + `vite
+  preview`), nunca contra `vite dev`; no se reconstruye el build durante una corrida.
+- **Cómo detectarlo antes:** una URL de medición con el puerto del dev server.
+- **Promovido a CLAUDE.md:** no.
+
+### L-010 · "60 fps" en headless o con el timer de WebGL no prueba que la GPU dé abasto
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia (spike A, P0.13)
+- **Contexto:** medición del terreno sin ventana visible (el navegador integrado oculto no corre
+  `requestAnimationFrame`), con Chrome headless por CDP.
+- **Qué pasó:** en WebGL2 a dpr 2 el contador daba 60 fps, pero el timer de GPU
+  (`EXT_disjoint_timer_query` vía ANGLE/Metal) marcaba 20,6 ms en p95. Las dos cifras no podían
+  ser ciertas a la vez.
+- **Causa raíz:**
+  - headless tiene un reloj de cuadros virtual de 60 Hz;
+  - los timers de GPU (WebGL sobre ANGLE/Metal y también los timestamps de WebGPU) sobrestiman:
+    el estrés muestra que ×4 escenas entran en un cuadro de 16,7 ms aunque el timer sume 34 ms.
+    La hipótesis más probable es que miden latencia de pase (esperas y solapamiento), no
+    ocupación de la GPU.
+- **Regla:**
+  - toda medición de fps lleva un **control cruzado de la cola de GPU**: fences en WebGL2,
+    `queue.onSubmittedWorkDone()` en WebGPU. Si los cuadros en vuelo no pasan de 1–2, la GPU da
+    abasto;
+  - el **margen** se mide por estrés (dibujar la escena N veces por cuadro hasta que caen los
+    fps), no con timers de GPU;
+  - los fps de headless no se reportan sin esos dos controles.
+- **Cómo detectarlo antes:** tiempo de GPU p95 mayor que el período del cuadro con 0 tirones.
+
+### L-011 · Un resumen con grep puede esconder la falla
 - **Fecha / fase:** 2026-10-15 · P0
 - **Origen:** observación propia
 - **Contexto:** filtré la salida de `pnpm check` con `grep` buscando "Tasks", "error" y "violations".
