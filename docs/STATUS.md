@@ -8,8 +8,8 @@
 | **Última actualización** | 2026-10-16 |
 | **Fase actual** | P0 — Fundaciones de arquitectura |
 | **Estado** | 🧪 QA de P0 — decisiones del checkpoint 3 aprobadas (D43–D45); REPORT en borrador |
-| **Próximo paso** | Cristian pasa las mediciones manuales (spike A en Chrome/Safari/Firefox visibles; Safari en `/spikes/determinism/`; README en clon nuevo) → completar `REPORT.md` → decidir la promoción de spikes (REPORT §9) → refrescar el prompt de P1 → OK de cierre y merge |
-| **Bloqueos** | Mediciones manuales de Cristian |
+| **Próximo paso** | Cristian: repetir el spike A en Safari (sin modo de bajo consumo) y en Firefox (anotar backend; ver si se repite el congelamiento de 8 s), recorrer el README en un clon nuevo (o dispensarlo) y decidir la promoción de spikes (REPORT §9) → REPORT final, prompt de P1, OK de cierre y merge |
+| **Bloqueos** | Re-mediciones del spike A (Safari, Firefox) · README en clon nuevo · decisión §9 del REPORT |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · rama `phase/p00-fundaciones` · PR #1 (draft) |
 
 ## Fases
@@ -34,6 +34,11 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-16 (sesión P0-8):**
+  - mediciones de Cristian registradas: Chrome visible 118,8 fps (120 Hz) ✅; Safari 29,9 fps con la GPU al 30% (tope de 30 Hz del sistema, probable modo de bajo consumo) → repetir; Firefox p5 107 con un congelamiento de 8 s → repetir y anotar backend;
+  - **spike C completo:** Safari 26 real idéntico a Node en los 14.000 años;
+  - CI completo en verde (check + determinism 14.000 años + deploy).
+
 - **2026-10-16 (sesión P0-7):**
   - checkpoint 3: Cristian aprobó ADR-006 (D43), opción B de keyframes del ADR-008 (D44) y las métricas de §2 + 2 nuevas (D45); plan a v1.1;
   - CI: el job `determinism` corre 14.000 años en Chromium, Firefox y WebKit (Linux) en ~4 min, todo idéntico a Node; el bench del CI compara contra una base del propio runner (`bench-baseline-ci.json`);

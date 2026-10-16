@@ -34,9 +34,9 @@ La casa está construida y vacía, como pedía el objetivo:
 | P0.10 `core/time` + scheduler | ✅ | Calendario sin año 0; 14 fases; escritor único estático; buffers; guard por huella de campo |
 | P0.11 `docs/model.md` | ✅ | v1.0 aprobado con M1–M8 (D42) |
 | P0.12 ADRs | ✅ | ADR-001…008 (006 y 008 aceptados en el checkpoint 3: D43, D44) |
-| P0.13 Spike A — terreno | ⚠️ | Medido en headless; **falta la medición en Chrome, Safari y Firefox visibles** (Cristian) |
+| P0.13 Spike A — terreno | ⚠️ | Chrome visible: 118,8 fps (120 Hz) ✅ · Firefox: p5 107 con un congelamiento de 8 s a repetir · Safari: topeado en 30 fps por el sistema, **a repetir** |
 | P0.14 Spike B — Worker | ✅ | 45 s (Chromium), 60 s (Firefox) para 14.000 años |
-| P0.15 Spike C — determinismo | ⚠️ | Idéntico en Chromium, Firefox, WebKit (Linux, CI) y Node; **falta Safari real** (Cristian) |
+| P0.15 Spike C — determinismo | ✅ | Idéntico a Node en Chromium, Firefox, WebKit (Linux, CI) y **Safari 26 real** (14.000 años) |
 | P0.16 CI/CD | ✅ | `check` + `determinism` (14.000 años, 3 motores, ~4 min) + `deploy` por direct upload |
 | P0.17 Bench | ✅ | `ws bench`; base del M1 Pro + base del runner del CI; Δ: dos bases |
 | P0.18 Documentación de trabajo | ⚠️ | `CLAUDE.md` con comandos, STATUS, LEARNINGS al día; **falta refrescar el prompt de P1** (al cierre) |
@@ -85,16 +85,16 @@ La casa está construida y vacía, como pedía el objetivo:
 - **Bench:** [`bench-baseline.json`](bench-baseline.json) (M1 Pro) y [`bench-baseline-ci.json`](bench-baseline-ci.json) (runner).
 - **CI:** job `determinism` con Chromium (1,2 min), Firefox (1,6 min) y WebKit (60 s) idénticos a Node en 14.000 años. `check` incluye el bench de regresión.
 - **Preview:** la app placeholder (es/en, sin errores de consola) y los tres spikes.
-- **Capturas del checkpoint 3:** _pendientes (Cristian)._
+- **Checkpoint 3 (Cristian):** mediciones visibles del spike A en Chrome, Safari y Firefox (`spikes.md`, "Mediciones en navegadores visibles"); Safari 26 en `/spikes/determinism/`: ✅ idéntico a Node; `pnpm dev` en su checkout: la app abre en http://localhost:5173.
 
 ## 7. Criterios de salida
-- [ ] Clon nuevo → `pnpm i` → `pnpm dev` en ≤ 10 min siguiendo el README (**lo prueba Cristian**). Verifiqué un clon limpio con `pnpm install --frozen-lockfile` y el build: funciona.
-- [x] PR → CI verde + link de preview automático en el PR (el CI comenta el link)
+- [ ] Clon nuevo → `pnpm i` → `pnpm dev` en ≤ 10 min siguiendo el README (**lo prueba Cristian**). Cristian corrió `pnpm dev` en su checkout (la app abre); yo verifiqué un clon limpio con `pnpm install --frozen-lockfile` y el build. Falta el recorrido del README desde cero
+- [x] PR → CI verde (`check`, `determinism`, `deploy`) + link de preview automático en el PR
 - [x] El lint de determinismo falla con cada API prohibida (120 tests, validados con mutación) y el de fronteras con un import prohibido
 - [x] `core`: tests unitarios + propiedades verdes; RNG y math con vectores fijos
-- [ ] Spike A: ≥ 60 fps promedio en M1 Pro con 2048×1024 + wrap; fallback WebGL2 funcional. **Headless: sí** (WebGPU ≥ 4× de margen). **Falta la medición visible de Cristian**
+- [ ] Spike A: ≥ 60 fps promedio en M1 Pro con 2048×1024 + wrap; fallback WebGL2 funcional. **Chrome visible: 118,8 fps (sí)**; Firefox: p5 107 pero un congelamiento de 8 s (repetir); Safari: 29,9 fps por un tope del sistema a 30 Hz con la GPU al 30% (repetir sin modo de bajo consumo); fallback WebGL2: sí (headless)
 - [x] Spike B: 14.000 años en ≤ 3 min sin bloquear la UI (45 s / 60 s; 0 cuadros > 25 ms)
-- [ ] Spike C: hash por año idéntico en Chromium, WebKit, Firefox y Node (**sí**, WebKit en Linux) + verificación manual en Safari (**pendiente**)
+- [x] Spike C: hash por año idéntico en Chromium, WebKit, Firefox y Node + verificación manual en Safari 26 (14.000 años, todo ✅)
 - [x] `docs/model.md` aprobado (D42)
 - [x] ADR-001 a ADR-008 escritos (el 006 con datos del spike A)
 - [x] `ws bench` con línea base registrada

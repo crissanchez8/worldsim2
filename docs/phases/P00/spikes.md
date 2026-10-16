@@ -171,6 +171,28 @@ Con la caché de shaders fría (primer arranque del navegador) se suman ~3,5 s a
 
 Draw calls: 15–25 por cuadro (de 128 chunks, el resto se descarta por frustum).
 
+### Mediciones en navegadores visibles (Cristian, M1 Pro, 2026-10-16)
+Recorrido de 60 s desde el HUD, en el preview desplegado, con ventana visible (pantalla
+ProMotion de 120 Hz).
+
+| Navegador | fps prom / p5 / p1 | Cuadro prom / p95 / máx (ms) | Tirones > 25 ms | CPU prom (ms) | GPU prom / p95 (ms) | Cola GPU prom (máx) |
+|---|---|---|---|---|---|---|
+| Chrome | **118,8** / 107,5 / 86,2 | 8,42 / 9,30 / 24,4 | 0 | 0,47 | 7,99 / 11,93 | 1,08 (4) |
+| Safari 26 | 29,9 / 28,6 / 25,6 | 33,46 / 35,00 / 189,0 | 1.776 | 1,74 | 9,62 / 19,20 | 1,00 (1) |
+| Firefox | 86,5 / **107,3** / 57,5 | 11,55 / 9,32 / **8.001,1** | 35 | 2,08 | n/d | 2,04 (5) |
+
+Lectura:
+- **Chrome:** 120 Hz casi sostenidos, sin tirones y con la cola de la GPU en 1: cumple con margen
+  aun al doble del objetivo.
+- **Safari: tope de 30 fps, no falta de rendimiento.** El cuadro dura 33,5 ms parejo mientras la
+  GPU usa 9,6 ms, la CPU 1,7 ms y nunca hay más de un cuadro en vuelo: nada está saturado. Es la
+  firma de un `requestAnimationFrame` limitado a 30 Hz, lo que Safari hace en modo de bajo
+  consumo. **Hay que repetir la medición** con el Mac enchufado y sin modo de bajo consumo.
+- **Firefox: rinde, pero hubo un congelamiento de 8 s.** El 95% de los cuadros va a ≥ 107 fps
+  (p5 107,3); el promedio de 86,5 lo arrastra un único cuadro de 8.001 ms. Hipótesis: compilación
+  de pipelines con la caché fría, ya visto en Firefox (problema 3). **Hay que repetir** para ver
+  si se repite con la caché caliente, y anotar el backend (Firefox 137 = WebGL2; ≥ 147 = WebGPU).
+
 ### ¿Cumple el criterio de salida?
 Criterio (BRIEF §8): ≥ 60 fps promedio en M1 Pro con heightmap 2048×1024 + wrap; fallback WebGL2
 funcional.
@@ -181,8 +203,9 @@ funcional.
 - **Fallback WebGL2: sí.**
   - forzado en Chrome y automático en Firefox 137;
   - 60 fps promedio en dpr 1 y 2, con ~2× de margen.
-- **Pendiente para cerrarlo del todo:** Chrome, Safari y Firefox **visibles** en el M1 Pro
-  (checkpoint 3). Headless no mide la presentación real ni el refresco de 120 Hz.
+- **Visibles (checkpoint 3):** Chrome cumple a 120 Hz; Firefox cumple en el 95% de los cuadros
+  con un congelamiento de 8 s a investigar; Safari quedó topeado en 30 fps por el sistema y se
+  repite la medición (ver arriba).
 - **Antes del checkpoint 3:** el Firefox instalado es la **137**, anterior a la 147, que trae WebGPU
   en macOS. Para medir WebGPU en Firefox hay que actualizarlo; con la 137 se mide el fallback.
 
@@ -389,7 +412,7 @@ Criterio (BRIEF §8): 14.000 años ficticios en ≤ 3 min sin bloquear la UI (60
 | **Fecha** | 2026-10-16 |
 | **Código** | `spikes/determinism/` (`@ws/spike-determinism`): batería en `src/battery.ts`, página en `/spikes/determinism/`, Playwright en `tests/` |
 | **Pregunta** | ¿El motor da el mismo hash, año por año, en Chromium, WebKit, Firefox y Node? |
-| **Estado** | ✅ Chromium 156 y Firefox 157 idénticos a Node en 14.000 años · WebKit en el CI (Linux) · **Safari real: pendiente (checkpoint 3)** |
+| **Estado** | ✅ Idéntico a Node en 14.000 años en Chromium 156, Firefox 157, WebKit (Linux, CI) y **Safari 26 real** |
 
 ### Resumen
 - **Idéntico bit a bit** a Node en Chromium y Firefox: los **14.000 hashes anuales** (estado +
@@ -397,7 +420,7 @@ Criterio (BRIEF §8): 14.000 años ficticios en ≤ 3 min sin bloquear la UI (60
   cada una y 25.600 valores del RNG.
 - **No apareció ninguna diferencia** que hubiera que resolver: la matemática propia (ADR-003), el
   RNG por contador (ADR-002) y la serialización little-endian explícita (ADR-004) alcanzan.
-- **Integrado al CI:** por PR 2.000 años en los tres motores; todas las noches, los 14.000.
+- **Integrado al CI:** los 14.000 años en los tres motores en cada PR (~4 min).
 
 ### Qué se hizo
 - **Batería compartida** (el mismo código en Node y en el navegador):
@@ -421,16 +444,16 @@ Criterio (BRIEF §8): 14.000 años ficticios en ≤ 3 min sin bloquear la UI (60
 | Node 24 (referencia) | 14.000 | — | 49 s |
 | Chromium 156 | 14.000 | ✅ idéntico | 50 s |
 | Firefox 157 | 14.000 | ✅ idéntico | 72 s |
-| WebKit (Playwright, Linux, CI) | 2.000 por PR · 14.000 nocturno | ver CI | — |
+| WebKit (Playwright, Linux, CI) | 14.000 por PR | ✅ idéntico | 60 s |
 | WebKit (Playwright, macOS 26.0) | — | no arranca (L-012) | — |
-| Safari real | 14.000 | **pendiente: Cristian en `/spikes/determinism/`** | — |
+| Safari 26 real (M1 Pro, Cristian) | 14.000 | ✅ idéntico (18 funciones, RNG y simulación; final `c8e308dd0de5bf43:4065b21c90819962`) | 53 s |
 
 ### ¿Cumple el criterio de salida?
 Criterio (BRIEF §8): hash por año idéntico en Chromium, WebKit, Firefox y Node + verificación
 manual en Safari.
 - **Chromium, Firefox y Node: sí** (14.000 años).
-- **WebKit:** en el CI sobre Linux (el resultado queda en el job `determinism`).
-- **Safari: pendiente** del checkpoint 3.
+- **WebKit: sí**, en el CI sobre Linux (14.000 años en cada PR).
+- **Safari real: sí** (checkpoint 3): idéntico en las 18 funciones, el RNG y los 14.000 años.
 
 ### Problemas encontrados
 1. WebKit de Playwright 1.64.1 se cae en macOS 26.0 (L-012).
