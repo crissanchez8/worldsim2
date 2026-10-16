@@ -3,7 +3,7 @@
 // sistema escriba solo lo que declaró: compara la huella por campo de cada parte del estado
 // antes y después del sistema.
 import type { EventBus } from '../events/bus';
-import type { StatePart } from '../serialize/serializable';
+import type { GuardSnapshot, StatePart } from '../serialize/serializable';
 import { isEveryNYears, type Season } from '../time';
 import type { SystemContract, SystemDef } from './contract';
 import { phaseIndex } from './phases';
@@ -129,7 +129,8 @@ export class Pipeline<W> {
     const partNames = new Set<string>();
     for (const part of parts) {
       partNames.add(part.partName);
-      for (const key of part.fieldFingerprints().keys()) known.add(key);
+      known.add(`${part.partName}.#rows`);
+      for (const key of part.guardSnapshot().fields.keys()) known.add(key);
     }
     for (const { contract: c } of this.systems) {
       for (const field of [...c.reads, ...c.writes]) {
@@ -159,7 +160,7 @@ export class Pipeline<W> {
       const seasons: (Season | undefined)[] =
         c.cadence.kind === 'seasonal' ? [0, 1, 2, 3] : [undefined];
       for (const season of seasons) {
-        const before = guard ? fingerprints(guard.parts) : null;
+        const before = guard ? guard.parts.map((p) => p.guardSnapshot()) : null;
         options.events.setEmitter(c.name, new Set(c.emits));
         try {
           system.run(world, {
@@ -171,12 +172,17 @@ export class Pipeline<W> {
           options.events.setEmitter(null, null);
         }
         if (guard && before) {
-          const after = fingerprints(guard.parts);
-          for (const [key, hash] of after) {
-            if (before.get(key) !== hash && !allows(c.writes, key)) {
-              throw new ContractError(`${c.name} escribió "${key}" sin declararlo en su contrato`);
+          guard.parts.forEach((part, k) => {
+            const prev = before[k];
+            if (!prev) return;
+            for (const key of changedKeys(part.partName, prev, part.guardSnapshot())) {
+              if (!allows(c.writes, key)) {
+                throw new ContractError(
+                  `${c.name} escribió "${key}" sin declararlo en su contrato`,
+                );
+              }
             }
-          }
+          });
         }
         ran.push(season === undefined ? c.name : `${c.name}@${season}`);
       }
@@ -191,10 +197,43 @@ export class Pipeline<W> {
   }
 }
 
-function fingerprints(parts: readonly StatePart[]): Map<string, string> {
-  const all = new Map<string, string>();
-  for (const part of parts) for (const [k, v] of part.fieldFingerprints()) all.set(k, v);
-  return all;
+function same(a: unknown, b: unknown): boolean {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return a.length === b.length && a.every((v: unknown, i) => Object.is(v, b[i]));
+  }
+  return Object.is(a, b);
+}
+
+/** Claves que cambiaron entre dos instantáneas de una parte (ver `GuardSnapshot`). */
+export function changedKeys(
+  partName: string,
+  before: GuardSnapshot,
+  after: GuardSnapshot,
+): string[] {
+  const out: string[] = [];
+  if (before.rows !== after.rows) out.push(`${partName}.#rows`);
+  for (const [key, prev] of before.fields) {
+    const next = after.fields.get(key);
+    if (!next) continue;
+    // Recorrido conjunto de dos listas de ids crecientes: solo filas comunes.
+    let i = 0;
+    let j = 0;
+    while (i < before.ids.length && j < after.ids.length) {
+      const a = before.ids[i] ?? 0;
+      const b = after.ids[j] ?? 0;
+      if (a < b) i++;
+      else if (a > b) j++;
+      else {
+        if (!same(prev[i], next[j])) {
+          out.push(key);
+          break;
+        }
+        i++;
+        j++;
+      }
+    }
+  }
+  return out;
 }
 
 export function createPipeline<W>(

@@ -4,12 +4,14 @@ import { hash } from '@ws/core';
 import { canonicalJson } from './canonical';
 import type { ContentRow, ContentTable } from './table';
 import { Biomes } from './tables/biomes';
+import { Eras, Innovations, SettlementLevels } from './tables/knowledge';
 import { Laws, Strata } from './tables/society';
 import { MapTypes, WorldSizes } from './tables/world';
 
 export { canonicalJson } from './canonical';
 export { ContentError, type ContentRow, type ContentTable, defineTable } from './table';
 export { Biomes, classifyBiome } from './tables/biomes';
+export { Eras, INNOVATION_STATS, Innovations, SettlementLevels } from './tables/knowledge';
 export { Laws, Strata } from './tables/society';
 export { MapTypes, WorldSizes } from './tables/world';
 
@@ -20,6 +22,9 @@ export const CONTENT_TABLES: readonly ContentTable<ContentRow>[] = Object.freeze
   Biomes,
   Strata,
   Laws,
+  SettlementLevels,
+  Innovations,
+  Eras,
 ]);
 
 /** Hash de 64 bits (16 hex) del JSON canónico de todas las tablas. */

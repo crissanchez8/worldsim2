@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { Biomes, classifyBiome, MapTypes, WorldSizes } from './index';
+import {
+  Biomes,
+  classifyBiome,
+  Eras,
+  Innovations,
+  MapTypes,
+  SettlementLevels,
+  WorldSizes,
+} from './index';
 
 describe('Biomes', () => {
   it('la última fila no tiene condiciones: toda celda de tierra tiene bioma', () => {
@@ -45,5 +53,30 @@ describe('MapTypes y WorldSizes', () => {
 
   it('los anchos son potencias de 2 (el render repite texturas que dividen el ancho)', () => {
     for (const s of WorldSizes.rows) expect(s.width & (s.width - 1)).toBe(0);
+  });
+});
+
+describe('Innovations, Eras y SettlementLevels', () => {
+  it('cada prerrequisito existe y está antes en la tabla (grafo acíclico)', () => {
+    Innovations.rows.forEach((row, i) => {
+      for (const pre of row.prerequisites) expect(Innovations.indexOf(pre)).toBeLessThan(i);
+    });
+  });
+
+  it('entran en el bitset de 32 bits de Province.knownInnovations', () => {
+    expect(Innovations.rows.length).toBeLessThanOrEqual(32);
+  });
+
+  it('los requisitos de asentamiento y las entradas de era existen', () => {
+    for (const row of Innovations.rows) {
+      if (row.requires.settlement) SettlementLevels.indexOf(row.requires.settlement);
+    }
+    for (const era of Eras.rows) for (const key of era.enteredBy) Innovations.indexOf(key);
+    expect(Eras.rows[0]?.enteredBy).toEqual([]);
+  });
+
+  it('los niveles de asentamiento crecen', () => {
+    const mins = SettlementLevels.rows.map((r) => r.minUrban);
+    expect([...mins].sort((a, b) => a - b)).toEqual(mins);
   });
 });

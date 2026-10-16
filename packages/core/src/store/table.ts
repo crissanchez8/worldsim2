@@ -5,7 +5,7 @@
 import { hash64 } from '../hash';
 import { type ByteReader, ByteWriter, SerializeError } from '../serialize/bytes';
 import { writeScalar } from '../serialize/scalar-io';
-import type { StatePart } from '../serialize/serializable';
+import type { GuardSnapshot, StatePart } from '../serialize/serializable';
 import { allocColumn, type ColumnArray, type ColumnOf, grown } from './columns';
 import { type Id, IdAllocator } from './id';
 import { checkScalar, describeSchema, type Fields, type ScalarType, type Schema } from './schema';
@@ -242,24 +242,27 @@ export class Table<K extends string, F extends ScalarFields> implements StatePar
     for (const key of this.schema.order) r.numeric(this.column(key), count);
   }
 
-  /** Huella por campo (guard de contratos). Independiente de la compactación. */
-  fieldFingerprints(): ReadonlyMap<string, string> {
-    const out = new Map<string, string>();
+  /** Instantánea para el guard de contratos (solo filas vivas: no depende de la compactación). */
+  guardSnapshot(): GuardSnapshot {
     const rows = new ByteWriter();
     rows.varuint(this.allocator.peek());
+    const ids = new Uint32Array(this.live);
+    const alive = new Uint32Array(this.live);
+    let k = 0;
     for (let row = 0; row < this.used; row++) {
-      if (this.aliveColumn[row] === 1) rows.u32(this.idColumn[row] ?? 0);
+      if (this.aliveColumn[row] !== 1) continue;
+      ids[k] = this.idColumn[row] ?? 0;
+      alive[k++] = row;
+      rows.u32(this.idColumn[row] ?? 0);
     }
-    out.set(`${this.schema.name}.#rows`, hash64(rows.finish()));
+    const fields = new Map<string, Float64Array>();
     for (const key of this.schema.order) {
       const col = this.column(key);
-      const w = new ByteWriter();
-      for (let row = 0; row < this.used; row++) {
-        if (this.aliveColumn[row] === 1) w.f64(col[row] ?? 0);
-      }
-      out.set(`${this.schema.name}.${key}`, hash64(w.finish()));
+      const values = new Float64Array(this.live);
+      for (let i = 0; i < this.live; i++) values[i] = col[alive[i] ?? 0] ?? 0;
+      fields.set(`${this.schema.name}.${key}`, values);
     }
-    return out;
+    return { rows: hash64(rows.finish()), ids, fields };
   }
 
   /** Filas vivas en orden de id. */
