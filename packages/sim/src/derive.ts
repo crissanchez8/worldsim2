@@ -19,6 +19,10 @@ export interface Derived {
   /** CSR polity → polities vecinas (comparten frontera; ids crecientes, sin repetir). */
   readonly polityNeighborsStart: Uint32Array;
   readonly polityNeighbors: Uint32Array;
+  /** Cultura mayoritaria por provincia (a igual población, la de id menor; 0 sin pops). */
+  readonly majorityCulture: Uint32Array;
+  /** Innovaciones conocidas en alguna provincia (bits, como `Province.knownInnovations`). */
+  readonly worldInnovations: number;
 }
 
 /** Prefijos acumulados in situ: counts[i] pasa a ser el inicio del bloque i. */
@@ -38,14 +42,24 @@ export function computeDerived(state: SimState, world: WorldStatic): Derived {
 
   // Pops por provincia.
   const popProvince = pop.column('province');
+  const popCulture = pop.column('culture');
   const size = pop.column('size');
   const provincePopulation = new Float64Array(n + 1);
   const popRowsStart = new Uint32Array(n + 2);
+  const majorityCulture = new Uint32Array(n + 1);
+  const majoritySize = new Float64Array(n + 1);
   for (let row = 0; row < pop.rowCount; row++) {
     if (!pop.aliveAt(row)) continue;
     const p = popProvince[row] ?? 0;
-    provincePopulation[p] = (provincePopulation[p] ?? 0) + (size[row] ?? 0);
+    const s = size[row] ?? 0;
+    provincePopulation[p] = (provincePopulation[p] ?? 0) + s;
     popRowsStart[p] = (popRowsStart[p] ?? 0) + 1;
+    const c = popCulture[row] ?? 0;
+    const best = majoritySize[p] ?? 0;
+    if (s > best || (s === best && c < (majorityCulture[p] ?? 0))) {
+      majoritySize[p] = s;
+      majorityCulture[p] = c;
+    }
   }
   toStarts(popRowsStart);
   const popRows = new Uint32Array(pop.size);
@@ -109,7 +123,13 @@ export function computeDerived(state: SimState, world: WorldStatic): Derived {
     polityNeighbors.set(list, polityNeighborsStart[a] ?? 0);
   });
 
+  let worldInnovations = 0;
+  const known = province.column('knownInnovations');
+  for (let p = 1; p <= n; p++) worldInnovations |= known[p - 1] ?? 0;
+
   return {
+    majorityCulture,
+    worldInnovations: worldInnovations >>> 0,
     provincePopulation,
     popRowsStart,
     popRows,

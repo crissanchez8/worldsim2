@@ -2,7 +2,7 @@ import { createGridWorld } from '@ws/worldgen';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import {
-  DEFAULT_SYSTEMS,
+  CONSOLIDATION_SYSTEMS,
   LedgerError,
   PopDeltaKind,
   popDeltaCause,
@@ -34,13 +34,16 @@ function withProducer(
       produce(w, tick.year);
     },
   };
-  return Sim.create(world, {}, { checks: true, systems: [producer, ...DEFAULT_SYSTEMS] });
+  return Sim.create(world, {}, { checks: true, systems: [producer, ...CONSOLIDATION_SYSTEMS] });
 }
 
-function popOf(sim: Sim, province: number, culture = 0) {
+/** Pop de una provincia con la cultura dada (por defecto, la de su pop original). */
+function popOf(sim: Sim, province: number, culture?: number) {
   const { pop } = sim.ctx.state;
+  const native = sim.ctx.derived.majorityCulture[province] ?? 0;
+  const wanted = culture ?? native;
   for (const row of pop.rows()) {
-    if (pop.column('province')[row] === province && pop.column('culture')[row] === culture) {
+    if (pop.column('province')[row] === province && pop.column('culture')[row] === wanted) {
       return { id: pop.idAt(row), size: pop.column('size')[row] ?? 0 };
     }
   }
@@ -155,10 +158,10 @@ describe('ledger · población', () => {
         toCulture: 5,
       });
     });
-    const before = popOf(sim, 1)?.size ?? 0;
+    const before = totalPopulation(sim.ctx.state);
     const r = sim.step();
     expect(popOf(sim, province, 5)).toBeUndefined();
-    expect(popOf(sim, province)?.size).toBeCloseTo(before, 9);
+    expect(totalPopulation(sim.ctx.state)).toBeCloseTo(before, 6);
     expect(r.tally.popsCreated).toBe(1);
     expect(r.tally.popsRemoved).toBe(1);
   });

@@ -258,6 +258,9 @@ importers:
       '@ws/core':
         specifier: workspace:*
         version: link:../core
+      '@ws/lang':
+        specifier: workspace:*
+        version: link:../lang
       '@ws/worldgen':
         specifier: workspace:*
         version: link:../worldgen

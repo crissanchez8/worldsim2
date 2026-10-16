@@ -23,6 +23,42 @@ export const en: Catalog = {
     territory: {
       changed: '{{province}} passes from {{from}} to {{to}}',
     },
+    subsistence: {
+      shifted: 'In {{province}} farming now feeds most people',
+    },
+    famine: {
+      started: 'Famine in {{province}}',
+      ended: 'The famine in {{province}} ends',
+    },
+    innovation: {
+      invented: '{{innovation}} emerges in {{province}}',
+    },
+    settlement: {
+      founded: '{{settlement}} is founded in {{province}}',
+      grew: '{{settlement}} grows into a {{level}}',
+      declined: '{{settlement}} declines into a {{level}}',
+    },
+    polity: {
+      formed: '{{polity}} arises in {{province}}',
+      absorbed: '{{polity}} joins {{by}}',
+      collapsed: '{{polity}} vanishes',
+    },
+    person: {
+      died: '{{person}} dies aged {{age}}',
+    },
+    ruler: {
+      succeeded: '{{person}} rules {{polity}}',
+    },
+    war: {
+      declared: '{{attacker}} declares war on {{defender}}',
+      ended: 'The war between {{attacker}} and {{defender}} ends',
+    },
+    treaty: {
+      signed: 'Peace between {{attacker}} and {{defender}}',
+    },
+    battle: {
+      fought: 'Battle in {{province}} between {{attacker}} and {{defender}}',
+    },
   },
   content: {
     worldSize: { small: 'Small', medium: 'Medium' },

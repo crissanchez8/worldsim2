@@ -48,7 +48,7 @@ describe('checkInvariants', () => {
     const row = 0;
     pop.add({
       province: pop.column('province')[row] ?? 0,
-      culture: 0,
+      culture: pop.column('culture')[row] ?? 0,
       religion: 0,
       stratum: 0,
       size: 10,

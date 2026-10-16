@@ -203,6 +203,16 @@
 - **Cómo detectarlo antes:** un `.sub(` aplicado sobre un `Stream` que vino por parámetro.
 - **Promovido a CLAUDE.md:** no.
 
+### L-017 · Los tests que generan mundos fallan por timeout solo bajo `pnpm check`
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.3)
+- **Contexto:** `pnpm check` salió con 1 sin error visible en el log filtrado; repetido, pasó. Después falló de nuevo con "Hook timed out in 10000ms" en el `beforeAll` de la rebanada.
+- **Qué pasó:** solos, los tests de worldgen y de la simulación entran en los timeouts por defecto de Vitest (5 s por test, 10 s por hook); con Turborepo corriendo todos los paquetes en paralelo, no.
+- **Causa raíz:** timeouts por defecto en tests que hacen trabajo pesado de verdad (generar un mundo, simular miles de años), sensibles a la carga de la máquina.
+- **Regla:** todo archivo de tests que genera mundos o simula corridas largas fija `vi.setConfig({ testTimeout, hookTimeout })` explícitos y holgados; un "fallo sin error" en `pnpm check` se busca con `grep -E "FAIL|timed out"` en el log completo (L-011), no se reintenta a ciegas.
+- **Cómo detectarlo antes:** un test que tarda más de ~1 s solo.
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)

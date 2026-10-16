@@ -1,5 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { fullRunYears, runYears, scenarioWorld, staticChecks } from './battery';
+
+// Genera el mundo chico real y simula: bajo la carga de `pnpm check` tarda más que el default.
+vi.setConfig({ testTimeout: 120_000 });
 
 describe('batería de determinismo', () => {
   it('es reproducible en el mismo proceso (control antes de comparar entre motores)', () => {

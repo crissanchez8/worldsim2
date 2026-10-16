@@ -9,6 +9,7 @@ export {
   type WorldgenStage,
 } from './generate';
 export { createGridWorld, type GridOptions } from './grid';
+export { MinHeap } from './heap';
 export { Water } from './hydrology';
 export { D8_DX, D8_DY, NO_DIR } from './raster';
 export {

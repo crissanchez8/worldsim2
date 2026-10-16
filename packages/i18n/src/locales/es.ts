@@ -26,6 +26,42 @@ export const es = {
     territory: {
       changed: '{{province}} pasa de {{from}} a {{to}}',
     },
+    subsistence: {
+      shifted: 'En {{province}} la agricultura ya alimenta a la mayoría',
+    },
+    famine: {
+      started: 'Hambruna en {{province}}',
+      ended: 'Termina la hambruna en {{province}}',
+    },
+    innovation: {
+      invented: '{{innovation}} surge en {{province}}',
+    },
+    settlement: {
+      founded: 'Se funda {{settlement}} en {{province}}',
+      grew: '{{settlement}} crece: ahora es {{level}}',
+      declined: '{{settlement}} decae: ahora es {{level}}',
+    },
+    polity: {
+      formed: 'Nace {{polity}} en {{province}}',
+      absorbed: '{{polity}} se integra a {{by}}',
+      collapsed: '{{polity}} desaparece',
+    },
+    person: {
+      died: 'Muere {{person}} a los {{age}} años',
+    },
+    ruler: {
+      succeeded: '{{person}} gobierna {{polity}}',
+    },
+    war: {
+      declared: '{{attacker}} declara la guerra a {{defender}}',
+      ended: 'Termina la guerra entre {{attacker}} y {{defender}}',
+    },
+    treaty: {
+      signed: 'Paz entre {{attacker}} y {{defender}}',
+    },
+    battle: {
+      fought: 'Batalla en {{province}} entre {{attacker}} y {{defender}}',
+    },
   },
   /** Nombres de las filas de contenido: `content.<tabla>.<clave>` (los exige un test). */
   content: {

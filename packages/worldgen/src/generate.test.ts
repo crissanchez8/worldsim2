@@ -12,7 +12,7 @@ import {
 } from './index';
 
 // Generar un mundo chico tarda ~1 s; algunos tests generan varios.
-vi.setConfig({ testTimeout: 60_000 });
+vi.setConfig({ testTimeout: 120_000, hookTimeout: 120_000 });
 
 const cache = new Map<string, WorldStatic>();
 function world(params: Partial<WorldParams> = {}): WorldStatic {

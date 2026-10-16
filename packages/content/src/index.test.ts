@@ -75,7 +75,7 @@ describe('canonicalJson', () => {
 describe('hash de contenido', () => {
   it('golden: solo cambia si cambia el contenido (al cambiarlo a propósito, actualizar acá)', () => {
     expect(CONTENT_HASH).toMatch(/^[0-9a-f]{16}$/);
-    expect(CONTENT_HASH).toBe('cc9bca76423073de');
+    expect(CONTENT_HASH).toBe('17e5ae7f612b67f7');
   });
 
   it('un valor, el orden de las filas o el orden de las tablas cambian el hash', () => {

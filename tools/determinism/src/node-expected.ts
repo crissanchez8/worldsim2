@@ -7,7 +7,8 @@ import { type Expected, fullRunYears, runYears, scenarioWorld, staticChecks } fr
 
 const world = scenarioWorld();
 const arg = process.argv[2] ?? process.env['DETERMINISM_YEARS'];
-const years = arg === undefined ? fullRunYears(world) : Number(arg);
+// Vacío o ausente = corrida completa (el CI lo deja vacío fuera de los PR).
+const years = arg === undefined || arg === '' ? fullRunYears(world) : Number(arg);
 const yearHashes: string[] = [];
 const t0 = performance.now();
 runYears(world, years, (_i, h) => yearHashes.push(h));

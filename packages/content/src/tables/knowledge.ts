@@ -34,7 +34,12 @@ export const Innovations = defineTable(
           settlement: z.string().optional(),
         })
         .strict(),
-      /** Probabilidad anual de invención en una provincia elegible de 10.000 personas (per_year). */
+      /**
+       * Probabilidad anual de invención en una provincia elegible de 10.000 personas (per_year);
+       * escala lineal con población/10.000, así la tasa mundial depende de la gente y no de cuántas
+       * provincias tiene el mapa. Calibrada para que la primera invención mundial caiga en
+       * las ventanas del Apéndice A del plan (`ws health`).
+       */
       inventionChance: z.number().positive(),
       effects: z.array(
         z
@@ -53,63 +58,63 @@ export const Innovations = defineTable(
       key: 'agriculture',
       prerequisites: [],
       requires: { arable: 0.2 },
-      inventionChance: 8e-7,
+      inventionChance: 2e-6,
       effects: [], // habilita el cultivo (production)
     },
     {
       key: 'pastoralism',
       prerequisites: [],
       requires: {},
-      inventionChance: 6e-7,
+      inventionChance: 4e-7,
       effects: [{ stat: 'forageYield', op: 'mul', value: 1.6 }],
     },
     {
       key: 'pottery',
       prerequisites: ['agriculture'],
       requires: {},
-      inventionChance: 1e-5,
+      inventionChance: 2.3e-7,
       effects: [{ stat: 'cropYield', op: 'mul', value: 1.1 }],
     },
     {
       key: 'wheel',
       prerequisites: ['agriculture'],
       requires: {},
-      inventionChance: 3e-6,
+      inventionChance: 2.6e-7,
       effects: [
         { stat: 'diffusionRate', op: 'mul', value: 1.2 },
-        { stat: 'reach', op: 'add', value: 5 },
+        { stat: 'reach', op: 'add', value: 10 },
       ],
     },
     {
       key: 'copper',
       prerequisites: ['pottery'],
       requires: { settlement: 'town' },
-      inventionChance: 1e-5,
+      inventionChance: 5e-7,
       effects: [{ stat: 'combatStrength', op: 'mul', value: 1.1 }],
     },
     {
       key: 'plough',
       prerequisites: ['agriculture', 'wheel'],
       requires: {},
-      inventionChance: 5e-6,
+      inventionChance: 1.8e-7,
       effects: [{ stat: 'cropYield', op: 'mul', value: 1.5 }],
     },
     {
       key: 'writing',
       prerequisites: ['agriculture'],
       requires: { settlement: 'city' },
-      inventionChance: 1.5e-5,
+      inventionChance: 1.9e-6,
       effects: [
         { stat: 'diffusionRate', op: 'mul', value: 1.5 },
         { stat: 'urbanShare', op: 'add', value: 0.02 },
-        { stat: 'reach', op: 'add', value: 10 },
+        { stat: 'reach', op: 'add', value: 25 },
       ],
     },
     {
       key: 'bronze',
       prerequisites: ['copper'],
       requires: {},
-      inventionChance: 8e-6,
+      inventionChance: 2.6e-7,
       effects: [
         { stat: 'combatStrength', op: 'mul', value: 1.3 },
         { stat: 'cropYield', op: 'mul', value: 1.05 },
@@ -119,7 +124,7 @@ export const Innovations = defineTable(
       key: 'iron',
       prerequisites: ['bronze'],
       requires: {},
-      inventionChance: 4e-6,
+      inventionChance: 6e-8,
       effects: [
         { stat: 'combatStrength', op: 'mul', value: 1.3 },
         { stat: 'cropYield', op: 'mul', value: 1.25 },
@@ -129,32 +134,32 @@ export const Innovations = defineTable(
       key: 'coinage',
       prerequisites: ['writing', 'bronze'],
       requires: {},
-      inventionChance: 8e-6,
+      inventionChance: 7.5e-8,
       effects: [
         { stat: 'diffusionRate', op: 'mul', value: 1.2 },
         { stat: 'urbanShare', op: 'add', value: 0.01 },
-        { stat: 'reach', op: 'add', value: 10 },
+        { stat: 'reach', op: 'add', value: 20 },
       ],
     },
     {
       key: 'cropRotation',
       prerequisites: ['plough', 'iron'],
       requires: {},
-      inventionChance: 1.5e-6,
+      inventionChance: 5e-8,
       effects: [{ stat: 'cropYield', op: 'mul', value: 1.4 }],
     },
     {
       key: 'oceanNavigation',
       prerequisites: ['iron', 'coinage'],
       requires: { coastal: true },
-      inventionChance: 2e-6,
+      inventionChance: 1.5e-7,
       effects: [{ stat: 'diffusionRate', op: 'mul', value: 1.2 }],
     },
     {
       key: 'printing',
       prerequisites: ['writing', 'coinage'],
       requires: { settlement: 'greatCity' },
-      inventionChance: 2e-6,
+      inventionChance: 3.6e-7,
       effects: [
         { stat: 'diffusionRate', op: 'mul', value: 1.5 },
         { stat: 'urbanShare', op: 'add', value: 0.02 },
@@ -164,10 +169,10 @@ export const Innovations = defineTable(
       key: 'gunpowder',
       prerequisites: ['iron', 'coinage'],
       requires: {},
-      inventionChance: 1.5e-6,
+      inventionChance: 7e-8,
       effects: [
         { stat: 'combatStrength', op: 'mul', value: 1.6 },
-        { stat: 'reach', op: 'add', value: 10 },
+        { stat: 'reach', op: 'add', value: 20 },
       ],
     },
   ],
@@ -197,10 +202,12 @@ export const SettlementLevels = defineTable(
   'settlementLevel',
   z.object({ key: z.string(), minUrban: z.number().positive() }).strict(),
   [
+    // El asentamiento es el mayor centro urbano de la provincia (~160.000 km² en el mundo
+    // mediano). Referencias: Uruk ~40 mil (3000 a.C.), Babilonia ~200 mil, Roma ~1 M.
     { key: 'village', minUrban: 500 },
-    { key: 'town', minUrban: 5_000 },
-    { key: 'city', minUrban: 25_000 },
-    { key: 'greatCity', minUrban: 100_000 },
-    { key: 'metropolis', minUrban: 500_000 },
+    { key: 'town', minUrban: 2_000 },
+    { key: 'city', minUrban: 10_000 },
+    { key: 'greatCity', minUrban: 50_000 },
+    { key: 'metropolis', minUrban: 300_000 },
   ],
 );

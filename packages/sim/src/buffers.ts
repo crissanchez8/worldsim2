@@ -58,6 +58,15 @@ export function createBuffers() {
       toReligion: { type: 'ref', unit: 'id', ref: 'religion' },
       toStratum: { type: 'u8', unit: 'enum' },
     }),
+    /** Alimento producido en el año por provincia (production → demography; P6: → markets). */
+    productionOutput: scheduler.createSoaBuffer(
+      'productionOutput',
+      {
+        province: { type: 'ref', unit: 'id', ref: 'province' },
+        food: { type: 'f64', unit: 'tons' },
+      },
+      { capacity: 2048 },
+    ),
     /** Solicitudes de cambio de dueño de provincias. */
     territoryRequests: scheduler.createSoaBuffer(
       'territoryRequests',

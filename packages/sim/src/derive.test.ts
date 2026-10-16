@@ -1,7 +1,7 @@
 import { createGridWorld, neighborsOf } from '@ws/worldgen';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { computeDerived, DEFAULT_SYSTEMS, Sim } from './index';
+import { CONSOLIDATION_SYSTEMS, computeDerived, Sim } from './index';
 import { testLoad } from './test-support/load';
 
 // Las vistas en CSR tienen que coincidir con un cálculo ingenuo (con Map y Set) del mismo estado.
@@ -13,7 +13,11 @@ describe('derive (CSR) contra un cálculo ingenuo', () => {
         fc.integer({ min: 1, max: 1000 }),
         fc.integer({ min: 1, max: 150 }),
         (seed, years) => {
-          const sim = Sim.create(world, {}, { systems: [...testLoad(seed), ...DEFAULT_SYSTEMS] });
+          const sim = Sim.create(
+            world,
+            {},
+            { systems: [...testLoad(seed), ...CONSOLIDATION_SYSTEMS] },
+          );
           for (let i = 0; i < years; i++) sim.step();
           const { state } = sim.ctx;
           const d = computeDerived(state, world);

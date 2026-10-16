@@ -4,7 +4,7 @@ import { createGridWorld } from '@ws/worldgen';
 import { describe, expect, it } from 'vitest';
 import {
   createEventTypes,
-  DEFAULT_SYSTEMS,
+  CONSOLIDATION_SYSTEMS,
   Sim,
   type SimSystem,
   totalPopulation,
@@ -13,7 +13,7 @@ import {
 import { testLoad } from './test-support/load';
 
 const world = createGridWorld({ seed: 1, width: 12, height: 6 });
-const systems = (seed = 1): readonly SimSystem[] => [...testLoad(seed), ...DEFAULT_SYSTEMS];
+const systems = (seed = 1): readonly SimSystem[] => [...testLoad(seed), ...CONSOLIDATION_SYSTEMS];
 
 describe('Sim · estado inicial', () => {
   it('provincias con la misma id que el mundo estático y forrajeros en la tierra habitable', () => {
@@ -67,7 +67,7 @@ describe('Sim · determinismo y continuidad', () => {
   it('golden: hash a los 200 años (si cambia a propósito, subir ENGINE_VERSION y actualizar)', () => {
     const sim = Sim.create(world, {}, { systems: systems() });
     for (let i = 0; i < 200; i++) sim.step();
-    expect(sim.hash()).toBe('10e9aad1f0b80b4a');
+    expect(sim.hash()).toBe('48f35f8c2a609b34');
   });
 
   it('guardar/cargar a mitad de corrida → continuación idéntica, año por año', () => {
@@ -101,7 +101,7 @@ describe('Sim · contratos', () => {
         size[0] = (size[0] ?? 0) + 1;
       },
     };
-    const sim = Sim.create(world, {}, { checks: true, systems: [rogue, ...DEFAULT_SYSTEMS] });
+    const sim = Sim.create(world, {}, { checks: true, systems: [rogue, ...CONSOLIDATION_SYSTEMS] });
     expect(() => sim.step()).toThrow(scheduler.ContractError);
   });
 

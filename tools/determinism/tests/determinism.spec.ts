@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 import type { DeterminismResult } from '../src/main';
 
-const years = process.env['DETERMINISM_YEARS'];
+const raw = process.env['DETERMINISM_YEARS'];
+const years = raw === undefined || raw === '' ? undefined : raw;
 
 test(`hash idéntico a Node (${years ?? 'corrida completa'})`, async ({ page, browserName }) => {
   const errors: string[] = [];

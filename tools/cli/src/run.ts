@@ -2,7 +2,14 @@
 // `ws health` (P1.8) y herramienta para buscar divergencias (el primer año con hash distinto).
 import { performance } from 'node:perf_hooks';
 import { ENGINE_VERSION } from '@ws/core';
-import { Sim, STATE_VERSION, totalPopulation, yearHash } from '@ws/sim';
+import {
+  Sim,
+  STATE_VERSION,
+  summarize,
+  totalPopulation,
+  type WorldSummary,
+  yearHash,
+} from '@ws/sim';
 import {
   createGridWorld,
   generateWorld,
@@ -84,6 +91,8 @@ export interface RunReport {
     readonly worldgenMs: number;
   };
   readonly hashes: readonly { readonly year: number; readonly hash: string }[];
+  /** Resumen del mundo cada `every` años. */
+  readonly trace: readonly WorldSummary[];
   readonly final: { readonly year: number; readonly hash: string };
   readonly summary: {
     readonly years: number;
@@ -118,6 +127,7 @@ export function runSim(options: RunOptions): RunReport {
   const worldgenMs = performance.now() - g0;
   const sim = Sim.create(world, {}, { checks: options.checks });
   const hashes: { year: number; hash: string }[] = [];
+  const trace: WorldSummary[] = [];
   const stepMs: number[] = [];
   let events = 0;
   let years = 0;
@@ -129,8 +139,15 @@ export function runSim(options: RunOptions): RunReport {
     stepMs.push(performance.now() - s);
     events += result.events.length;
     years++;
-    last = { year: result.year, hash: yearHash(sim, result) };
-    if (years % options.every === 0) hashes.push(last);
+    // El hash del estado completo es caro: solo cuando se muestra (y al final).
+    const shown = years % options.every === 0;
+    // (`sim.finished` quedó acotado a false por la condición del while: se pregunta por el año.)
+    const final = sim.year > sim.endYear || (options.years !== undefined && years >= options.years);
+    if (shown || final) last = { year: result.year, hash: yearHash(sim, result) };
+    if (shown) {
+      hashes.push(last);
+      trace.push(summarize(sim.ctx, result.year));
+    }
   }
   const totalMs = performance.now() - t0;
   const s = stats(stepMs);
@@ -145,6 +162,7 @@ export function runSim(options: RunOptions): RunReport {
       worldgenMs,
     },
     hashes,
+    trace,
     final: last,
     summary: {
       years,
@@ -166,7 +184,10 @@ export function formatRun(report: RunReport): string {
   return [
     `motor ${report.engine} · estado ${report.stateVersion}`,
     `mundo ${w.description} · ${w.provinces} provincias · hash ${w.hash} · generado en ${(w.worldgenMs / 1000).toFixed(2)} s`,
-    ...report.hashes.map((h) => `${String(h.year).padStart(7)}  ${h.hash}`),
+    ...report.trace.map((t, k) => {
+      const levels = t.settlementsByLevel.join('/');
+      return `${String(t.year).padStart(7)}  pob ${(t.population / 1e6).toFixed(2)} M · agri ${t.farmingProvinces} · urb ${(t.urbanization * 100).toFixed(1)}% · asent ${levels} · polities ${t.activePolities} (mayor ${(t.largestPolity / 1e6).toFixed(2)} M, dueño ${(t.ownedShare * 100).toFixed(0)}%) · guerras ${t.activeWars} · era ${t.dominantEra} · ${t.innovations.length} innov · ${report.hashes[k]?.hash ?? ''}`;
+    }),
     `final ${report.final.year}  ${report.final.hash}`,
     `${s.years} años en ${(s.totalMs / 1000).toFixed(1)} s · ${s.msPerYearAvg.toFixed(3)} ms/año (p95 ${s.msPerYearP95.toFixed(3)})`,
     `población ${n(s.population)} · pops ${s.pops} · polities ${s.polities} · eventos ${s.events}`,

@@ -51,6 +51,7 @@ export class Sim {
       ledger: emptyTally(),
     };
     this.pipeline = scheduler.createPipeline(options.systems ?? DEFAULT_SYSTEMS, [
+      buffers.productionOutput,
       buffers.popDeltas,
       buffers.territoryRequests,
     ]);
