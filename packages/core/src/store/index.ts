@@ -1,3 +1,4 @@
+export { allocColumn, type ColumnOf, grown } from './columns';
 export { Globals } from './globals';
 export { type Id, IdAllocator, NO_ID } from './id';
 export {

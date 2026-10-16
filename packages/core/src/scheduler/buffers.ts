@@ -1,5 +1,7 @@
 // Buffers de flujo (docs/model.md §8): viven dentro del tick, tienen productores declarados y un
 // único consumidor, y tienen que quedar vacíos en la frontera del tick (I9).
+// Este es el buffer de OBJETOS, para flujos fríos (pocos ítems por tick). Los calientes van en
+// `SoaBuffer` (soa-buffer.ts).
 
 export class FlowBuffer<T> {
   readonly name: string;
