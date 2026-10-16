@@ -12,6 +12,10 @@ export const es = {
     body: 'Fase 0: fundaciones de arquitectura. Todavía no hay mundo que mirar.',
     engineVersion: 'Motor v{{version}}',
   },
+  time: {
+    yearBC: '{{year}} a.C.',
+    yearAD: '{{year}} d.C.',
+  },
   language: {
     label: 'Idioma',
     es: 'Español',

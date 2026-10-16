@@ -7,9 +7,9 @@
 |---|---|
 | **Última actualización** | 2026-10-15 |
 | **Fase actual** | P0 — Fundaciones de arquitectura |
-| **Estado** | 🟢 En curso — bloque 3: `model.md` 1.0-rc en revisión (gate); spike A en una sesión paralela |
-| **Próximo paso** | Cristian revisa `docs/model.md` (decisiones M1–M8, §17) → OK en `decisions.md` → bloque 4 (P0.8 events, P0.9 modifiers, P0.10 time+scheduler). Integrar la rama `p00-spike-terrain` cuando la sesión del spike A termine |
-| **Bloqueos** | P0.8–P0.10 esperan la aprobación de `model.md` |
+| **Estado** | 🟢 En curso — bloques 1–4 hechos (casa, primitivas, modelo aprobado, events/modifiers/scheduler); spike A en sesión paralela |
+| **Próximo paso** | Integrar la rama `p00-spike-terrain` cuando termine su sesión → bloque 5: P0.14 spike B (Worker + deltas + rebobinado) → P0.15 spike C (determinismo entre navegadores) → P0.17 bench |
+| **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · rama `phase/p00-fundaciones` · PR #1 (draft) |
 
 ## Fases
@@ -34,6 +34,16 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-15 (sesión P0-5):**
+  - `model.md` v1.0 **aprobado** con M1–M8 (D42);
+  - **bloque 4 hecho** en `packages/core` (244 tests):
+    - P0.8 `events`: registro con clave i18n, umbral y significancia; bus con ids desde el estado, validación de causas, contrato del emisor; codec y `hashEvents`;
+    - P0.9 `modifiers`: stats con forma de agregación, dueño por fila, vencimiento, `explain()`, resultado independiente del orden de alta;
+    - P0.10 `time` (calendario sin año 0) + `scheduler` (14 fases, cadencias, escritor único estático, buffers, guard por huella de campo);
+    - `@ws/i18n`: `formatYear` / `formatNumber` (es/en);
+  - tests débiles detectados con mutación y corregidos (L-004 ampliada); L-009;
+  - la sesión del spike A sigue trabajando en `p00-spike-terrain`.
+
 - **2026-10-15 (sesión P0-4):**
   - primer deploy a Cloudflare OK (preview comentado en el PR #1 por el CI); el certificado TLS del subdominio de rama todavía estaba en emisión;
   - `docs/model.md` 1.0-rc escrito (≈980 líneas): entidades, dueños, pipeline, buffers, 25 contratos, invariantes, eventos, decisiones M1–M8;

@@ -10,6 +10,10 @@ export const en: Catalog = {
     body: 'Phase 0: architecture foundations. There is no world to watch yet.',
     engineVersion: 'Engine v{{version}}',
   },
+  time: {
+    yearBC: '{{year}} BC',
+    yearAD: '{{year}} AD',
+  },
   language: {
     label: 'Language',
     es: 'Español',

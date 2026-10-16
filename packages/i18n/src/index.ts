@@ -3,6 +3,7 @@ import { en } from './locales/en';
 import { es } from './locales/es';
 
 export type { Catalog } from './catalog';
+export { formatNumber, formatYear } from './format';
 
 export const LANGUAGES = ['es', 'en'] as const;
 export type Language = (typeof LANGUAGES)[number];

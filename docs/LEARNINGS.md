@@ -107,6 +107,16 @@
 - **Cómo detectarlo antes:** un cambio de rendimiento que no cambia las mediciones.
 - **Promovido a CLAUDE.md:** no.
 
+### L-009 · Un resumen con grep puede esconder la falla
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia
+- **Contexto:** filtré la salida de `pnpm check` con `grep` buscando "Tasks", "error" y "violations".
+- **Qué pasó:** `prettier --check` falló primero y cortó la cadena; ninguna línea matcheó y el resumen vacío parecía un éxito.
+- **Causa raíz:** el filtro solo buscaba señales de éxito y algunas de falla, no el código de salida.
+- **Regla:** al filtrar salidas de comandos encadenados, incluir siempre `ELIFECYCLE`/`exit code` y, ante un resumen vacío o incompleto, mirar la cola completa (`tail`) antes de concluir.
+- **Cómo detectarlo antes:** el resumen no muestra las tres etapas esperadas (typecheck, lint, test).
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)
