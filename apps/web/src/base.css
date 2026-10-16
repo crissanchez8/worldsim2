@@ -1,0 +1,46 @@
+/* Estilo neutro de P0. El Design System llega en P2; nada de esto es definitivo. */
+:root {
+  --bg: #fafafa;
+  --fg: #1a1a1a;
+  --muted: #5c5c5c;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161616;
+    --fg: #ededed;
+    --muted: #a3a3a3;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.placeholder {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+.placeholder header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.eyebrow,
+.meta {
+  color: var(--muted);
+}
+
+.language {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}

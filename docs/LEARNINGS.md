@@ -56,6 +56,133 @@
 - **Cómo detectarlo antes:** el nombre mencionado no aparece literal en el filesystem.
 - **Promovido a CLAUDE.md:** no.
 
+### L-004 · Un test de lint que deriva sus casos de la config que prueba no prueba nada
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia (prueba de mutación)
+- **Contexto:** P0.3, test de que el lint de determinismo falla con cada API prohibida.
+- **Qué pasó:** los casos se generaban desde `MATH_ALLOWED` / `FORBIDDEN_GLOBALS`; al agregar `sin` a la allowlist o borrar `process`, el test seguía verde.
+- **Causa raíz:** el oráculo del test era el mismo código bajo prueba (autorreferencia).
+- **Regla:** los tests de reglas de seguridad/determinismo usan **listas canónicas propias** (independientes de la config) + una aserción de igualdad exacta sobre la allowlist; y se valida cada test nuevo de este tipo con **una mutación manual** (aflojar la regla → el test debe fallar).
+- **Recurrencia (P0.9):** el test "orden de alta no importa" de los modificadores tampoco detectaba la mutación: el rango del stat acotaba los resultados y los topes aleatorios aplanaban las diferencias. Ampliación de la regla: el caso de prueba tiene que hacer **observable** la propiedad (sin acotar, sin operaciones que la oculten, permutaciones reales).
+- **Cómo detectarlo antes:** si el test importa la lista que define qué está prohibido y solo itera sobre ella, sospechar.
+- **Promovido a CLAUDE.md:** no (si se repite, sí).
+
+### L-005 · "latest" de npm no siempre es compatible con el resto del stack
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia
+- **Contexto:** P0.2, fijando versiones del monorepo.
+- **Qué pasó:** TypeScript `latest` es 7.0 (compilador nativo), pero typescript-eslint 8.x declara `typescript <6.1`.
+- **Causa raíz:** asumir que las últimas versiones de cada herramienta son compatibles entre sí.
+- **Regla:** antes de fijar versiones, revisar `peerDependencies` de las herramientas que se enchufan entre sí (`npm view <pkg> peerDependencies`); fijar con `catalog:` y anotar el motivo en `pnpm-workspace.yaml` cuando se queda atrás de latest.
+- **Cómo detectarlo antes:** cambio de versión mayor reciente en una herramienta "base" (TS, ESLint, Vite).
+- **Promovido a CLAUDE.md:** no.
+
+### L-006 · Verificar la UI en el navegador aunque sea un placeholder
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia
+- **Contexto:** P0.2, toggle es/en de la página placeholder.
+- **Qué pasó:** typecheck, lint y tests verdes, pero la página quedaba en blanco: loop infinito (`changeLanguage` dentro de un `useEffect` que dependía de `t`, que cambia en cada `languageChanged`).
+- **Causa raíz:** dos fuentes de verdad para el idioma (estado de React + i18next) sincronizadas con un efecto.
+- **Regla:** (1) toda UI se abre en el navegador y se revisa la consola antes de commitear; (2) el idioma activo vive solo en i18next: la UI lo lee de `i18n.resolvedLanguage` y lo cambia con `changeLanguage` en el handler, nunca en un efecto.
+- **Cómo detectarlo antes:** un `useEffect` que llama a algo que emite eventos que a su vez cambian sus dependencias.
+- **Promovido a CLAUDE.md:** no.
+
+### L-007 · Buffers que crecen: probar por encima de la capacidad inicial
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia (bench de P0.7)
+- **Contexto:** `ByteWriter` del serializador, con capacidad inicial de 1 KiB.
+- **Qué pasó:** `this.view.setFloat64(this.reserve(8), v)` escribía en la vista VIEJA cuando `reserve` agrandaba el buffer (JS evalúa `this.view` antes que los argumentos). Los tests pasaban porque ningún estado de prueba superaba 1 KiB; lo encontró el bench con 615 KiB.
+- **Causa raíz:** orden de evaluación + tests que nunca ejercitaban el crecimiento.
+- **Regla:** (1) en estructuras que se reasignan, obtener el offset/recurso en una sentencia y usar el campo después; (2) todo test de una estructura con capacidad inicial incluye un caso que la supera varias veces.
+- **Cómo detectarlo antes:** un método que reemplaza un campo y se llama como argumento de otro método de ese mismo campo.
+- **Promovido a CLAUDE.md:** no.
+
+### L-008 · Un reemplazo por script que no encuentra el texto falla en silencio
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia (profiling de P0.7)
+- **Contexto:** apliqué el camino rápido de serialización con `str.replace` en Python.
+- **Qué pasó:** Prettier ya había partido la llamada en varias líneas; el reemplazo no matcheó y el camino rápido nunca existió. El test "rápido = lento" pasaba porque ambos usaban el lento.
+- **Causa raíz:** `str.replace` devuelve el texto sin cambios si no hay match; no verifiqué que se aplicara.
+- **Regla:** para editar código existente usar la herramienta Edit (falla si no encuentra el texto); si uso scripts, `assert old in s` antes de cada reemplazo. Todo test que compara dos caminos se valida con una mutación en cada camino.
+- **Cómo detectarlo antes:** un cambio de rendimiento que no cambia las mediciones.
+- **Promovido a CLAUDE.md:** no.
+
+### L-009 · Medir rendimiento contra el dev server invalida corridas
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia (spike A, P0.13)
+- **Contexto:** recorridos de 60 s del spike de terreno contra `vite dev`.
+- **Qué pasó:** edité código mientras corría la medición; el HMR de Vite recargó la página en
+  medio de dos corridas y tuve que tirarlas.
+- **Causa raíz:** el dev server reacciona a cualquier cambio en disco; además sirve código sin
+  minificar, que no es lo que se despliega.
+- **Regla:** las mediciones de rendimiento corren contra el **build** (`vite build` + `vite
+  preview`), nunca contra `vite dev`; no se reconstruye el build durante una corrida.
+- **Cómo detectarlo antes:** una URL de medición con el puerto del dev server.
+- **Promovido a CLAUDE.md:** no.
+
+### L-010 · "60 fps" en headless o con el timer de WebGL no prueba que la GPU dé abasto
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia (spike A, P0.13)
+- **Contexto:** medición del terreno sin ventana visible (el navegador integrado oculto no corre
+  `requestAnimationFrame`), con Chrome headless por CDP.
+- **Qué pasó:** en WebGL2 a dpr 2 el contador daba 60 fps, pero el timer de GPU
+  (`EXT_disjoint_timer_query` vía ANGLE/Metal) marcaba 20,6 ms en p95. Las dos cifras no podían
+  ser ciertas a la vez.
+- **Causa raíz:**
+  - headless tiene un reloj de cuadros virtual de 60 Hz;
+  - los timers de GPU (WebGL sobre ANGLE/Metal y también los timestamps de WebGPU) sobrestiman:
+    el estrés muestra que ×4 escenas entran en un cuadro de 16,7 ms aunque el timer sume 34 ms.
+    La hipótesis más probable es que miden latencia de pase (esperas y solapamiento), no
+    ocupación de la GPU.
+- **Regla:**
+  - toda medición de fps lleva un **control cruzado de la cola de GPU**: fences en WebGL2,
+    `queue.onSubmittedWorkDone()` en WebGPU. Si los cuadros en vuelo no pasan de 1–2, la GPU da
+    abasto;
+  - el **margen** se mide por estrés (dibujar la escena N veces por cuadro hasta que caen los
+    fps), no con timers de GPU;
+  - los fps de headless no se reportan sin esos dos controles.
+- **Cómo detectarlo antes:** tiempo de GPU p95 mayor que el período del cuadro con 0 tirones.
+
+### L-011 · Un resumen con grep puede esconder la falla
+- **Fecha / fase:** 2026-10-15 · P0
+- **Origen:** observación propia
+- **Contexto:** filtré la salida de `pnpm check` con `grep` buscando "Tasks", "error" y "violations".
+- **Qué pasó:** `prettier --check` falló primero y cortó la cadena; ninguna línea matcheó y el resumen vacío parecía un éxito.
+- **Causa raíz:** el filtro solo buscaba señales de éxito y algunas de falla, no el código de salida.
+- **Regla:** al filtrar salidas de comandos encadenados, incluir siempre `ELIFECYCLE`/`exit code` y, ante un resumen vacío o incompleto, mirar la cola completa (`tail`) antes de concluir.
+- **Cómo detectarlo antes:** el resumen no muestra las tres etapas esperadas (typecheck, lint, test).
+- **Promovido a CLAUDE.md:** no.
+
+### L-012 · WebKit de Playwright 1.64.1 no arranca en macOS 26.0
+- **Fecha / fase:** 2026-10-16 · P0
+- **Origen:** observación propia (spikes B y C)
+- **Contexto:** medir el spike B y correr el spike C en los tres motores con Playwright.
+- **Qué pasó:** `webkit.launch()` + `newPage()` termina en *segmentation fault* (headless y con ventana, dentro y fuera del sandbox) con el build `webkit-mac-26-arm64` v2370 en macOS 26.0 (25A354).
+- **Causa raíz:** incompatibilidad del build de WebKit de Playwright con esta versión de macOS (no es del proyecto: falla un `setContent` mínimo).
+- **Regla:** WebKit se prueba en el CI sobre Linux; Safari real lo verifica Cristian a mano. Los scripts de medición toleran que un navegador no arranque y lo reportan.
+- **Cómo detectarlo antes:** probar un arranque mínimo de cada navegador apenas se instala Playwright.
+- **Promovido a CLAUDE.md:** no.
+
+### L-013 · Una cadena con `;` sigue aunque el chequeo falle
+- **Fecha / fase:** 2026-10-16 · P0
+- **Origen:** observación propia (recurrencia de L-011)
+- **Contexto:** `pnpm check ...; git add … && git commit … ; git push`.
+- **Qué pasó:** los tests de dos spikes fallaron (Vitest levantaba el spec de Playwright; un timeout con la máquina cargada) y igual se commiteó y se subió.
+- **Causa raíz:** separar con `;` el chequeo del commit; el grep del resumen no frena nada.
+- **Regla:** chequeo y commit se encadenan con `&&` (o se verifica `exit=$?` antes de commitear); nunca `;` entre un chequeo y una acción que publica.
+- **Cómo detectarlo antes:** un `;` después de `pnpm check` en el mismo comando que un `git push`.
+- **Promovido a CLAUDE.md:** sí (regla de "verificar antes de publicar"; ver Convenciones).
+
+### L-014 · Lo que funciona en mi checkout puede no existir en un clon limpio
+- **Fecha / fase:** 2026-10-16 · P0
+- **Origen:** observación propia (CI)
+- **Contexto:** el build del spike C escribe `public/expected.json`, que está en `.gitignore`.
+- **Qué pasó:** en mi máquina `public/` existía; en el CI (clon limpio) no, y el build falló en dos jobs.
+- **Causa raíz:** una carpeta cuyo único contenido está ignorado no viaja con git.
+- **Regla:** los generadores crean sus carpetas (`mkdirSync(..., { recursive: true })`); ante un cambio de build, probar en un clon nuevo (`git clone . /tmp/x && pnpm i --frozen-lockfile && pnpm build`).
+- **Cómo detectarlo antes:** un archivo generado en una carpeta que no tiene ningún archivo versionado.
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)

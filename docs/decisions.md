@@ -43,6 +43,16 @@
 | D35 | 2026-10-15 | S2 confirmado: mundo realista, solo humanos, sin magia, nombres ficticios | BRIEF P0 §9 | P0 |
 | D36 | 2026-10-15 | S4 confirmado: 2 últimas versiones mayores de Chrome, Edge, Safari y Firefox de escritorio; WebGL2 como piso | BRIEF P0 §9 | P0 |
 | D37 | 2026-10-15 | Repo `crissanchez8/worldsim2` hasta que Q5 defina el nombre en P2 | BRIEF P0 §9 | P0 |
+| D38 | 2026-10-15 | TypeScript fijado en 6.0.3 (no 7.0) | typescript-eslint 8.x declara `typescript <6.1`; revisar cuando soporte TS 7 (ADR-001, L-005) | P0 |
+| D39 | 2026-10-15 | RNG por contador: XXH32 de 6 palabras, dos carriles, registro único de streams con ids constantes | Independiente del orden del tick; agregar sistemas no altera el azar (ADR-002) | P0 |
+| D40 | 2026-10-15 | `core/math` = port de fdlibm + allowlist de `Math` en el motor | < 2,2 ulp vs V8; bit a bit entre motores a confirmar en spike C (ADR-003) | P0 |
+| D41 | 2026-10-15 | Estado en SoA + tablas escasas; snapshot binario `WSST`; hash de estado = 2×XXH32 de los bytes serializados | XXH64 emulado medía 50 MB/s vs 3,3 GB/s; el hash sobre bytes garantiza que todo el estado esté en el hash (ADR-004) | P0 |
+| D42 | 2026-10-15 | `docs/model.md` v1.0 aprobado con las decisiones de modelo M1–M8 tal como se recomendaron | M1 libro mayor (`ledger`) para población, territorio y reclamos · M2 log de eventos fuera del hash · M3 vistas derivadas fuera del snapshot · M4 lo que cruza el tick es estado · M5 sistema `factions` · M6 `Person` permanente + `CharacterDetail` · M7 costo de movimiento en días · M8 moneda de cuenta única (plata) | P0 |
+| D43 | 2026-10-16 | ADR-006 confirmado: Three.js `WebGPURenderer` + TSL, fallback automático a WebGL2, `?backend=webgl2` para depurar | Spike A: WebGPU ≥ 4× de margen a dpr 2 vs ~2× de WebGL2; un solo código de material. La medición en navegadores visibles la hace Cristian (checkpoint 3) | P0 |
+| D44 | 2026-10-16 | ADR-008 opción B: keyframes completos cada 100 años en memoria; en el `.wsim`, cada 1.000 años + el estado final exacto; mapa a la fecha con keyframes visuales + deltas; inspector a la fecha con resúmenes | Spike B: keyframes cada 100 años = 13 MB con un estado mínimo; el presupuesto del archivo es 20 MB. Reemplaza "keyframes cada 100 años" del plan §8.4 para el archivo | P0 |
+| D45 | 2026-10-16 | Métricas de §2: se mantienen todas; se suman rebobinar el mapa ≤ 16 ms y estado completo a una fecha (en vivo) ≤ 500 ms; el determinismo se verifica por año en CI | Mediciones de los spikes A, B y C (`docs/phases/P00/spikes.md`) | P0 |
+| D46 | 2026-10-16 | El criterio "clon nuevo → pnpm i → pnpm dev en ≤ 10 min (lo prueba Cristian)" se difiere a las últimas fases (P13) | Decisión de Cristian: el repo es público pero no se comparte todavía. Evidencia mientras tanto: clon limpio verificado por Claude (`pnpm install --frozen-lockfile` + build) y `pnpm dev` probado por Cristian en su checkout | P0 |
+| D47 | 2026-10-16 | Promoción de spikes (REPORT P0 §9) aprobada como se recomendó: en P1 se reescriben el terreno y wrap del spike A, el ledger con buffers SoA, el Worker por tandas y la historia del spike B, y la batería de determinismo del spike C; ninguna carpeta pasa tal cual | Cristian delegó la decisión en Claude ("seguí tu recomendación") | P0 |
 
 ## Aprobaciones de fase
 
@@ -50,3 +60,6 @@
 |---|---|---|---|
 | 2026-10-14 | Plan | DEVELOPMENT_PLAN aprobado como v1.0 | Q1–Q4 quedan para el BRIEF de P0 |
 | 2026-10-15 | P0 | BRIEF aprobado tal cual | D30–D37; descargas de dependencias npm y navegadores de Playwright autorizadas |
+| 2026-10-15 | P0 | `docs/model.md` v1.0 aprobado (gate P0.11) | D42; se habilita el bloque 4 (P0.8–P0.10) |
+| 2026-10-16 | P0 | Checkpoint 3: decisiones aprobadas (D43–D45) | Mediciones manuales (navegadores visibles, Safari) en curso por Cristian |
+| 2026-10-16 | P0 | **Fase cerrada** (OK de Cristian) | REPORT en `docs/phases/P00/REPORT.md`; merge del PR #1 a `main` con merge commit; próxima fase: P1 con `docs/prompts/P01-rebanada-vertical.md` |

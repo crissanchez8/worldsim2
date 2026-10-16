@@ -66,9 +66,21 @@ Si el usuario no indicó tarea, proponé el próximo paso según `STATUS.md`. Si
 - Rama por fase (`phase/pNN-nombre`); `main` siempre desplegable; el merge de cierre de fase
   espera la revisión de Cristian.
 - Hablale a Cristian en español rioplatense (voseo).
+- **Antes de commitear o pushear:** `pnpm check` tiene que salir con código 0, encadenado con `&&`
+  (nunca `;`) a la acción que publica (L-011, L-013).
 
 ## Comandos
-_(se completan en P0 cuando exista el monorepo)_
+| Comando | Qué hace |
+|---|---|
+| `pnpm i` · `pnpm dev` | Instalar · app web en desarrollo (http://localhost:5173) |
+| `pnpm check` | Lo mismo que el CI: formato, typecheck, lint (estilo + determinismo + UI + fronteras), tests |
+| `pnpm build` · `pnpm site` | Build de todo · arma `site/` (web + spikes) para desplegar |
+| `pnpm ws bench [--compare docs/phases/P00/bench-baseline.json]` | Bench del core y año sintético (normalizado por calibración) |
+| `pnpm --filter @ws/core exec vitest run` | Tests de un paquete |
+| `pnpm --filter @ws/spike-determinism e2e` | Playwright: hash idéntico a Node en Chromium/Firefox/WebKit (WebKit local no anda en macOS 26.0: L-012) |
+| `pnpm --filter @ws/spike-worker measure:node [años] [--hash]` | Medición headless del spike B |
+
+Previews: el CI comenta el link en cada PR (`<rama>.worldsim2.pages.dev`; spikes en `/spikes/<nombre>/`).
 
 ## Qué NO hacer
 - Empezar una fase sin BRIEF aprobado, o la siguiente sin el OK de cierre.

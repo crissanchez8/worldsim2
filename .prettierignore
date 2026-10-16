@@ -1,0 +1,8 @@
+# Los docs se editan a mano (tablas alineadas a gusto); Prettier no los toca.
+*.md
+pnpm-lock.yaml
+dist
+coverage
+.turbo
+playwright-report
+test-results

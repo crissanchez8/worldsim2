@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@ws/web", "dev", "--port", "5173", "--strictPort"],
+      "port": 5173
+    },
+    {
+      "name": "spike-terrain",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@ws/spike-terrain", "dev", "--port", "5174", "--strictPort"],
+      "port": 5174
+    },
+    {
+      "name": "spike-terrain-build",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@ws/spike-terrain", "preview", "--port", "4174", "--strictPort"],
+      "port": 4174
+    }
+  ]
+}

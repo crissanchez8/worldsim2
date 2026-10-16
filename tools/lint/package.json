@@ -1,0 +1,25 @@
+{
+  "name": "@ws/lint",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Reglas de lint del monorepo (determinismo, texto de UI) y sus tests",
+  "exports": {
+    "./determinism": "./src/determinism.js",
+    "./ui-text": "./src/ui-text.js"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "lint": "eslint --max-warnings=0 .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "dependency-cruiser": "catalog:",
+    "eslint": "catalog:",
+    "vitest": "catalog:"
+  },
+  "dependencies": {
+    "@ws/core": "workspace:*"
+  }
+}

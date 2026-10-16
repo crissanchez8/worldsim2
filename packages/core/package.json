@@ -1,0 +1,28 @@
+{
+  "name": "@ws/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Primitivas deterministas del motor: rng, math, stores, serialización, eventos, modificadores, scheduler",
+  "exports": {
+    ".": "./src/index.ts",
+    "./hash": "./src/hash/index.ts",
+    "./math": "./src/math/index.ts",
+    "./rng": "./src/rng/index.ts",
+    "./store": "./src/store/index.ts",
+    "./serialize": "./src/serialize/index.ts",
+    "./events": "./src/events/index.ts",
+    "./time": "./src/time/index.ts",
+    "./modifiers": "./src/modifiers/index.ts",
+    "./scheduler": "./src/scheduler/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "lint": "eslint --max-warnings=0 .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "fast-check": "catalog:",
+    "vitest": "catalog:"
+  }
+}

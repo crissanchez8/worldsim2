@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Versión** | 1.0 — aprobada |
+| **Versión** | 1.1 — aprobada (ajustes de P0: D44, D45) |
 | **Fecha** | 2026-10-14 |
 | **Autores** | Cristian Sánchez (Product Owner) + Claude (Ingeniero principal / Diseñador de producto) |
 | **Estado** | 🟢 Aprobado 2026-10-14 — P0 por abrir |
@@ -81,7 +81,7 @@ de recorrer y compartir).
 6. **Web pública, rápida y gratuita**, apta como pieza de portfolio.
 7. **Base técnica sólida**: determinismo, tests de salud, rendimiento medido.
 
-### Métricas de éxito (objetivos v1; 🔶 se revisan en P0 con los spikes)
+### Métricas de éxito (objetivos v1; revisadas en P0 con los spikes: D45)
 
 | Métrica | Objetivo |
 |---|---|
@@ -90,8 +90,10 @@ de recorrer y compartir).
 | Costo por año simulado | promedio ≤ 10 ms, p95 ≤ 25 ms |
 | Render en vivo | 60 fps promedio, p5 ≥ 45 fps (M-series, calidad alta) |
 | Memoria del navegador | ≤ 1,5 GB en el pico |
-| Archivo de historia (`.wsim`) | ≤ 20 MB comprimido |
-| Determinismo | 100% hash idéntico en Chromium, WebKit, Firefox y Node |
+| Archivo de historia (`.wsim`) | ≤ 20 MB comprimido (con la política de keyframes del ADR-008, D44) |
+| Rebobinar el mapa a cualquier año | ≤ 16 ms (un cuadro) |
+| Estado completo de una fecha (en vivo) | ≤ 500 ms |
+| Determinismo | 100% hash idéntico en Chromium, WebKit, Firefox y Node, **verificado por año en CI** |
 | Salud histórica | ≥ 80% de los seeds dentro de las bandas de cada curva de referencia (Apéndice A) |
 | Diversidad de poder | 0 hegemones universales en 30 seeds; ≥ 3 regímenes distintos coexistiendo en 1500 d.C. en ≥ 80% de los seeds |
 | Explicabilidad | 100% de colapsos, cambios de régimen y guerras con causas enlazadas |
@@ -350,7 +352,9 @@ worldsim2/
 
 ### 8.4 Historia y rebobinado
 
-- **Keyframes** cada 100 años: estado completo serializado y comprimido (fflate).
+- **Keyframes** completos (estado serializado y comprimido con fflate): **cada 100 años en memoria**
+  durante la sesión; **en el archivo, cada 1.000 años + el estado final exacto** (D44, ADR-008).
+  El mapa a la fecha usa keyframes visuales + deltas; el inspector a la fecha, resúmenes.
 - **Deltas visuales anuales** (estacionales para ejércitos): cambios de dueño de provincias,
   niveles de asentamientos, rutas, ejércitos, mayorías culturales y religiosas, resumen de
   precios.
