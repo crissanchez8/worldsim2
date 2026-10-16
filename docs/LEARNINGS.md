@@ -153,6 +153,26 @@
 - **Cómo detectarlo antes:** el resumen no muestra las tres etapas esperadas (typecheck, lint, test).
 - **Promovido a CLAUDE.md:** no.
 
+### L-012 · WebKit de Playwright 1.64.1 no arranca en macOS 26.0
+- **Fecha / fase:** 2026-10-16 · P0
+- **Origen:** observación propia (spikes B y C)
+- **Contexto:** medir el spike B y correr el spike C en los tres motores con Playwright.
+- **Qué pasó:** `webkit.launch()` + `newPage()` termina en *segmentation fault* (headless y con ventana, dentro y fuera del sandbox) con el build `webkit-mac-26-arm64` v2370 en macOS 26.0 (25A354).
+- **Causa raíz:** incompatibilidad del build de WebKit de Playwright con esta versión de macOS (no es del proyecto: falla un `setContent` mínimo).
+- **Regla:** WebKit se prueba en el CI sobre Linux; Safari real lo verifica Cristian a mano. Los scripts de medición toleran que un navegador no arranque y lo reportan.
+- **Cómo detectarlo antes:** probar un arranque mínimo de cada navegador apenas se instala Playwright.
+- **Promovido a CLAUDE.md:** no.
+
+### L-013 · Una cadena con `;` sigue aunque el chequeo falle
+- **Fecha / fase:** 2026-10-16 · P0
+- **Origen:** observación propia (recurrencia de L-011)
+- **Contexto:** `pnpm check ...; git add … && git commit … ; git push`.
+- **Qué pasó:** los tests de dos spikes fallaron (Vitest levantaba el spec de Playwright; un timeout con la máquina cargada) y igual se commiteó y se subió.
+- **Causa raíz:** separar con `;` el chequeo del commit; el grep del resumen no frena nada.
+- **Regla:** chequeo y commit se encadenan con `&&` (o se verifica `exit=$?` antes de commitear); nunca `;` entre un chequeo y una acción que publica.
+- **Cómo detectarlo antes:** un `;` después de `pnpm check` en el mismo comando que un `git push`.
+- **Promovido a CLAUDE.md:** sí (regla de "verificar antes de publicar"; ver Convenciones).
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)

@@ -66,6 +66,8 @@ Si el usuario no indicó tarea, proponé el próximo paso según `STATUS.md`. Si
 - Rama por fase (`phase/pNN-nombre`); `main` siempre desplegable; el merge de cierre de fase
   espera la revisión de Cristian.
 - Hablale a Cristian en español rioplatense (voseo).
+- **Antes de commitear o pushear:** `pnpm check` tiene que salir con código 0, encadenado con `&&`
+  (nunca `;`) a la acción que publica (L-011, L-013).
 
 ## Comandos
 _(se completan en P0 cuando exista el monorepo)_
