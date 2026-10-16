@@ -203,6 +203,64 @@
 - **Cómo detectarlo antes:** un `.sub(` aplicado sobre un `Stream` que vino por parámetro.
 - **Promovido a CLAUDE.md:** no.
 
+### L-018 · El primer cuadro no se ve cuando `render()` vuelve
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.2, primera carga del mapa)
+- **Contexto:** medía la carga hasta "primer `render` + un `requestAnimationFrame`" y aparte los cuadros de los 5 s siguientes.
+- **Qué pasó:**
+  - en un `restart` de Chrome (perfil con caché en disco), el "primer cuadro" salía a tiempo;
+  - el cuadro siguiente tardaba **967 ms**: el mapa no se veía hasta ahí;
+  - el tiempo de carga reportado mentía por casi 1 s.
+- **Causa raíz:** `render()` solo envía. Con la caché de shaders fría, la compilación de los pipelines sigue en el proceso de GPU y bloquea los cuadros siguientes. Es la hipótesis más fuerte para el congelamiento de 8 s de Firefox visible en P0.
+- **Regla:**
+  - toda medición de carga espera a que la GPU termine: `device.queue.onSubmittedWorkDone()` en WebGPU, fence en WebGL2 (`waitGpuIdle`);
+  - el precalentado se mide en dos partes, CPU (envío) y GPU (compilación);
+  - siempre se registran los cuadros de los segundos posteriores a la carga (`settle`).
+- **Cómo detectarlo antes:** un primer cuadro "rápido" seguido de un cuadro de cientos de ms.
+- **Promovido a CLAUDE.md:** no.
+
+### L-019 · El panel oculto del navegador integrado también frena los Workers
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.2)
+- **Contexto:** abrir el build del mapa en el navegador integrado para verificarlo y capturarlo.
+- **Qué pasó:**
+  - `preview_start` con `vite preview` no arrancó (`getcwd: Operation not permitted`, igual que en P0);
+  - con el panel oculto, `requestAnimationFrame` corrió a ~1,5 fps;
+  - el worldgen del Worker tardó **13–28 s**, contra 3,8 s en Chrome headless.
+- **Causa raíz:** el panel oculto estrangula la página entera: rAF, timers y Workers. El servidor de `preview_start` corre en un directorio que el sandbox no deja leer.
+- **Regla:**
+  - `vite preview` se levanta por Bash en segundo plano y el integrado se abre con `preview_start({url})`;
+  - en el panel oculto solo se hacen verificaciones funcionales y capturas, nunca tiempos;
+  - los tiempos y los fps se miden con `apps/web/scripts/measure-map.mjs` (Chrome por CDP, Firefox por BiDi), o los mide Cristian con la ventana visible.
+- **Cómo detectarlo antes:** `tabs_context` dice "The Browser pane is currently hidden".
+- **Promovido a CLAUDE.md:** no.
+
+### L-020 · Comparar un `WorldStatic` con `toMatchObject` tarda segundos
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.2, tests del cliente del Worker)
+- **Contexto:** un test resolvía la promesa del cliente con un mundo chico y lo comparaba con `resolves.toMatchObject({ world })`.
+- **Qué pasó:** el test tardó 12 s y cayó por timeout; parecía un problema de la promesa.
+- **Causa raíz:** el comparador recorre elemento por elemento los arrays del ráster (9 × 524.288 celdas en el chico).
+- **Regla:**
+  - en los tests, un mundo se compara por identidad (`toBe`) o por hash (`hashWorldStatic`), nunca con `toEqual` ni `toMatchObject`;
+  - los tests que no necesitan un mundo real usan `createGridWorld`.
+- **Cómo detectarlo antes:** un test sin trabajo pesado propio que tarda segundos.
+- **Promovido a CLAUDE.md:** no.
+
+### L-021 · Geometría armada a mano que no se ve, sin errores: el sentido de los triángulos
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.2, ríos)
+- **Contexto:** cintas de río armadas por código (dos vértices por punto, quads entre pares).
+- **Qué pasó:** con 344.648 vértices en la escena y ningún error en la consola, no se veía ni un río.
+- **Causa raíz:**
+  - el sentido de los triángulos depende del lado de la normal: la cara quedaba de espaldas a la cámara;
+  - `MeshBasicNodeMaterial` descarta las caras traseras por defecto.
+- **Regla:**
+  - ante geometría propia invisible, revisar en este orden: `side` / sentido de los triángulos, esfera envolvente (desplazamiento en GPU), `visible` / `count`;
+  - las cintas y los faldones usan `DoubleSide` o caras dobles.
+- **Cómo detectarlo antes:** probar la capa con `side = DoubleSide` antes de buscar el error en el shader.
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)

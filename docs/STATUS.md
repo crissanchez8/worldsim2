@@ -34,6 +34,22 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-16 (sesión paralela P1.2, mapa v1 hecho):**
+  - **rama `claude/eager-lamport-065b7b`** (cortada de `phase/p01-rebanada` en 115306d), sin push; el merge lo decide la sesión principal con Cristian;
+  - **qué se hizo:**
+    - Worker de worldgen + cliente tipado en `apps/web/src/worker`;
+    - mapa en `apps/web/src/map`: WebGPU/TSL con fallback WebGL2, terreno por chunks con LOD y wrap, agua con lagos, ríos por caudal, relleno y fronteras por provincia, zoom semántico v0, marcadores instanciados, picking en CPU;
+    - UI neutra con `?seed=` y `?size=` y claves i18n solo bajo `map.`;
+    - 53 tests validados con 13 mutaciones;
+  - **mediciones** en `docs/phases/P01/mapa.md` (mediano, dpr 2, headless):
+    - primer cuadro: Chrome WebGPU 4,3–4,7 s, WebGL2 4,5–5,3 s, Firefox 137 WebGL2 7,3–7,6 s (el worldgen es el 85–90 %);
+    - sin congelamientos después de la carga;
+    - recorrido: Chrome 60 fps con la cola en 1; Firefox 59,3 fps (p5 57,1);
+    - margen: WebGPU ×8, WebGL2 ×3;
+  - LEARNINGS L-018 a L-021 (L-017 es de la sesión principal);
+  - **falta:** las mediciones visibles de Cristian para el checkpoint 1 (instrucciones en `mapa.md` §8);
+  - **ojo:** `tools/determinism` ("es reproducible…", 4,9 s solo) y `tools/cli` ("run: genera el mundo…") siguen con el timeout de 5 s por defecto y fallan a veces bajo `pnpm check` (L-017).
+
 - **2026-10-16 (sesión P1-2, P1.1 hecha):**
   - **worldgen v1** en `packages/worldgen` (commit ed81874): placas sobre el cilindro + ruido (reescrito del spike A), nivel del mar por percentil, erosión térmica; clima con humedad advectada y sombra orográfica; 9 biomas en contenido; priority-flood con lagos y caudal; provincias Poisson + Dijkstra con fusión de diminutas; zonas marítimas; grafo con estrechos; `WorldStatic` v1 con hash y validación;
   - mediano en **3,64 s** en Node (`ws bench`, métrica `worldgen.medium`; presupuesto 20 s); 1.501 provincias, tierra 0,299 para 0,30;
