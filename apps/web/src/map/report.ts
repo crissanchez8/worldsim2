@@ -27,6 +27,8 @@ export interface MapReport {
     mapDataMs: number;
     gpuBuildMs: number;
     warmupMs: number;
+    /** Espera a que la GPU termine el precalentado (compilación de pipelines en la GPU). */
+    gpuWarmupMs: number;
     firstFrameMs: number;
     firstFrameAt: number;
   };
@@ -69,6 +71,7 @@ export function createReport(): MapReport {
       mapDataMs: NaN,
       gpuBuildMs: NaN,
       warmupMs: NaN,
+      gpuWarmupMs: NaN,
       firstFrameMs: NaN,
       firstFrameAt: NaN,
     },

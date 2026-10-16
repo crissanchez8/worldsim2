@@ -7,7 +7,7 @@
 // `onSelect`. Todo texto lo pone la UI (i18n); esta clase no tiene strings visibles.
 import { Color, Fog, PerspectiveCamera, Scene, Vector3, WebGPURenderer } from 'three/webgpu';
 import type { WorldStatic } from '@ws/worldgen';
-import { createGpuQueueProbe, type GpuQueueProbe } from './bench/gpu-queue';
+import { createGpuQueueProbe, type GpuQueueProbe, waitGpuIdle } from './bench/gpu-queue';
 import { FrameRecorder, percentile } from './bench/metrics';
 import { tourPose } from './bench/tour';
 import {
@@ -286,14 +286,20 @@ export class MapView {
       this.rivers.setWarmup(false);
     }
     const t1 = performance.now();
+    // El `render` solo envía: con la caché de shaders fría, la compilación de los pipelines sigue
+    // en la GPU. Se espera a que termine para que el primer cuadro cuente cuando se ve.
+    await waitGpuIdle(r.backend);
+    const t2 = performance.now();
     this.updateCamera(0);
     r.render(this.scene, this.camera);
+    await waitGpuIdle(r.backend);
     await nextFrame();
-    const t2 = performance.now();
+    const t3 = performance.now();
     const load = this.report.load;
     load.warmupMs = t1 - t0;
-    load.firstFrameMs = t2 - t1;
-    load.firstFrameAt = t2;
+    load.gpuWarmupMs = t2 - t1;
+    load.firstFrameMs = t3 - t2;
+    load.firstFrameAt = t3;
     const mem = r.info.memory;
     if (this.report.memory) {
       this.report.memory.threeTexturesBytes = mem.texturesSize;
@@ -305,7 +311,7 @@ export class MapView {
       height: r.domElement.height,
       dpr: r.getPixelRatio(),
     };
-    this.settle = { recorder: new FrameRecorder(), until: t2 + MEASURE.settleSeconds * 1000 };
+    this.settle = { recorder: new FrameRecorder(), until: t3 + MEASURE.settleSeconds * 1000 };
     if (this.disposed) return;
     await r.setAnimationLoop(this.frame);
   }

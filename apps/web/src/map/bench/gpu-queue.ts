@@ -49,6 +49,30 @@ class WebGl2Probe implements GpuQueueProbe {
   }
 }
 
+/**
+ * Resuelve cuando la GPU terminó todo lo enviado (el primer cuadro "se ve" recién ahí: con la
+ * caché de shaders fría la compilación de pipelines ocurre en la GPU después del `render`).
+ * Devuelve false si el backend no permite saberlo.
+ */
+export async function waitGpuIdle(backend: object): Promise<boolean> {
+  const b = backend as { device?: GPUDevice; gl?: WebGL2RenderingContext };
+  if (b.device) {
+    await b.device.queue.onSubmittedWorkDone();
+    return true;
+  }
+  const gl = b.gl;
+  if (!gl) return false;
+  const fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+  if (!fence) return false;
+  gl.flush();
+  // El estado del fence cambia entre tareas: se consulta en cada cuadro.
+  while (gl.getSyncParameter(fence, gl.SYNC_STATUS) !== gl.SIGNALED) {
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  }
+  gl.deleteSync(fence);
+  return true;
+}
+
 /** `backend` es `renderer.backend` de three; sus tipos no exponen `device` ni `gl`. */
 export function createGpuQueueProbe(backend: object): GpuQueueProbe | null {
   const b = backend as { device?: GPUDevice; gl?: WebGL2RenderingContext };

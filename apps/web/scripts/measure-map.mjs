@@ -208,6 +208,7 @@ function summarize(label, r) {
       mapData: ms(l.mapDataMs),
       gpuBuild: ms(l.gpuBuildMs),
       warmup: ms(l.warmupMs),
+      gpuWarmup: ms(l.gpuWarmupMs),
       firstFrame: ms(l.firstFrameMs),
     },
     settle: s && {
