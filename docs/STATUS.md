@@ -8,7 +8,7 @@
 | **Última actualización** | 2026-10-16 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | P1.1 Worldgen v1 (P1.0 hecha) |
+| **Próximo paso** | Terminar P1.1 (ws run con mundos reales, bench de worldgen, L-016) y pasar a P1.2 |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -34,6 +34,15 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-16 (sesión P1-2, P1.1 en curso; se cortó por límite de uso):**
+  - **hecho (commit ed81874):** worldgen v1 completo en `packages/worldgen` (placas, relieve, erosión, clima, hidrología, 9 biomas en contenido, provincias, zonas marítimas, grafo con estrechos); `WorldStatic` v1; mediano en ~3,9 s en Node; tests validados con mutaciones; suite de determinismo sobre el mundo chico real (Chromium y Firefox idénticos a Node); `ENGINE_VERSION` 0.1.1;
+  - **falta de P1.1:**
+    - `ws run` con `--size/--map/--land` (hoy solo grilla);
+    - tiempo de worldgen en `ws bench` (`worldgenSeconds`);
+    - LEARNINGS L-016: `Stream.sub` REEMPLAZA el sub-stream, no anida (casi hace que provincias y mares compartieran azar);
+    - el host del Worker de worldgen en `apps/web` va con P1.2;
+  - **próximo:** cerrar lo que falta de P1.1, pushear y proponer la sesión paralela de P1.2 (mapa) sobre `WorldStatic` v1.
+
 - **2026-10-16 (sesión P1-2, P1.0 bases):**
   - BRIEF aprobado tal cual (D48–D54) y registrado; rama `phase/p01-rebanada`;
   - **P1.0 hecha** (commits en la rama):
