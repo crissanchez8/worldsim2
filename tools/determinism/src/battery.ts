@@ -4,7 +4,7 @@
 import { CONTENT_HASH } from '@ws/content';
 import { ENGINE_VERSION, hash, math, rng, serialize } from '@ws/core';
 import { Sim, STATE_VERSION, yearHash } from '@ws/sim';
-import { createGridWorld, type WorldStatic } from '@ws/worldgen';
+import { generateWorld, type WorldParams, type WorldStatic } from '@ws/worldgen';
 
 const SAMPLES = 4096;
 type Unary = (x: number) => number;
@@ -85,14 +85,18 @@ export function rngBattery(): string {
 }
 
 /**
- * Escenario de la suite: el mundo sobre el que corre la simulación. Hasta el worldgen real
- * (P1.1) es la grilla de 1.500 provincias; después, el mundo chico generado de verdad.
+ * Escenario de la suite: el mundo chico generado por el worldgen real (P1.1). Generarlo en cada
+ * motor también compara el worldgen (ruido, clima, hidrología, provincias) bit a bit.
  */
-export const SCENARIO = { seed: 1, grid: [50, 30] } as const;
+export const SCENARIO: WorldParams = {
+  seed: 1,
+  size: 'small',
+  mapType: 'continents',
+  landFraction: 0.3,
+};
 
 export function scenarioWorld(): WorldStatic {
-  const [width, height] = SCENARIO.grid;
-  return createGridWorld({ seed: SCENARIO.seed, width, height });
+  return generateWorld(SCENARIO);
 }
 
 /** Corre la simulación real del escenario y entrega el hash de cada año. */

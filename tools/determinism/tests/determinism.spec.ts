@@ -15,9 +15,10 @@ test(`hash idéntico a Node (${years ?? 'corrida completa'})`, async ({ page, br
   const r = await page.evaluate(
     () => (globalThis as unknown as { __determinism: DeterminismResult }).__determinism,
   );
-  test
-    .info()
-    .annotations.push({ type: 'tiempo', description: `${browserName}: ${r.seconds.toFixed(1)} s` });
+  test.info().annotations.push({
+    type: 'tiempo',
+    description: `${browserName}: ${r.seconds.toFixed(1)} s (worldgen ${r.worldgenSeconds.toFixed(2)} s)`,
+  });
   expect(errors).toEqual([]);
   expect(r.mismatches, 'verificaciones distintas de Node').toEqual([]);
   expect(r.firstDivergentYear, 'primer año con hash distinto').toBeNull();

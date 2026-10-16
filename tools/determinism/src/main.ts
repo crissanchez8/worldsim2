@@ -19,6 +19,8 @@ export interface DeterminismResult {
   done: boolean;
   years: number;
   seconds: number;
+  /** Worldgen del escenario dentro del Worker (s). */
+  worldgenSeconds: number;
   userAgent: string;
   /** Verificaciones estáticas distintas de Node: contenido, mundo, versión, funciones, RNG. */
   mismatches: string[];
@@ -33,6 +35,7 @@ const result: DeterminismResult = {
   done: false,
   years,
   seconds: 0,
+  worldgenSeconds: 0,
   userAgent: navigator.userAgent,
   mismatches: [],
   firstDivergentYear: null,
@@ -60,6 +63,8 @@ let index = 0;
 worker.onmessage = (event: MessageEvent<WorkerMessage>) => {
   const m = event.data;
   if (m.type === 'static') {
+    result.worldgenSeconds = m.worldgenSeconds;
+    row('worldgen en el Worker', true, `${m.worldgenSeconds.toFixed(2)} s`);
     check('motor', m.checks.engine, expected.engine);
     check('contenido', m.checks.contentHash, expected.contentHash);
     check('mundo estático', m.checks.worldHash, expected.worldHash);

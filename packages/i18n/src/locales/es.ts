@@ -31,6 +31,17 @@ export const es = {
   content: {
     worldSize: { small: 'Chico', medium: 'Mediano' },
     mapType: { continents: 'Continentes', pangaea: 'Pangea', archipelago: 'Archipiélago' },
+    biome: {
+      ice: 'Hielo',
+      alpine: 'Alpino',
+      tundra: 'Tundra',
+      taiga: 'Taiga',
+      desert: 'Desierto',
+      grassland: 'Pradera',
+      temperateForest: 'Bosque templado',
+      savanna: 'Sabana',
+      tropicalForest: 'Selva tropical',
+    },
     stratum: { common: 'Común' },
     law: { primogeniture: 'Primogenitura' },
   },

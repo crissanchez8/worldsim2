@@ -27,6 +27,17 @@ export const en: Catalog = {
   content: {
     worldSize: { small: 'Small', medium: 'Medium' },
     mapType: { continents: 'Continents', pangaea: 'Pangaea', archipelago: 'Archipelago' },
+    biome: {
+      ice: 'Ice',
+      alpine: 'Alpine',
+      tundra: 'Tundra',
+      taiga: 'Taiga',
+      desert: 'Desert',
+      grassland: 'Grassland',
+      temperateForest: 'Temperate forest',
+      savanna: 'Savanna',
+      tropicalForest: 'Tropical forest',
+    },
     stratum: { common: 'Commoners' },
     law: { primogeniture: 'Primogeniture' },
   },

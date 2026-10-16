@@ -67,7 +67,7 @@ describe('Sim · determinismo y continuidad', () => {
   it('golden: hash a los 200 años (si cambia a propósito, subir ENGINE_VERSION y actualizar)', () => {
     const sim = Sim.create(world, {}, { systems: systems() });
     for (let i = 0; i < 200; i++) sim.step();
-    expect(sim.hash()).toBe('2ca7a8b082b8eec9');
+    expect(sim.hash()).toBe('10e9aad1f0b80b4a');
   });
 
   it('guardar/cargar a mitad de corrida → continuación idéntica, año por año', () => {

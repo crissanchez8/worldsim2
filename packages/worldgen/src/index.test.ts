@@ -8,7 +8,7 @@ describe('mundo de grilla (fixture de P1.0)', () => {
     const c = createGridWorld({ seed: 2, width: 12, height: 6 });
     expect(a.hash).toBe(b.hash);
     expect(a.hash).not.toBe(c.hash);
-    expect(a.hash).toBe('b869886bdb091c50');
+    expect(a.hash).toBe('35a0944556de8131');
   });
 
   it('wrap E-O: la primera y la última columna son vecinas', () => {

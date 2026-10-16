@@ -3,11 +3,13 @@
 import { hash } from '@ws/core';
 import { canonicalJson } from './canonical';
 import type { ContentRow, ContentTable } from './table';
+import { Biomes } from './tables/biomes';
 import { Laws, Strata } from './tables/society';
 import { MapTypes, WorldSizes } from './tables/world';
 
 export { canonicalJson } from './canonical';
 export { ContentError, type ContentRow, type ContentTable, defineTable } from './table';
+export { Biomes, classifyBiome } from './tables/biomes';
 export { Laws, Strata } from './tables/society';
 export { MapTypes, WorldSizes } from './tables/world';
 
@@ -15,6 +17,7 @@ export { MapTypes, WorldSizes } from './tables/world';
 export const CONTENT_TABLES: readonly ContentTable<ContentRow>[] = Object.freeze([
   WorldSizes,
   MapTypes,
+  Biomes,
   Strata,
   Laws,
 ]);
