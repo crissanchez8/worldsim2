@@ -1,0 +1,26 @@
+{
+  "name": "@ws/spike-determinism",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Spike C (P0.15, descartable): mismo hash por año en Chromium, WebKit, Firefox y Node",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit -p .",
+    "lint": "eslint --max-warnings=0 .",
+    "test": "vitest run",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@ws/core": "workspace:*",
+    "@ws/spike-worker": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

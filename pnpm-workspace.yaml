@@ -9,6 +9,7 @@ packages:
 catalog:
   '@commitlint/cli': 21.2.3
   '@commitlint/config-conventional': 21.2.3
+  '@playwright/test': 1.64.1
   '@eslint/js': 10.0.1
   '@types/node': 24.19.2
   '@types/react': 19.3.0
@@ -21,6 +22,7 @@ catalog:
   eslint-config-prettier: 10.1.8
   eslint-plugin-react-hooks: 7.1.1
   fast-check: 4.10.2
+  fflate: 0.8.3
   globals: 17.13.0
   husky: 9.1.7
   i18next: 26.4.6
