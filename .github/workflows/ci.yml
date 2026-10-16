@@ -77,8 +77,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      # PR: 2.000 años (rápido); nocturno o manual: los 14.000 completos.
-      DETERMINISM_YEARS: ${{ github.event_name == 'pull_request' && '2000' || '14000' }}
+      # Los 14.000 años completos: los tres motores corren en paralelo (≈ 25 s cada 2.000 años).
+      # Si el job pasa de 5 min, bajar el PR a 2.000 y dejar los 14.000 al cron (BRIEF P0.15).
+      DETERMINISM_YEARS: '14000'
     steps:
       - uses: actions/checkout@v7
 

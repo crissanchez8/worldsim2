@@ -282,3 +282,164 @@ Matices para el ADR:
   medir; el aspecto lo definen el Design System (P2) y P12;
 - **el HUD en DOM crudo, sin i18n**, y el `main.ts` de orquestación;
 - **la generación en el hilo principal.**
+
+---
+
+## Spike B · Worker + deltas + rebobinado (P0.14)
+
+| | |
+|---|---|
+| **Fecha** | 2026-10-16 |
+| **Código** | `spikes/worker/` (`@ws/spike-worker`): simulación en `src/sim/`, Worker en `src/worker.ts`, historia en `src/history.ts` |
+| **Pregunta** | ¿14.000 años de una simulación con la forma del motor corren en un Worker en ≤ 3 min sin bloquear la UI, con deltas transferibles, keyframes y rebobinado a cualquier año? |
+| **Estado** | ✅ Medido en Node, Chromium 156 y Firefox 157 (headless, Playwright, contra el build). WebKit: ver spike C |
+
+### Resumen
+- **Cumple con mucho margen:** 14.000 años en **45 s** (Chromium) y **60 s** (Firefox); el hilo
+  principal pinta el mapa a 60 fps sin un solo cuadro de más de 25 ms.
+- **Rebobinar el mapa es instantáneo** (0,03 ms: keyframe visual + deltas); **reconstruir el
+  estado completo** de cualquier año tarda 250–460 ms (keyframe + re-simulación determinista).
+- **El tamaño de la historia es el riesgo real:** con keyframes completos cada 100 años, un
+  estado mínimo ya ocupa **13 MB** comprimido. El estado del motor real va a ser varias veces
+  mayor: el presupuesto de 20 MB del `.wsim` no entra con esa política (ver ADR-008).
+- **Buffers de flujo calientes en SoA:** pasar los deltas de población de objetos a arrays
+  tipados y el índice provincia → pops de `Map` a CSR bajó el año de 5,3 a 3,4 ms (−35%).
+
+### Qué se hizo
+- **Simulación ficticia determinista sobre el `core` real** (`src/sim/`, bajo el lint de
+  determinismo):
+  - 1.500 provincias en una grilla de 50 × 30 con wrap E-O, 15.000 pops (10 por provincia), 60
+    polities iniciales;
+  - pipeline del scheduler con contratos: `growth` (fase consumo: crecimiento y asimilación →
+    deltas), `conquest` (fase guerra: ataques y secesiones → solicitudes de territorio, crea
+    polities), `ledger` (aplica los dos buffers, M1) y `derive` (vistas derivadas, M3);
+  - eventos `territory.changed` y `polity.formed` con causas; hash por año = estado + eventos;
+  - tests: guard de contratos activo 50 años, determinismo, guardar/cargar → mismos hashes,
+    deltas visuales que reconstruyen cada año.
+- **Worker por tandas de ~12 ms**: cede el control con un `MessageChannel` propio (sin el mínimo
+  de 4 ms del `setTimeout` anidado) y atiende pedidos de rebobinado entre tandas.
+- **Deltas visuales** (dueño y cultura mayoritaria por provincia) codificados en `Uint32Array` y
+  **transferidos** sin copia, ~4 años por mensaje.
+- **Historia en el Worker:** keyframe completo comprimido (fflate, nivel 6) y keyframe visual
+  cada 100 años, más los deltas anuales.
+- **Página** (`/spikes/worker/`): mapa en canvas 2D, modo político o cultural, línea de tiempo
+  para rebobinar, botón de "estado completo al año del cursor", HUD con todas las métricas;
+  `?auto=1` corre solo y deja el resultado en `window.__spikeB` (lo lee Playwright).
+- **Medición:** `pnpm --filter @ws/spike-worker measure:node [años] [--hash]` y
+  `node spikes/worker/scripts/measure-browsers.mjs [años]` (build + `vite preview`, L-009).
+
+### Mediciones (14.000 años, seed 1, M1 Pro)
+
+| Entorno | Total | ms/año prom / p95 | Hilo principal | Mensajes | Rebobinado del mapa | Estado completo a una fecha |
+|---|---|---|---|---|---|---|
+| Node 24 | 47 s (51,6 s con hash por año) | 3,37 / 3,64 | — | — | — | — |
+| Chromium 156 · Worker | **45 s** | 3,17 / 3,40 | 60 fps prom, p5 59,5, 0 cuadros > 25 ms, máx 16,8 ms | 3.505 lotes · 296 KiB | 0,03 ms prom · 0,1 máx | 253 ms prom · 318 máx |
+| Firefox 157 · Worker | **60 s** | 4,20 / 5,00 | 60 fps prom, p5 60, 0 cuadros > 25 ms, máx 17,5 ms | 4.704 lotes · 296 KiB | < 0,01 ms | 360 ms prom · 461 máx |
+
+Lecturas:
+- hash del estado completo por año: **0,25 ms** (15.000 pops), viable en todos los tests;
+- los fps del hilo principal son de headless (reloj virtual de 60 Hz, L-010). Igual, un hilo
+  bloqueado se vería como cuadros largos, y no hubo ninguno: la UI no se bloquea.
+
+**Historia:**
+
+| Componente | Tamaño (14.000 años) |
+|---|---|
+| 140 keyframes completos, comprimidos (deflate 6) | **13,0 MB** (32,5 MB crudos; ~93 KB c/u) |
+| 141 keyframes visuales (dueño + cultura) | 1,4 MB crudos |
+| Deltas visuales anuales | 0,24 MB |
+
+**Antes / después de la optimización** (Node, 2.000 años): deltas como objetos + índice en `Map`:
+5,26 ms/año (p95 6,29) · deltas en SoA + índice CSR: 3,40 ms/año (p95 3,81).
+
+### ¿Cumple el criterio de salida?
+Criterio (BRIEF §8): 14.000 años ficticios en ≤ 3 min sin bloquear la UI (60 fps sostenidos).
+- **Sí**, en Chromium (45 s) y Firefox (60 s), con el hilo principal a 60 fps y sin cuadros
+  largos. Margen ≥ 3× sobre el criterio para esta carga.
+- La carga es más liviana que el motor real: el criterio de P1 (≤ 3 min con el mundo real) se
+  vuelve a medir con `ws bench` y el escenario del mundo mediano.
+
+### Problemas encontrados
+1. **Objetos por delta y `Map` en el camino caliente:** 35% del costo del año. Lección para P1:
+   los buffers de flujo calientes van en SoA y los índices derivados densos (CSR), no `Map`.
+2. **Keyframes completos cada 100 años no entran en 20 MB** con un estado real (ver arriba y
+   ADR-008).
+3. **WebKit de Playwright no arranca en macOS 26.0** (L-012): se mide en el CI sobre Linux y en
+   Safari a mano.
+4. **Medición encadenada con `;`**: un commit con tests rotos llegó al CI (L-013).
+
+### Qué reutilizar en P1 (propuesta; se decide en el REPORT)
+**Sí, reescrito en su paquete:**
+- el patrón **ledger** con buffers en SoA (deltas de población y solicitudes de territorio con
+  prioridad) y el `derive` con índices CSR;
+- el **Worker por tandas** con `MessageChannel`, el protocolo de mensajes y los deltas visuales
+  en `Uint32Array` transferibles;
+- la **historia**: keyframes visuales + deltas para el mapa a la fecha, y "keyframe completo +
+  re-simulación" para el estado completo a la fecha;
+- `measure-browsers.mjs` como base del E2E de rendimiento.
+
+**No:** la dinámica ficticia (crecimiento, conquista), la página y su HUD.
+
+---
+
+## Spike C · determinismo entre navegadores (P0.15)
+
+| | |
+|---|---|
+| **Fecha** | 2026-10-16 |
+| **Código** | `spikes/determinism/` (`@ws/spike-determinism`): batería en `src/battery.ts`, página en `/spikes/determinism/`, Playwright en `tests/` |
+| **Pregunta** | ¿El motor da el mismo hash, año por año, en Chromium, WebKit, Firefox y Node? |
+| **Estado** | ✅ Chromium 156 y Firefox 157 idénticos a Node en 14.000 años · WebKit en el CI (Linux) · **Safari real: pendiente (checkpoint 3)** |
+
+### Resumen
+- **Idéntico bit a bit** a Node en Chromium y Firefox: los **14.000 hashes anuales** (estado +
+  eventos), las **18 funciones** de `core/math` (incluida `Math.sqrt`) sobre 4.096 argumentos
+  cada una y 25.600 valores del RNG.
+- **No apareció ninguna diferencia** que hubiera que resolver: la matemática propia (ADR-003), el
+  RNG por contador (ADR-002) y la serialización little-endian explícita (ADR-004) alcanzan.
+- **Integrado al CI:** por PR 2.000 años en los tres motores; todas las noches, los 14.000.
+
+### Qué se hizo
+- **Batería compartida** (el mismo código en Node y en el navegador):
+  - simulación del spike B con hash por año;
+  - `mathBattery`: hash de los bits de cada función sobre 4.096 argumentos en dominios amplios
+    (exp en ±700, log en 10^±300, sin/cos en ±1e5, pow, atan2, hypot…);
+  - `rngBattery`: `uint32` y `uniform` en 4 streams × 100 entidades × 4 años (−12000, −1, 1,
+    1900) × 32 pasos.
+- **Referencia de Node** generada en el build (`expected.json`, 14.000 hashes, ~500 KB).
+- **Página** `/spikes/determinism/`: corre la batería en un Worker y muestra ✅/❌ por función, RNG
+  y simulación, con el **primer año distinto** si hubiera divergencia. Es la verificación manual
+  en Safari.
+- **Playwright** (`pnpm --filter @ws/spike-determinism e2e`): los tres proyectos contra el build;
+  `DETERMINISM_YEARS` define el horizonte. Validado con una mutación (un hash alterado en la
+  referencia → falla con la función o el año).
+
+### Mediciones
+
+| Motor | Años | Resultado | Tiempo |
+|---|---|---|---|
+| Node 24 (referencia) | 14.000 | — | 49 s |
+| Chromium 156 | 14.000 | ✅ idéntico | 50 s |
+| Firefox 157 | 14.000 | ✅ idéntico | 72 s |
+| WebKit (Playwright, Linux, CI) | 2.000 por PR · 14.000 nocturno | ver CI | — |
+| WebKit (Playwright, macOS 26.0) | — | no arranca (L-012) | — |
+| Safari real | 14.000 | **pendiente: Cristian en `/spikes/determinism/`** | — |
+
+### ¿Cumple el criterio de salida?
+Criterio (BRIEF §8): hash por año idéntico en Chromium, WebKit, Firefox y Node + verificación
+manual en Safari.
+- **Chromium, Firefox y Node: sí** (14.000 años).
+- **WebKit:** en el CI sobre Linux (el resultado queda en el job `determinism`).
+- **Safari: pendiente** del checkpoint 3.
+
+### Problemas encontrados
+1. WebKit de Playwright 1.64.1 se cae en macOS 26.0 (L-012).
+2. Vitest levantaba el spec de Playwright (`tests/`): se acotó a `src/**/*.test.ts`.
+3. En un clon limpio `public/` no existía (su único archivo está ignorado): el CI falló hasta que
+   el generador crea la carpeta.
+
+### Qué reutilizar en P1
+- La **batería de math y RNG** y la comparación por año pasan a ser la suite de determinismo
+  permanente (§14.2 del plan: "Chromium/WebKit/Firefox/Node idénticos"), corriendo sobre el
+  motor real en lugar de la simulación ficticia.
+- El job de CI con horizonte corto por PR y completo por la noche.
