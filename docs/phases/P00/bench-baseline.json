@@ -1,0 +1,53 @@
+{
+  "engine": "0.0.0",
+  "machine": {
+    "cpu": "Apple M1 Pro",
+    "platform": "darwin-arm64",
+    "node": "v24.21.0"
+  },
+  "calibrationMs": 4.806874999999991,
+  "worldgenSeconds": null,
+  "peakHeapMB": 17,
+  "metrics": [
+    {
+      "key": "core.rng.uniform",
+      "value": 49.287583999999924,
+      "unit": "ns/llamada"
+    },
+    {
+      "key": "core.math.exp",
+      "value": 16.501542000000086,
+      "unit": "ns/llamada"
+    },
+    {
+      "key": "core.math.sin",
+      "value": 22.467542000000094,
+      "unit": "ns/llamada"
+    },
+    {
+      "key": "core.serialize.15kPops",
+      "value": 0.4679160000000593,
+      "unit": "ms"
+    },
+    {
+      "key": "core.hashState.15kPops",
+      "value": 0.605792000000065,
+      "unit": "ms"
+    },
+    {
+      "key": "core.scheduler.tick8Systems",
+      "value": 0.6183750000000146,
+      "unit": "µs/tick"
+    },
+    {
+      "key": "synthetic.msPerYear.avg",
+      "value": 2.3829302677777666,
+      "unit": "ms/año"
+    },
+    {
+      "key": "synthetic.msPerYear.p95",
+      "value": 2.750874999999951,
+      "unit": "ms/año"
+    }
+  ]
+}

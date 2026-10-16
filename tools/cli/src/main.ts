@@ -1,4 +1,5 @@
 import { ENGINE_VERSION } from '@ws/core';
+import { parseBenchArgs, runBench } from './bench';
 
 export interface Io {
   out: (line: string) => void;
@@ -19,6 +20,8 @@ const HELP = [
   '',
   'Comandos:',
   '  --version, -v   Versión del motor',
+  '  bench           Bench: primitivas del core y año sintético (P0.17)',
+  '                  --json · --years N · --out archivo · --compare base.json · --tolerance 0.5',
   '  --help, -h      Esta ayuda',
 ].join('\n');
 
@@ -30,6 +33,11 @@ export function main(args: readonly string[], io: Io = consoleIo): Promise<numbe
     case '-v':
       io.out(ENGINE_VERSION);
       return Promise.resolve(0);
+    case 'bench': {
+      const { text, regressions } = runBench(parseBenchArgs(args.slice(1)));
+      io.out(text);
+      return Promise.resolve(regressions > 0 ? 1 : 0);
+    }
     case undefined:
     case '--help':
     case '-h':
