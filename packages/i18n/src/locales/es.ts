@@ -12,6 +12,47 @@ export const es = {
     body: 'Fase 0: fundaciones de arquitectura. Todavía no hay mundo que mirar.',
     engineVersion: 'Motor v{{version}}',
   },
+  /** Mapa v1 (P1.2): estado de la carga, relleno de prueba y lo que hay bajo el mouse. */
+  map: {
+    status: {
+      starting: 'Preparando el mapa…',
+      generating: 'Generando el mundo: {{stage}} ({{index}} de {{total}})',
+      ready:
+        'Semilla {{seed}} · mundo {{size}} · {{provinces}} provincias · {{backend}} · listo en {{seconds}} s',
+      error: 'No se pudo mostrar el mapa: {{message}}',
+    },
+    stage: {
+      plates: 'placas',
+      relief: 'relieve',
+      erosion: 'erosión',
+      climate: 'clima',
+      hydrology: 'ríos y lagos',
+      biomes: 'biomas',
+      provinces: 'provincias',
+      seas: 'mares',
+      graph: 'caminos',
+      hash: 'verificación',
+    },
+    backend: {
+      webgpu: 'WebGPU',
+      webgl2: 'WebGL2',
+      webgl2Forced: 'WebGL2 (forzado)',
+    },
+    colors: {
+      label: 'Relleno de prueba',
+      biome: 'Bioma dominante',
+      id: 'Un color por provincia',
+      none: 'Sin relleno',
+    },
+    hover: {
+      province: 'Provincia {{id}}',
+      area: '{{area}} km²',
+      ocean: 'Océano',
+      lake: 'Lago',
+    },
+    selected: 'Seleccionada: provincia {{id}}',
+    help: 'Arrastrar para mover · rueda para acercar · Q y E para girar · clic para seleccionar',
+  },
   time: {
     yearBC: '{{year}} a.C.',
     yearAD: '{{year}} d.C.',

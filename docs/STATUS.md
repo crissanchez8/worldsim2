@@ -8,7 +8,7 @@
 | **Última actualización** | 2026-10-16 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | Decidir el merge de P1.2 (rama `claude/eager-lamport-065b7b`, mapa v1) en la rama de fase; después P1.5 Tiempo y director v1 (Worker por tandas, IndexedDB) |
+| **Próximo paso** | P1.5 Tiempo y director v1 (Worker por tandas, IndexedDB); en paralelo, la medición visible del mapa por Cristian (checkpoint 1, `phases/P01/mapa.md` §8) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -42,8 +42,24 @@ Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA
   - **medición en el mediano** (`ws run --wsim`, detalle en ADR-008): `.wsim` de **5,69 MB** para 13.900 años (presupuesto 20); mapa a la fecha ≤ 0,1 ms; estado completo en vivo 167 ms en promedio y 278 ms como máximo (presupuesto 500); desde el archivo 1,5–2,1 s (con progreso, D01-c); grabar 0,4 ms/año;
   - **Δ (para el REPORT):** sin bloque INDX (el archivo se carga entero; índice de la enciclopedia en P11); eventos por año, no por siglo; guardar en IndexedDB y el E2E de "cargar a mitad de corrida" van con el Worker en P1.5; las latencias se miden en `ws run --wsim`, no en los tests (frágiles en paralelo); el titular de un título a la fecha sale de los eventos `ruler.succeeded` cuando lo pida el inspector (P1.6);
   - **riesgos:** EVNT pesa 1,7 MB con 51.508 eventos (~33 B por evento; el codec escribe tipo y datos como texto) y crece con cada fase; los keyframes en memoria suman 13,5 MB;
-  - **P1.2 (mapa v1)** lo hizo una sesión paralela en la rama `claude/eager-lamport-065b7b` (sin pushear): mediano en 4,3–4,7 s en Chrome WebGPU y 7,3–7,6 s en Firefox WebGL2, 60 fps; el merge sobre esta rama choca solo en LEARNINGS y STATUS; falta tu medición en un navegador visible (checkpoint 1) y tu OK para mergear;
-  - **próximo:** tu OK para mergear P1.2 → P1.5 Tiempo y director v1.
+  - **P1.2 (mapa v1) mergeada** en la rama de fase con el OK de Cristian (rama `claude/eager-lamport-065b7b`, handoff abajo); conflictos solo en LEARNINGS y STATUS (se conservaron los dos lados); falta la medición de Cristian en un navegador visible (checkpoint 1, `docs/phases/P01/mapa.md` §8);
+  - **próximo:** P1.5 Tiempo y director v1 (Worker de simulación por tandas, velocidades, ritmo por era, guardar en IndexedDB).
+
+- **2026-10-16 (sesión paralela P1.2, mapa v1 hecho):**
+  - **rama `claude/eager-lamport-065b7b`** (cortada de `phase/p01-rebanada` en 115306d), sin push; mergeada en la rama de fase el 2026-10-16 con el OK de Cristian;
+  - **qué se hizo:**
+    - Worker de worldgen + cliente tipado en `apps/web/src/worker`;
+    - mapa en `apps/web/src/map`: WebGPU/TSL con fallback WebGL2, terreno por chunks con LOD y wrap, agua con lagos, ríos por caudal, relleno y fronteras por provincia, zoom semántico v0, marcadores instanciados, picking en CPU;
+    - UI neutra con `?seed=` y `?size=` y claves i18n solo bajo `map.`;
+    - 53 tests validados con 13 mutaciones;
+  - **mediciones** en `docs/phases/P01/mapa.md` (mediano, dpr 2, headless):
+    - primer cuadro: Chrome WebGPU 4,3–4,7 s, WebGL2 4,5–5,3 s, Firefox 137 WebGL2 7,3–7,6 s (el worldgen es el 85–90 %);
+    - sin congelamientos después de la carga;
+    - recorrido: Chrome 60 fps con la cola en 1; Firefox 59,3 fps (p5 57,1);
+    - margen: WebGPU ×8, WebGL2 ×3;
+  - LEARNINGS L-018 a L-021 (L-017 es de la sesión principal);
+  - **falta:** las mediciones visibles de Cristian para el checkpoint 1 (instrucciones en `mapa.md` §8);
+  - **ojo** (resuelto en el merge): los tests de `tools/determinism` y `tools/cli` que generan mundos ya tienen timeouts explícitos (L-017, promovida a CLAUDE.md).
 
 - **2026-10-16 (sesión P1-2, P1.3 hecha):**
   - **idioma v1** (`packages/lang`, 03b4084): fonología por seed y nombres romanizados;
