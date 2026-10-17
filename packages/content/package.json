@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Contenido como datos validado con zod (P1+)",
+  "description": "Contenido como datos validado con zod: tablas versionadas por hash de contenido",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -11,6 +11,10 @@
     "typecheck": "tsc --noEmit -p .",
     "lint": "eslint --max-warnings=0 .",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "@ws/core": "workspace:*",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "vitest": "catalog:"

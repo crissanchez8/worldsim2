@@ -6,3 +6,5 @@ coverage
 .turbo
 playwright-report
 test-results
+# Generado por `ws health --save` (no se formatea a mano)
+docs/phases/**/health-baseline.json

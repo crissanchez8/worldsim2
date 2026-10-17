@@ -1,2 +1,30 @@
-/** Paquete vacío en P0: el contenido llega en P1 (DEVELOPMENT_PLAN §16). */
-export const PACKAGE_NAME = '@ws/worldgen';
+export { NO_BIOME } from './biomes';
+export { PLANET } from './config';
+export {
+  generateWorld,
+  LAND_FRACTION_RANGE,
+  validateParams,
+  WORLDGEN_STAGES,
+  type WorldgenProgress,
+  type WorldgenStage,
+} from './generate';
+export { createGridWorld, type GridOptions } from './grid';
+export { MinHeap } from './heap';
+export { Water } from './hydrology';
+export { D8_DX, D8_DY, NO_DIR } from './raster';
+export {
+  EdgeKind,
+  hashWorldStatic,
+  neighborsOf,
+  type ProvinceGraph,
+  type ProvinceStatic,
+  type SeaGraph,
+  type SeaZoneStatic,
+  transferables,
+  validateWorldStatic,
+  worldArrays,
+  type WorldParams,
+  type WorldRaster,
+  type WorldStatic,
+  type WorldStaticData,
+} from './world-static';

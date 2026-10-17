@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Grabación, consultas a la fecha y formato .wsim (P1)",
+  "description": "Grabación de la corrida, consultas a la fecha y formato .wsim v0 (P1.4)",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -14,5 +14,12 @@
   },
   "devDependencies": {
     "vitest": "catalog:"
+  },
+  "dependencies": {
+    "@ws/content": "workspace:*",
+    "@ws/core": "workspace:*",
+    "@ws/sim": "workspace:*",
+    "@ws/worldgen": "workspace:*",
+    "fflate": "catalog:"
   }
 }

@@ -5,10 +5,10 @@
 
 | | |
 |---|---|
-| **Última actualización** | 2026-10-16 |
-| **Fase actual** | P1 — Rebanada vertical (por abrir) |
-| **Estado** | ✅ P0 cerrada el 2026-10-16 · P1 por abrir |
-| **Próximo paso** | Sesión nueva con `docs/prompts/P01-rebanada-vertical.md` → BRIEF de P1 y esperar aprobación |
+| **Última actualización** | 2026-10-17 |
+| **Fase actual** | P1 — Rebanada vertical |
+| **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
+| **Próximo paso** | Checkpoint 3 de Cristian → completar el REPORT (`docs/phases/P01/REPORT.md`, borrador) con su resultado, QA gate y OK de cierre. Pendiente de Cristian: medición visible del mapa (checkpoint 1) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -17,7 +17,7 @@
 | Fase | Estado | BRIEF | REPORT | Cierre |
 |---|---|---|---|---|
 | P0 Fundaciones de arquitectura | ✅ cerrada | [BRIEF](phases/P00/BRIEF.md) | [REPORT](phases/P00/REPORT.md) | 2026-10-16 |
-| P1 Rebanada vertical | ⚪ | — | — | — |
+| P1 Rebanada vertical | 🟢 en curso | [BRIEF](phases/P01/BRIEF.md) | — | — |
 | P2 Dirección de diseño y DS | ⚪ | — | — | — |
 | P3 El planeta físico | ⚪ | — | — | — |
 | P4 Gente y sustento | ⚪ | — | — | — |
@@ -34,6 +34,196 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-17 (sesión P1-2, P1.10 preparada, sin cerrar):**
+  - **spikes borrados (D52):** se cumplieron las condiciones (todo lo de D47 reescrito y el job `determinism` sobre el motor real). Se quitaron del workspace, del lint de fronteras, de ESLint, de `launch.json`, de CLAUDE.md y del README. Quedan en el tag `p00-spikes` (a2797f4), publicado en GitHub con el OK de Cristian (D52);
+  - **`model.md` v1.1:** cambios D51, D53 y D55 marcados en sus filas, campos nuevos de P1, lo que no entró marcado ⏳, la historia como quedó (§14), §16 y §18;
+  - **prompt de P2 refrescado:** estado de partida (pantallas y componentes a re-vestir, wireframes D57, color político provisorio, cómo sacar renders reales, `packages/ui` vacío, E2E por nombres accesibles) y trampas de P1 (lint de texto, L-024, rendimiento medido);
+  - **REPORT de P1 en borrador:** tareas, desvíos, decisiones, métricas, evidencia, criterios de salida con lo pendiente marcado (checkpoint 3, base del runner), deuda y recomendaciones;
+  - **pendiente para cerrar:**
+    1. el resultado del checkpoint 3 en el REPORT;
+    2. marcar las casillas del BRIEF;
+    3. el OK de cierre en `decisions.md`;
+  - **base del bench del runner hecha:** `docs/phases/P01/bench-baseline-ci.json` sale del artefacto `bench-ci` de la corrida de a2797f4 (AMD EPYC, todo dentro del presupuesto: 1,84 ms/año, estado completo 325 ms, worldgen 5,0 s) y el CI ya compara contra ella. Keyframe y `.wsim` miden lo mismo, byte por byte, que en el M1 Pro;
+
+- **2026-10-17 (sesión P1-2, P1.9 hecha):**
+  - **`ws bench` con el escenario `world-medium`** (medido antes de optimizar, como pide el BRIEF): corrida completa del mediano con la historia grabada; ms/año (prom y p95), costo de grabar, keyframe, `.wsim`, mapa y estado completo a la fecha y hash final;
+  - **presupuestos absolutos** en el bench (el CI falla si se pasan): worldgen ≤ 20 s, ms/año ≤ 10 y p95 ≤ 25, mapa ≤ 16 ms, estado completo ≤ 500 ms, `.wsim` ≤ 20 MB. Los de tiempo se escalan por la calibración de la máquina (referencia M1 Pro); los tamaños ya no se normalizan;
+  - **en Node (M1 Pro):** 1,43 ms/año (p95 2,1), grabar 0,25 ms/año, keyframe de 394 KB, `.wsim` de 5,7 MB, mapa 0,1 ms, estado completo 237 ms, worldgen 3,8 s; línea base en `docs/phases/P01/bench-baseline.json`;
+  - **en el navegador** (`apps/web/scripts/measure-live.mjs`, build, mediano, link compartido):
+
+    | | Chrome con GPU (WebGPU) | Firefox (WebGL2) |
+    |---|---|---|
+    | worldgen | 3,8 s | 6,6 s |
+    | primer cuadro | 4,6 s | 7,5 s |
+    | corrida a máx. hasta 1900 (presupuesto ≤ 3 min) | 20 s | 42 s |
+    | rebobinar | 0,5 ms | 2 ms |
+    | estado completo | 218 ms | 487 ms |
+    | tareas largas durante la corrida | 0 | 0 |
+
+    No hizo falta optimizar el motor;
+  - **hallazgo:** con el Chromium de Playwright sin GPU (WebGL por software) el hilo principal se satura dibujando (21 s de tareas largas en 21 s), pero el perfil CDP da 98,7 % en código nativo y no en la app. Con GPU real no pasa. Por eso `measure-live` usa el Chrome instalado (`chrome`);
+  - **web:**
+    - las rutas del mundo se cargan a pedido: "Crear" baja 298 kB en lugar de 1,6 MB y el lector de `.wsim` se carga solo al importar;
+    - el mapa no dibuja mientras está tapado por el resumen o una ficha;
+    - el aviso de chunk grande queda en 1 MB, porque es three.js;
+  - **CI:** el bench del runner incluye `world-medium` y sube `out/bench-ci.json` como artefacto `bench-ci`, para regenerar la base del runner al cerrar P1;
+  - **riesgo:** en Firefox el estado completo a una fecha queda justo (487 ms frente a 500), porque su simulación es 2× más lenta. Si pesa, se pueden poner keyframes en memoria cada 50 años (el doble de memoria: ~27 MB en el mediano);
+  - **próximo:** checkpoint 3 (Cristian) → QA gate y P1.10.
+
+- **2026-10-17 (sesión P1-2, P1.7 hecha):**
+  - **compartir:**
+    - el botón "Compartir" abre un panel con el link (parámetros del mundo + `v=<versión del motor>`), copiar y las huellas: hash del mundo y hash del estado final, para comparar a ojo el mismo link en otro navegador;
+    - abrir un link (`?v=`) regenera el mundo y simula todo a máx. con barra de progreso; al terminar queda en pausa al principio, con la huella final y "Reproducir desde el principio";
+    - si la versión del link no es la del motor, se muestra un aviso;
+  - **verificación:**
+    - test de la sesión (avance rápido → pausa en k = 0 → tomar el control);
+    - E2E: el link da la misma huella final que la corrida sin cortes (Chromium y Firefox); el mismo link en Firefox, abierto desde el test de Chromium, da la misma huella (`3b5328aa…` para la seed 7 del mundo chico, igual que Node); un link de otra versión avisa;
+  - **CI:**
+    - con el arreglo de P1.6 (la simulación no espera al mapa), el Firefox del runner ya pasa vivo y guardar/continuar;
+    - el E2E de la UI fallaba por un `console.error` del mapa al no poder crear el renderer, y ahora ese fallo manejado va como aviso;
+    - si el E2E falla, el CI sube `apps/web/test-results` como artefacto;
+  - **Δ:** el modo "link compartido" lo marca `v=` en la URL. Los mundos abiertos desde "Crear" (sin `v`) se reproducen a 1× desde el principio, como antes;
+  - **próximo:** checkpoint 3 con Cristian; después P1.9.
+
+- **2026-10-17 (sesión P1-2, P1.6 hecha):**
+  - **D57:** wireframes aprobados con las 3 recomendaciones (resumen durante la corrida hasta lo visto, ficha = inspector, mundos guardados en "Crear");
+  - **UI v1** (`apps/web`), con TanStack Router, zustand, TanStack Virtual y uPlot (versiones con ≥ 2 semanas en el catálogo):
+    - **rutas:** `/` crear (los links viejos `/?seed=…` redirigen), `/mundo?…` vivo, `/mundo/resumen` y `/mundo/resumen/$kind/$id`;
+    - **crear:** parámetros, generación con progreso por etapa (el mundo pasa a la vista en vivo sin regenerarse), mundos guardados con cargar, exportar, importar `.wsim` y borrar;
+    - **vivo:** barra superior (fecha y era, resumen, guardar, exportar, es/en), riel de modos de mapa y leyenda, inspector, y abajo los controles, la línea de tiempo y el teletipo (eventos ≥ 0,3 hasta la fecha; un clic selecciona y centra el mapa);
+    - **inspector y ficha** (un solo componente, D57): provincia, asentamiento, estado, personaje, cultura y guerra "a la fecha", más el "¿Por qué?" a pedido (estado exacto en el Worker). La ficha muestra además los eventos de la entidad con sus causas enlazadas;
+    - **resumen:** números clave, 3 gráficos (población, cantidad de estados, mayor estado) y listas virtualizadas por tipo, ordenables, hasta lo visto;
+    - **atajos:** espacio, ←/→, 1–4, Esc; estados de carga, error y vacío; todo en es/en;
+  - **motor:**
+    - `explainProvince` / `explainPolity` en sim, atados por un test a las funciones de los sistemas;
+    - el Worker manda un **registro de entidades** (nombres, fundación y fin, personas, guerras, títulos) en deltas cada 250 ms y atiende `inspect` con caché del estado reconstruido;
+    - en el hilo principal hay un formateador de eventos (plantillas es/en con nombres) y un índice de gobernantes a la fecha (eventos `ruler.succeeded`, D50);
+  - **verificación:**
+    - tests de sim, history y web;
+    - E2E en Chromium y Firefox, 6/6, incluido el recorrido crear → vivo → inspector con porqué → resumen → ficha → en, sin errores de consola y sin regenerar el mundo;
+    - capturas `docs/phases/P01/img/p16-*.jpg`;
+  - **Δ (para el REPORT):**
+    - las columnas del resumen muestran valores a la fecha, no máximos históricos;
+    - el botón "Compartir" llega con P1.7;
+    - el porqué cubre los stats cuya base no depende del estado del año (rendimientos, alcance agrícola, difusión, fracción urbana base, fuerza, alcance); natalidad y mortalidad quedan fuera, porque su base usa el excedente de alimento del año, que no se guarda;
+    - el porqué desde un archivo muestra "calculando…" sin porcentaje;
+    - una historia de otra versión no trae registro, así que los nombres caen en "estado 12";
+    - la simulación arranca cuando el mundo existe, sin esperar al mapa: un fallo del mapa (sin WebGL) es un aviso y la historia sigue. Lo destapó el E2E en el Firefox del CI, donde el mapa no llegaba al primer cuadro y la simulación nunca arrancaba;
+  - **riesgos y hallazgos:**
+    - el mapa sigue dibujando debajo del resumen y de las fichas (costo: P1.9);
+    - el bundle supera los 500 kB (three + motor: P1.9);
+    - en la simulación, durante el año de la sucesión el heredero puede ser el mismo que el titular (se nota en el porqué de un personaje): anotar para P7;
+  - LEARNINGS L-024 (`useTranslation` cambia `i18n` al cambiar de idioma: regeneraba el mundo);
+  - **próximo:** P1.7 Compartir v1.
+
+- **2026-10-17 (sesión P1-2, después de P1.5):**
+  - **D56:** el ritmo de D48 queda como está; el objetivo de 10 ± 1 min se mide después de calibrar la simulación en P4/P5, y en el cierre de P1 ese criterio figura como no cumplido, con su causa;
+  - **wireframes 🎨 de P1.6** en `docs/phases/P01/wireframes/` (`index.html` + 4 PNG): crear mundo, vista en vivo, resumen v1 y ficha genérica, de baja fidelidad (se aprueba la estructura, no el aspecto), con el mapa de pantallas y 3 preguntas de estructura (resumen durante la corrida, ficha = inspector, mundos guardados en "crear");
+  - **próximo:** el OK de Cristian sobre los wireframes → P1.6 (router, crear, vivo con inspector y teletipo, resumen con listas y gráficos).
+
+- **2026-10-17 (sesión P1-2, P1.5 hecha):**
+  - **Worker de simulación** (`apps/web/src/worker/sim-*`):
+    - simula por tandas de 16 ms y cede con un `MessageChannel` propio; protocolo tipado; motor `SimEngine` separado del `onmessage` y probado en Node;
+    - graba la historia y manda lotes transferibles: `History.viewData` / `drain` / `append`; el hilo principal arma un espejo sin keyframes completos y reproduce desde ahí (D49);
+    - estado completo a una fecha y guardado (`.wsim`) a pedido;
+  - **reloj por era** (`PlaybackClock`, `PLAYBACK` en `packages/history`): cada año dura 1/ritmo de la era dominante, con transición suave (τ = 3 s) y piso de 15 min (D48); con fechas tipo Tierra da 9,6 min, como la tabla de D01-a;
+  - **director:** pausa, 1×, 2×, 4× y máx.; colchón de 500 años por delante; si la reproducción alcanza a la simulación, espera; rebobinar mueve el reloj;
+  - **línea de tiempo:**
+    - bandas de eras y marcadores de eventos con significancia ≥ 0,8, solo hasta lo ya visto (D49); con 0,6 eran ~9.000 marcas;
+    - lo simulado por delante va como franja neutra;
+    - se navega con clic, arrastre y ←/→;
+  - **mapa en vivo:** relleno político (un color por id de polity) y asentamientos reales por nivel;
+  - **mundos guardados** en IndexedDB (bytes del `.wsim` + metadatos): guardar, lista, cargar (`?load=<id>` regenera el mundo y continúa desde el último año) y borrar;
+  - **verificación:**
+    - tests de historia y de la web;
+    - E2E de Playwright (`apps/web/e2e`, Chromium y Firefox, 4/4): reproducción, polities y asentamientos en el mapa, rebobinar con la línea de tiempo, guardar → recargar → cargar → continuar con el mismo hash; en el CI corre en el job `determinism`;
+    - en el navegador: el hash del estado en k = 1.500 y el final después de guardar en 1753, recargar y continuar son idénticos a los de Node (`ab57ea65…`, `3b5328aa…`);
+    - captura en `docs/phases/P01/img/vivo-p15.jpg`;
+  - **`ws health` mide la duración a 1×.** Con 10 seeds la mediana da **13,7 min** (rango 4,0–15,0) y solo 1 de 10 queda en 9–11 min. La causa es la dispersión bimodal de la simulación: 5 seeds llegan a la era moderna hacia el −6000 y tocan el piso de 15 min; una no tiene agricultura hasta el 798 y dura 4 min. La tabla de D48 no lo arregla. **Decisión pendiente** con Cristian; la línea base de salud se regeneró con el campo nuevo (mismos resultados, solo cambian los tiempos);
+  - **Δ (para el REPORT):**
+    - `PLAYBACK` vive en `packages/history` y no en la config de `apps/web` (D48), para que `ws health` use la misma función;
+    - el color político sale del id de polity (el coloreo de grafo es P2.4);
+    - la línea de tiempo funcional y neutra ya está en P1.5; su lugar y aspecto los fijan los wireframes de P1.6;
+    - una historia cargada arranca en su último año;
+    - `dominantEra` se separó de `summarize` (es barata) para medir el ritmo por año;
+  - **riesgos:**
+    - con un archivo cargado, el estado completo de un año viejo cuesta hasta 999 años de re-simulación (1,5–2,1 s, todavía sin barra de progreso; la necesita el inspector de P1.6);
+    - el mapa y el Worker tienen cada uno su copia del mundo (memoria sin medir: P1.9);
+    - con el panel oculto del navegador integrado, el mundo chico tardó 70–114 s en cargar (L-019): la verificación visual se hizo con Playwright headless;
+  - LEARNINGS L-022 (nombres que difieren solo en mayúsculas) y L-023 (arneses de `postMessage` sin copia);
+  - **próximo:** la decisión del ritmo, y P1.6 empezando por los wireframes 🎨 (mock-first).
+
+- **2026-10-16 (sesión P1-2, P1.8 y P1.4 hechas):**
+  - **`ws health`** (32ae77f): N seeds en paralelo con invariantes por tick, bandas y ventanas del Apéndice A escaladas por la tierra de cada mundo, reporte MD + HTML en `out/health/`, comparación contra la línea base (`docs/phases/P01/health-baseline.json`, generada con el contenido calibrado `15186f8…`; su etiqueta dice motor 0.1.2 porque la versión se subió después, sin cambios de comportamiento); job `health` en el CI por PR;
+  - **calibración v1** (10 seeds del mediano, D55: `cropReach`, invención ∝ área × √densidad): 0 invariantes rotos, 0 hegemones; medianas: agricultura −10.194, primera ciudad −4.218, bronce −3.655, escritura −3.268; 235 M personas en el 1 d.C. (7/10 dentro de la banda); 44 polities activas; `ENGINE_VERSION` 0.1.3;
+  - **pendiente de calibración (P4/P5):** la dispersión entre seeds es bimodal (unas despegan temprano: imprenta y pólvora antes de Cristo; otras no llegan) y la población se estanca después del 1500 (366 M en 1900; banda 0,9–2,2 mil M);
+  - **historia v1** (`packages/history`): grabador fuera del pipeline (marcos visuales, deltas anuales, series cada 10 años con población en u16 logarítmico y fracción urbana en u8, agregados por año, eventos, keyframes completos cada 100 años en memoria); consultas `mapAt`, `seriesAt`, `provinceAt`, `polityAt`, `eventsBetween` y `fullStateAt` (keyframe + re-simulación, hash idéntico al real); codec `.wsim` v0 (META, VKEY, DELT, SERI en diferencias zigzag, AGGR, EVNT, KEYF cada 1.000 años, FINL) con `inspectWsim`; continuar desde FINL a mitad de corrida da el mismo hash;
+  - **medición en el mediano** (`ws run --wsim`, detalle en ADR-008): `.wsim` de **5,69 MB** para 13.900 años (presupuesto 20); mapa a la fecha ≤ 0,1 ms; estado completo en vivo 167 ms en promedio y 278 ms como máximo (presupuesto 500); desde el archivo 1,5–2,1 s (con progreso, D01-c); grabar 0,4 ms/año;
+  - **Δ (para el REPORT):** sin bloque INDX (el archivo se carga entero; índice de la enciclopedia en P11); eventos por año, no por siglo; guardar en IndexedDB y el E2E de "cargar a mitad de corrida" van con el Worker en P1.5; las latencias se miden en `ws run --wsim`, no en los tests (frágiles en paralelo); el titular de un título a la fecha sale de los eventos `ruler.succeeded` cuando lo pida el inspector (P1.6);
+  - **riesgos:** EVNT pesa 1,7 MB con 51.508 eventos (~33 B por evento; el codec escribe tipo y datos como texto) y crece con cada fase; los keyframes en memoria suman 13,5 MB;
+  - **P1.2 (mapa v1) mergeada** en la rama de fase con el OK de Cristian (rama `claude/eager-lamport-065b7b`, handoff abajo); conflictos solo en LEARNINGS y STATUS (se conservaron los dos lados); falta la medición de Cristian en un navegador visible (checkpoint 1, `docs/phases/P01/mapa.md` §8);
+  - **próximo:** P1.5 Tiempo y director v1 (Worker de simulación por tandas, velocidades, ritmo por era, guardar en IndexedDB).
+
+- **2026-10-16 (sesión paralela P1.2, mapa v1 hecho):**
+  - **rama `claude/eager-lamport-065b7b`** (cortada de `phase/p01-rebanada` en 115306d), sin push; mergeada en la rama de fase el 2026-10-16 con el OK de Cristian;
+  - **qué se hizo:**
+    - Worker de worldgen + cliente tipado en `apps/web/src/worker`;
+    - mapa en `apps/web/src/map`: WebGPU/TSL con fallback WebGL2, terreno por chunks con LOD y wrap, agua con lagos, ríos por caudal, relleno y fronteras por provincia, zoom semántico v0, marcadores instanciados, picking en CPU;
+    - UI neutra con `?seed=` y `?size=` y claves i18n solo bajo `map.`;
+    - 53 tests validados con 13 mutaciones;
+  - **mediciones** en `docs/phases/P01/mapa.md` (mediano, dpr 2, headless):
+    - primer cuadro: Chrome WebGPU 4,3–4,7 s, WebGL2 4,5–5,3 s, Firefox 137 WebGL2 7,3–7,6 s (el worldgen es el 85–90 %);
+    - sin congelamientos después de la carga;
+    - recorrido: Chrome 60 fps con la cola en 1; Firefox 59,3 fps (p5 57,1);
+    - margen: WebGPU ×8, WebGL2 ×3;
+  - LEARNINGS L-018 a L-021 (L-017 es de la sesión principal);
+  - **falta:** las mediciones visibles de Cristian para el checkpoint 1 (instrucciones en `mapa.md` §8);
+  - **ojo** (resuelto en el merge): los tests de `tools/determinism` y `tools/cli` que generan mundos ya tienen timeouts explícitos (L-017, promovida a CLAUDE.md).
+
+- **2026-10-16 (sesión P1-2, P1.3 hecha):**
+  - **idioma v1** (`packages/lang`, 03b4084): fonología por seed y nombres romanizados;
+  - **guard de contratos por filas comunes** (`core`, 77f9ad7): un campo cambió solo si cambió en una fila que existía antes y después; habilita la propiedad por campo del modelo (p. ej. `Title.holder` de succession en filas que crea statecraft);
+  - **simulación v1** (4d9722a): estado de P1, culturas placeholder con idiomas y 9 sistemas con contrato (production, demography, knowledge, characters, succession, statecraft, diplomacy, military, settlements) + ledger + derive; 17 tipos de evento con plantillas es/en; contenido de 14 innovaciones, 5 eras y niveles de asentamiento;
+  - calibración v1 en el mediano (3 seeds): hierro hacia el 1 d.C., 128–350 M personas, urbanización 3,8–7,9 %, 49–75 polities en el 1 d.C.; 1,5–2,1 ms/año (presupuesto 10);
+  - **determinismo con el motor real:** Chromium y Firefox idénticos a Node en 13.900 años; la corrida completa tarda ~2 min en Node y ~3 en cada navegador, así que en los PR el CI corre 3.000 años y la completa queda para `main` y el cron;
+  - **Δ (para el REPORT y `model.md` v1.1):** `Province.cropShare` en lugar de `landUse` ×5; `Title.heir` (characters); batallas, tratados e invenciones solo como eventos (M2); guerra activa en `war` (diplomacy) + `front` (military) en lugar de `WarSide`; efectos de innovaciones como datos sobre el bitset (no como filas de `Modifier`); invención ∝ población (no ∝ provincia) y difusión ponderada por días; `chronicle` pasa a P1.4;
+  - **riesgos anotados:** al 1900 el estado pesa 1,3 MB y su hash cuesta ~26 ms (nombres y personas): pesa en los keyframes (P1.4) y en el hash por año; la dispersión entre seeds es grande (la calibración fina es P1.8); el mundo chico corre más rápido que el mediano (los requisitos de asentamiento dependen de la resolución);
+  - LEARNINGS L-017 (timeouts de tests pesados bajo `pnpm check`);
+  - **próximo:** `ws health` (P1.8) para calibrar con 10 seeds, después historia (P1.4). El checkpoint 2 necesita además el mapa político (P1.2).
+
+- **2026-10-16 (sesión P1-2, P1.1 hecha):**
+  - **worldgen v1** en `packages/worldgen` (commit ed81874): placas sobre el cilindro + ruido (reescrito del spike A), nivel del mar por percentil, erosión térmica; clima con humedad advectada y sombra orográfica; 9 biomas en contenido; priority-flood con lagos y caudal; provincias Poisson + Dijkstra con fusión de diminutas; zonas marítimas; grafo con estrechos; `WorldStatic` v1 con hash y validación;
+  - mediano en **3,64 s** en Node (`ws bench`, métrica `worldgen.medium`; presupuesto 20 s); 1.501 provincias, tierra 0,299 para 0,30;
+  - calibración v1: hundimiento polar (el cilindro sobrerrepresenta los polos), lagos solo con más de 150 m de relleno (sin erosión hidráulica sobraban); el clima fino es P3;
+  - suite de determinismo sobre el mundo chico real, generado en el Worker de la página (Chromium y Firefox idénticos a Node); `ENGINE_VERSION` 0.1.1;
+  - `ws run` genera mundos reales (`--size`, `--map`, `--land`; `--grid` para la grilla de prueba);
+  - LEARNINGS L-016 (`Stream.sub` reemplaza, no anida);
+  - **Δ:** el host del Worker de worldgen en `apps/web` va con P1.2 (lo consume el mapa); en P1.1 el worldgen corre en un Worker en la página de determinismo;
+  - **próximo:** P1.3 acá; P1.2 en una sesión paralela que toca solo `apps/web` (propuesta como tarjeta).
+
+- **2026-10-16 (sesión P1-2, P1.0 bases):**
+  - BRIEF aprobado tal cual (D48–D54) y registrado; rama `phase/p01-rebanada`;
+  - **P1.0 hecha** (commits en la rama):
+    - `core/scheduler`: `SoaBuffer` (columnas tipadas, `reserve`/`append`/`clear`; `append` nunca reasigna, L-007); bench 30.000 deltas: SoA 0,40 ms vs objetos 0,55 ms;
+    - `@ws/content`: tablas con zod, índice = enum del estado, hash de contenido (golden `5f7ebcad944a9320`); tablas `worldSize`, `mapType`, `stratum`, `law`; nombres es/en exigidos por test;
+    - `@ws/worldgen`: contrato `WorldStatic` v0 (provincias SoA, grafo CSR en días/km, hash, validación) + mundo de grilla para tests;
+    - `@ws/sim`: estado (world, province, pop, polity), `Sim.create/load/step`, snapshot versionado por motor + contenido + hash del mundo; `ledger` (M1) con contabilidad por causa, escalado de excesos, fusión de pops < 1 persona y territorio por prioridad; `derive` con CSR; invariantes I2–I6 e I10 por tick; tests con carga de prueba de 300 años con guard, guardar/cargar idéntico, propiedades y mutaciones;
+    - `ws run` (hashes por año y resumen); `ENGINE_VERSION` 0.1.0;
+    - `tools/determinism` reemplaza al spike C en el job `determinism` (contenido, mundo, math, RNG y hash por año de la sim real; Chromium y Firefox idénticos a Node localmente; página para Safari en `/tools/determinism/`);
+  - **Δ respecto del BRIEF (técnicos, informar en el REPORT):** las tablas de contenido y los campos de cada entidad se crean con el sistema que los usa (P1.1/P1.3), no todos en P1.0; el escenario de la suite de determinismo es la grilla hasta P1.1, y con solo ledger + derive el hash por año todavía cubre poco (crece con cada sistema);
+  - LEARNINGS L-015 (`not.toThrow(Clase)` pasa con otro error);
+  - verificado en un clon limpio: `pnpm install --frozen-lockfile` + build + tests;
+  - **próximo:** P1.1 Worldgen v1 en el Worker de worldgen; al fijar `WorldStatic`, proponer la sesión paralela de P1.2 (mapa).
+
+- **2026-10-16 (sesión P1-1, apertura de P1):**
+  - leídos los docs de arranque del prompt de P1, `packages/core`, los tres spikes y el CI; confirmado en STATUS y `decisions.md` que P0 está ✅ cerrada (OK registrado, PR #1 mergeado);
+  - **`docs/phases/P01/BRIEF.md` escrito y presentado** (📋 en revisión):
+    - tareas P1.0–P1.10 refinadas con el estado real; Δ: suite de determinismo en `tools/determinism`, guardar = bytes del `.wsim`, tarea de cierre P1.10;
+    - 🔶 D01-a ritmo por era (era dominante + piso de duración); D01-b simulación adelantada con colchón (nueva); D01-c resúmenes mínimos + registros permanentes; D01-d ítems límite del alcance; D01-e borrar `spikes/` al cerrar P1;
+  - **inconsistencia a resolver con Cristian:** el prompt pide reclamos en el ledger de P1, pero en P1 no hay productores y `Claim` es de P7 → propuesta: diferirlos a P7 (D01-d, pregunta 2);
+  - sin código ni commits: el BRIEF y este STATUS quedan sin commitear hasta la aprobación (van a la rama `phase/p01-rebanada`);
+  - **próximo:** respuesta de Cristian → registrar la aprobación (D# nuevas) → rama de fase → P1.0.
+
 - **2026-10-16 (cierre de P0):**
   - OK de cierre de Cristian registrado en `decisions.md`; REPORT y BRIEF marcados como cerrados;
   - PR #1 mergeado a `main` con merge commit; desde `main` corren el deploy de producción y el job nocturno de determinismo;
@@ -116,4 +306,4 @@ Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA
   Plan aprobado como v1.0. No hay código todavía.
 
 ## Decisiones pendientes
-- Las 🔶 de P1 (en su prompt): curva de ritmo por era, lista de lo que queda fuera de la rebanada, resúmenes por entidad para el inspector a la fecha (ADR-008), destino de `spikes/` al cerrar P1.
+- Ninguna. BRIEF de P1 aprobado tal cual (D48–D54). La sesión paralela para P1.2 (mapa) se propone cuando P1.1 fije `WorldStatic`.

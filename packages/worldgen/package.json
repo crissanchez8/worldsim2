@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Generación física del planeta (P1/P3)",
+  "description": "Generación física del planeta: worldgen v1 (P1.1) → P3",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -11,6 +11,10 @@
     "typecheck": "tsc --noEmit -p .",
     "lint": "eslint --max-warnings=0 .",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "@ws/content": "workspace:*",
+    "@ws/core": "workspace:*"
   },
   "devDependencies": {
     "vitest": "catalog:"

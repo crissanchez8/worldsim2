@@ -1,8 +1,9 @@
-/* Estilo neutro de P0. El Design System llega en P2; nada de esto es definitivo. */
+/* Estilo neutro de P0/P1. El Design System llega en P2; nada de esto es definitivo. */
 :root {
   --bg: #fafafa;
   --fg: #1a1a1a;
   --muted: #5c5c5c;
+  --panel: rgb(250 250 250 / 0.9);
   font-family: system-ui, sans-serif;
   line-height: 1.5;
 }
@@ -12,6 +13,7 @@
     --bg: #161616;
     --fg: #ededed;
     --muted: #a3a3a3;
+    --panel: rgb(22 22 22 / 0.88);
   }
 }
 
@@ -21,26 +23,409 @@ body {
   color: var(--fg);
 }
 
-.placeholder {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: 3rem 1rem;
-}
-
-.placeholder header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
 .eyebrow,
 .meta {
   color: var(--muted);
 }
 
-.language {
+.map-screen {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.map-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.map-tooltip {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem 0.5rem;
+  background: var(--panel);
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── P1.6: pantallas neutras (estructura de los wireframes aprobados, D57; el aspecto es P2) ── */
+:root {
+  --line: rgb(128 128 128 / 0.45);
+  --gap: 0.75rem;
+  --bar: 2.75rem;
+}
+
+button,
+.button {
+  font: inherit;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+  text-decoration: none;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+button[aria-pressed='true'],
+button[aria-selected='true'],
+button[aria-checked='true'] {
+  font-weight: 700;
+  outline: 2px solid var(--fg);
+}
+button.primary {
+  font-weight: 700;
+}
+button.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  text-decoration: underline;
+}
+:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+.spacer {
+  flex: 1;
+}
+.top-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  align-items: center;
+  min-height: var(--bar);
+  padding: 0 var(--gap);
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.language-toggle {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+/* Pantallas de página (crear, resumen, ficha). */
+.screen {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  background: var(--bg);
+  font-size: 0.875rem;
+}
+.panel {
+  padding: var(--gap);
+  border: 1px solid var(--line);
+  border-radius: 0.375rem;
+}
+.create-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: calc(var(--gap) * 2);
+  padding: calc(var(--gap) * 2);
+}
+.create-grid h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+.field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.5rem 0;
+  border: 0;
+  padding: 0;
+}
+.field label {
+  display: inline-flex;
+  gap: 0.375rem;
+  align-items: center;
+  margin-right: 0.75rem;
+}
+.field legend {
+  padding: 0;
+  margin-bottom: 0.25rem;
+}
+.progress progress {
+  width: 100%;
+}
+.saves {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--gap);
+}
+.saves th,
+.saves td {
+  padding: 0.25rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.saves .actions {
+  white-space: nowrap;
+}
+.tag {
+  display: block;
+}
+
+/* Un mundo: el mapa y, encima, la vista en vivo o una página. */
+.world-screen {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+.boot {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 20rem;
+  padding: var(--gap);
+  background: var(--panel);
+  border-radius: 0.375rem;
+}
+.boot progress {
+  width: 100%;
+}
+.hud {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template:
+    'top top top' auto
+    'rail . inspector' minmax(0, 1fr)
+    'bottom bottom bottom' auto / 12rem 1fr 22rem;
+  pointer-events: none;
+  font-size: 0.875rem;
+}
+.hud > * {
+  pointer-events: auto;
+}
+.hud .top-bar {
+  grid-area: top;
+}
+.hud .date {
+  font-weight: 700;
+}
+.rail {
+  grid-area: rail;
+  align-self: start;
+  margin: var(--gap);
+  padding: var(--gap);
+  background: var(--panel);
+  border-radius: 0.375rem;
+}
+.rail label {
+  display: block;
+}
+.legend {
+  margin: 0;
+  padding-left: 1rem;
+}
+.inspector {
+  grid-area: inspector;
+  margin: var(--gap);
+  padding: var(--gap);
+  overflow: auto;
+  background: var(--panel);
+  border-radius: 0.375rem;
+}
+.inspector-bar {
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+}
+.bottom {
+  grid-area: bottom;
+  padding: 0.5rem var(--gap);
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+}
+.shortcuts {
+  margin: 0.25rem 0 0;
+}
+.time-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  align-items: center;
+  margin-bottom: 0.375rem;
+}
+.speeds {
+  display: flex;
+  gap: 0.25rem;
+}
+.time-year {
+  min-width: 14rem;
+}
+.timeline {
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  touch-action: none;
+}
+.ticker ol {
+  max-height: 6.5rem;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+.ticker .year,
+.entity-events .year {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ficha / inspector (mismo componente, dos densidades). */
+.entity-card header h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+.entity-card.page {
+  max-width: 60rem;
+}
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 0.75rem;
+  margin: 0.75rem 0;
+}
+.facts dt {
+  color: var(--muted);
+}
+.facts dd {
+  margin: 0;
+}
+.inline-list > * + *::before {
+  content: ' · ';
+  color: var(--muted);
+}
+.why {
+  margin-top: var(--gap);
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--line);
+}
+.stats,
+.terms {
+  margin: 0.25rem 0;
+  padding-left: 1rem;
+}
+.terms {
+  list-style: none;
+}
+.terms .op-mul::before {
+  content: '× ';
+}
+.terms .op-add::before {
+  content: '+ ';
+}
+.entity-events ol {
+  padding-left: 1.25rem;
+}
+.entity-events .cause {
+  display: block;
+}
+.entity-page {
+  padding: calc(var(--gap) * 2);
+}
+
+/* Resumen. */
+.summary {
+  display: grid;
+  gap: var(--gap);
+  padding: calc(var(--gap) * 2);
+}
+.key-numbers .facts {
+  grid-template-columns: repeat(5, max-content 1fr);
+}
+.charts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+}
+.chart {
+  margin: 0;
+}
+.chart figcaption {
+  color: var(--muted);
+}
+.entity-table .thead,
+.entity-table .tr {
+  display: grid;
+  gap: 0.5rem;
+  align-items: center;
+}
+.entity-table .thead button {
+  text-align: left;
+}
+.entity-table .tbody {
+  height: 24rem;
+  overflow: auto;
+  border: 1px solid var(--line);
+}
+.entity-table .tr {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--line);
+}
+.entity-table .tr span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Compartir (P1.7). */
+.share-panel {
+  position: absolute;
+  top: calc(var(--bar) + 0.5rem);
+  right: var(--gap);
+  z-index: 2;
+  width: 32rem;
+  padding: var(--gap);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 0.375rem;
+}
+.share-panel input {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+}
+.share-panel .row {
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  margin: 0.5rem 0;
+}
+.banners {
+  position: absolute;
+  top: calc(var(--bar) + 0.5rem);
+  left: 50%;
+  z-index: 1;
+  transform: translateX(-50%);
+  min-width: 26rem;
+  pointer-events: auto;
+}
+.banner {
+  margin: 0 0 0.5rem;
+  padding: 0.5rem var(--gap);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.375rem;
+}
+.banner progress {
+  width: 100%;
 }

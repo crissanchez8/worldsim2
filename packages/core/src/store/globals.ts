@@ -1,8 +1,8 @@
 // Escalares globales del estado (año actual, nivel del mar, etc.): un único registro tipado.
-import { hash64 } from '../hash';
-import { type ByteReader, ByteWriter, SerializeError } from '../serialize/bytes';
+import type { ByteWriter } from '../serialize/bytes';
+import { type ByteReader, SerializeError } from '../serialize/bytes';
 import { readScalar, writeScalar } from '../serialize/scalar-io';
-import type { StatePart } from '../serialize/serializable';
+import type { GuardSnapshot, StatePart } from '../serialize/serializable';
 import { checkScalar, describeSchema, type Schema } from './schema';
 import type { ScalarFields } from './table';
 
@@ -39,15 +39,11 @@ export class Globals<F extends ScalarFields> implements StatePart {
     this.values.set(key, value);
   }
 
-  /** Huella por campo (guard de contratos). */
-  fieldFingerprints(): ReadonlyMap<string, string> {
-    const out = new Map<string, string>();
-    for (const key of this.schema.order) {
-      const w = new ByteWriter();
-      w.f64(this.get(key));
-      out.set(`${this.schema.name}.${key}`, hash64(w.finish()));
-    }
-    return out;
+  /** Instantánea para el guard de contratos: una sola "fila" (id 0). */
+  guardSnapshot(): GuardSnapshot {
+    const fields = new Map<string, number[]>();
+    for (const key of this.schema.order) fields.set(`${this.schema.name}.${key}`, [this.get(key)]);
+    return { rows: '', ids: [0], fields };
   }
 
   writeState(w: ByteWriter): void {
