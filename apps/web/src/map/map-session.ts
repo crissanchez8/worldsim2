@@ -25,7 +25,10 @@ export interface MapReady {
 
 export interface MapSessionCallbacks {
   onProgress(stage: WorldgenStage, index: number, total: number): void;
+  /** El mundo existe (generado o dado), antes de que el mapa esté listo: la simulación puede arrancar. */
+  onWorld(world: WorldStatic): void;
   onReady(ready: MapReady): void;
+  /** Falló el mundo o el mapa (si `onWorld` ya llegó, lo que falló es el mapa). */
   onError(message: string): void;
   onHover(pick: MapPick | null, clientX: number, clientY: number): void;
   onSelect(province: number): void;
@@ -39,6 +42,8 @@ export class MapSession {
   private markers: boolean;
   /** Dueño por provincia del último marco mostrado (relleno político). */
   private owner: Uint32Array | undefined;
+  /** Último marco pedido (se dibuja cuando el mapa termina de prepararse). */
+  private lastFrame: VisualFrame | null = null;
   private disposed = false;
   private readonly cleanups: (() => void)[] = [];
 
@@ -81,6 +86,13 @@ export class MapSession {
     this.cleanups.push(() => {
       client?.dispose();
     });
+    // La simulación no espera al mapa: sin WebGL (o con WebGL por software) igual hay historia.
+    worldPromise.then(
+      (r) => {
+        if (!this.disposed) cb.onWorld(r.world);
+      },
+      () => undefined,
+    );
     const rendererPromise = createRenderer(params.backend, params.antialias);
     // Si el mundo falla, el renderer igual se libera.
     const [handleResult, worldResult] = await Promise.allSettled([rendererPromise, worldPromise]);
@@ -134,6 +146,7 @@ export class MapSession {
     report.load.gpuBuildMs = performance.now() - t1;
     await view.start();
     if (this.isDisposed()) return;
+    if (this.lastFrame) this.showFrame(this.lastFrame);
     cb.onReady({
       backend: handle.backend,
       forcedWebGL2: handle.forced,
@@ -165,6 +178,7 @@ export class MapSession {
 
   /** Muestra un año de la historia: relleno político y asentamientos (P1.5). */
   showFrame(frame: VisualFrame): void {
+    this.lastFrame = frame;
     const view = this.view;
     const world = this.world;
     if (!view || !world) return;

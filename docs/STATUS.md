@@ -57,6 +57,7 @@ Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA
     - el porqué cubre los stats cuya base no depende del estado del año (rendimientos, alcance agrícola, difusión, fracción urbana base, fuerza, alcance); natalidad y mortalidad quedan fuera, porque su base usa el excedente de alimento del año, que no se guarda;
     - el porqué desde un archivo muestra "calculando…" sin porcentaje;
     - una historia de otra versión no trae registro, así que los nombres caen en "estado 12";
+    - la simulación arranca cuando el mundo existe, sin esperar al mapa: un fallo del mapa (sin WebGL) es un aviso y la historia sigue. Lo destapó el E2E en el Firefox del CI, donde el mapa no llegaba al primer cuadro y la simulación nunca arrancaba;
   - **riesgos y hallazgos:**
     - el mapa sigue dibujando debajo del resumen y de las fichas (costo: P1.9);
     - el bundle supera los 500 kB (three + motor: P1.9);

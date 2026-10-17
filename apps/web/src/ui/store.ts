@@ -27,6 +27,10 @@ export interface UiState {
   readonly map: MapSession | null;
   readonly status: LiveStatus | null;
   readonly liveError: string | null;
+  /** El mapa terminó de prepararse (la simulación puede ir antes). */
+  readonly mapReady: boolean;
+  /** Falló el mapa (no el mundo): la simulación y la UI siguen. */
+  readonly mapError: string | null;
   readonly selected: EntityRef | null;
   readonly trail: readonly EntityRef[];
   /** Mundo ya generado en "Crear" para la URL `key` (la vista en vivo no lo regenera). */
@@ -46,6 +50,8 @@ export const useUi = create<UiState>()((set, get) => ({
   map: null,
   status: null,
   liveError: null,
+  mapReady: false,
+  mapError: null,
   selected: null,
   trail: [],
   pending: null,

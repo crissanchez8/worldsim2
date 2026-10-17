@@ -137,6 +137,7 @@ export const en: Catalog = {
       back: 'Back to the live view',
       generating: 'Generating the world: {{stage}} ({{index}} of {{total}})',
       preparingMap: 'Preparing the map…',
+      mapError: 'Could not show the map: {{message}}. The simulation keeps running.',
       error: 'Could not open the world: {{message}}',
       retry: 'Retry',
       create: 'Create another world',

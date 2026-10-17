@@ -27,6 +27,8 @@ export function LiveHud() {
   const saving = useUi((s) => s.saving);
   const savedYear = useUi((s) => s.savedYear);
   const liveError = useUi((s) => s.liveError);
+  const mapReady = useUi((s) => s.mapReady);
+  const mapError = useUi((s) => s.mapError);
   const [colorMode, setColorMode] = useState<ColorMode>('political');
   const [store] = useState(createWorldStore);
   if (!world) return null;
@@ -165,6 +167,8 @@ export function LiveHud() {
       </aside>
 
       <footer className="bottom">
+        {mapError !== null && <p role="alert">{t('ui.world.mapError', { message: mapError })}</p>}
+        {mapError === null && !mapReady && <p className="meta">{t('ui.world.preparingMap')}</p>}
         {liveError !== null && <p role="alert">{t('live.status.error', { message: liveError })}</p>}
         {session && status ? (
           <>

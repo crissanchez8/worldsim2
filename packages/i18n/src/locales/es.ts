@@ -141,6 +141,7 @@ export const es = {
       back: 'Volver a la vista en vivo',
       generating: 'Generando el mundo: {{stage}} ({{index}} de {{total}})',
       preparingMap: 'Preparando el mapa…',
+      mapError: 'No se pudo mostrar el mapa: {{message}}. La simulación sigue.',
       error: 'No se pudo abrir el mundo: {{message}}',
       retry: 'Reintentar',
       create: 'Crear otro mundo',

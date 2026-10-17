@@ -69,6 +69,8 @@ export function WorldLayout() {
       session: null,
       status: null,
       liveError: null,
+      mapReady: false,
+      mapError: null,
       selected: null,
       trail: [],
       savedYear: null,
@@ -82,9 +84,10 @@ export function WorldLayout() {
         onProgress: (stage, index, total) => {
           useUi.getState().patch({ boot: { kind: 'generating', stage, index, total } });
         },
-        onReady: (ready) => {
+        // La simulación arranca con el mundo, sin esperar al mapa (sin WebGL igual hay historia).
+        onWorld: (world) => {
           if (run.cancelled) return;
-          useUi.getState().patch({ boot: { kind: 'ready' }, world: ready.world });
+          useUi.getState().patch({ boot: { kind: 'ready' }, world });
           void (async () => {
             let file: Uint8Array | undefined;
             if (p.load !== null) {
@@ -99,7 +102,7 @@ export function WorldLayout() {
             }
             if (run.cancelled) return;
             live = new LiveSession(
-              ready.world,
+              world,
               {
                 onFrame: (frame) => {
                   map.showFrame(frame);
@@ -117,8 +120,13 @@ export function WorldLayout() {
             useUi.getState().patch({ session: live });
           })();
         },
+        onReady: () => {
+          useUi.getState().patch({ mapReady: true });
+        },
         onError: (message) => {
-          useUi.getState().patch({ boot: { kind: 'error', message } });
+          // Con el mundo ya generado, lo que falló es el mapa: la simulación y la UI siguen.
+          if (useUi.getState().world) useUi.getState().patch({ mapError: message });
+          else useUi.getState().patch({ boot: { kind: 'error', message } });
         },
         onHover: (pick, x, y) => {
           setHover(pick ? { pick, x, y } : null);

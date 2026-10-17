@@ -134,11 +134,18 @@ test('UI v1: crear → vivo → inspector → resumen → ficha; es/en sin regen
   await page.waitForURL(/\/mundo\/resumen\/polity\//);
   await expect(page.getByText('Eventos (con sus causas)')).toBeVisible();
 
-  // Cambiar de idioma cambia la UI y los textos de eventos, sin regenerar el mundo.
-  const head = await page.evaluate(() => (window as Win).__live?.status()?.head ?? 0);
+  // Cambiar de idioma cambia la UI y los textos de eventos, sin regenerar el mundo: la sesión es
+  // el mismo objeto antes y después (regenerar crearía otra).
+  await page.evaluate(() => {
+    (window as Win & { __before?: unknown }).__before = (window as Win).__live;
+  });
   await page.getByRole('button', { name: 'en', exact: true }).click();
   await expect(page.getByText('Events (with their causes)')).toBeVisible();
   await expect(page.getByText(/Generating the world/)).toHaveCount(0);
-  expect(await page.evaluate(() => (window as Win).__live?.status()?.head ?? 0)).toBe(head);
+  expect(
+    await page.evaluate(
+      () => (window as Win & { __before?: unknown }).__before === (window as Win).__live,
+    ),
+  ).toBe(true);
   expect(errors).toEqual([]);
 });
