@@ -1,7 +1,7 @@
 import { scheduler } from '@ws/core';
 import { LANGUAGES, resources } from '@ws/i18n';
 import { createGridWorld } from '@ws/worldgen';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   createEventTypes,
   CONSOLIDATION_SYSTEMS,
@@ -11,6 +11,9 @@ import {
   yearHash,
 } from './index';
 import { testLoad } from './test-support/load';
+
+// Simulan cientos de años: bajo `pnpm check` y en el runner del CI, más que el default (L-017).
+vi.setConfig({ testTimeout: 60_000 });
 
 const world = createGridWorld({ seed: 1, width: 12, height: 6 });
 const systems = (seed = 1): readonly SimSystem[] => [...testLoad(seed), ...CONSOLIDATION_SYSTEMS];

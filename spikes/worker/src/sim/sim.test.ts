@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   applyDelta,
   cloneView,
@@ -8,6 +8,9 @@ import {
   loadSim,
   yearHash,
 } from './index';
+
+// Simulan siglos del modelo del spike B: en el runner del CI, más que el default (L-017).
+vi.setConfig({ testTimeout: 60_000 });
 
 const SMALL = { ...DEFAULT_CONFIG, width: 20, height: 10, years: 200 };
 

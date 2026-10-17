@@ -1,10 +1,13 @@
 import { Sim } from '@ws/sim';
 import { createGridWorld } from '@ws/worldgen';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { SimClient, type SimWorkerLike } from '../worker/sim-client';
 import { SimEngine } from '../worker/sim-engine';
 import type { SimRequest, SimResponse } from '../worker/sim-protocol';
 import { type LiveStatus, LiveSession } from './live-session';
+
+// Simulan cientos de años en el mismo proceso: bajo `pnpm check` y en el runner del CI, más (L-017).
+vi.setConfig({ testTimeout: 60_000 });
 
 const world = createGridWorld({ seed: 5, width: 16, height: 8 });
 

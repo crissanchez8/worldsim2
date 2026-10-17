@@ -1,5 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mathBattery, rngBattery, runYears } from './battery';
+
+// La batería tarda ~2 s local y en el runner del CI pasó los 5 s por defecto (L-017).
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('spike C · batería', () => {
   it('es determinista en Node', () => {

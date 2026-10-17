@@ -1,9 +1,12 @@
 import { History } from '@ws/history';
 import { Sim } from '@ws/sim';
 import { createGridWorld } from '@ws/worldgen';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { SimEngine } from './sim-engine';
 import type { SimResponse } from './sim-protocol';
+
+// Simulan cientos de años en el mismo proceso: bajo `pnpm check` y en el runner del CI, más (L-017).
+vi.setConfig({ testTimeout: 60_000 });
 
 /** Worker de mentira: tareas en cola, reloj que avanza 1 ms por consulta (tandas de ~16 años). */
 function harness() {
