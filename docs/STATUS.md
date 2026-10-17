@@ -8,7 +8,7 @@
 | **Última actualización** | 2026-10-17 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | Checkpoint 🎨: Cristian revisa los wireframes de P1.6 (`docs/phases/P01/wireframes/`) y responde las 3 preguntas de estructura; con su OK, P1.6. En paralelo, su medición visible del mapa (checkpoint 1) |
+| **Próximo paso** | P1.7 Compartir v1 (link con seed + parámetros + versión del motor; abrir un link simula a máx. con progreso) → checkpoint 3 (recorrido completo). Pendiente de Cristian: medición visible del mapa (checkpoint 1) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -34,6 +34,36 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-17 (sesión P1-2, P1.6 hecha):**
+  - **D57:** wireframes aprobados con las 3 recomendaciones (resumen durante la corrida hasta lo visto, ficha = inspector, mundos guardados en "Crear");
+  - **UI v1** (`apps/web`), con TanStack Router, zustand, TanStack Virtual y uPlot (versiones con ≥ 2 semanas en el catálogo):
+    - **rutas:** `/` crear (los links viejos `/?seed=…` redirigen), `/mundo?…` vivo, `/mundo/resumen` y `/mundo/resumen/$kind/$id`;
+    - **crear:** parámetros, generación con progreso por etapa (el mundo pasa a la vista en vivo sin regenerarse), mundos guardados con cargar, exportar, importar `.wsim` y borrar;
+    - **vivo:** barra superior (fecha y era, resumen, guardar, exportar, es/en), riel de modos de mapa y leyenda, inspector, y abajo los controles, la línea de tiempo y el teletipo (eventos ≥ 0,3 hasta la fecha; un clic selecciona y centra el mapa);
+    - **inspector y ficha** (un solo componente, D57): provincia, asentamiento, estado, personaje, cultura y guerra "a la fecha", más el "¿Por qué?" a pedido (estado exacto en el Worker). La ficha muestra además los eventos de la entidad con sus causas enlazadas;
+    - **resumen:** números clave, 3 gráficos (población, cantidad de estados, mayor estado) y listas virtualizadas por tipo, ordenables, hasta lo visto;
+    - **atajos:** espacio, ←/→, 1–4, Esc; estados de carga, error y vacío; todo en es/en;
+  - **motor:**
+    - `explainProvince` / `explainPolity` en sim, atados por un test a las funciones de los sistemas;
+    - el Worker manda un **registro de entidades** (nombres, fundación y fin, personas, guerras, títulos) en deltas cada 250 ms y atiende `inspect` con caché del estado reconstruido;
+    - en el hilo principal hay un formateador de eventos (plantillas es/en con nombres) y un índice de gobernantes a la fecha (eventos `ruler.succeeded`, D50);
+  - **verificación:**
+    - tests de sim, history y web;
+    - E2E en Chromium y Firefox, 6/6, incluido el recorrido crear → vivo → inspector con porqué → resumen → ficha → en, sin errores de consola y sin regenerar el mundo;
+    - capturas `docs/phases/P01/img/p16-*.jpg`;
+  - **Δ (para el REPORT):**
+    - las columnas del resumen muestran valores a la fecha, no máximos históricos;
+    - el botón "Compartir" llega con P1.7;
+    - el porqué cubre los stats cuya base no depende del estado del año (rendimientos, alcance agrícola, difusión, fracción urbana base, fuerza, alcance); natalidad y mortalidad quedan fuera, porque su base usa el excedente de alimento del año, que no se guarda;
+    - el porqué desde un archivo muestra "calculando…" sin porcentaje;
+    - una historia de otra versión no trae registro, así que los nombres caen en "estado 12";
+  - **riesgos y hallazgos:**
+    - el mapa sigue dibujando debajo del resumen y de las fichas (costo: P1.9);
+    - el bundle supera los 500 kB (three + motor: P1.9);
+    - en la simulación, durante el año de la sucesión el heredero puede ser el mismo que el titular (se nota en el porqué de un personaje): anotar para P7;
+  - LEARNINGS L-024 (`useTranslation` cambia `i18n` al cambiar de idioma: regeneraba el mundo);
+  - **próximo:** P1.7 Compartir v1.
+
 - **2026-10-17 (sesión P1-2, después de P1.5):**
   - **D56:** el ritmo de D48 queda como está; el objetivo de 10 ± 1 min se mide después de calibrar la simulación en P4/P5, y en el cierre de P1 ese criterio figura como no cumplido, con su causa;
   - **wireframes 🎨 de P1.6** en `docs/phases/P01/wireframes/` (`index.html` + 4 PNG): crear mundo, vista en vivo, resumen v1 y ficha genérica, de baja fidelidad (se aprueba la estructura, no el aspecto), con el mapa de pantallas y 3 preguntas de estructura (resumen durante la corrida, ficha = inspector, mundos guardados en "crear");

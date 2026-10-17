@@ -292,6 +292,16 @@
 - **Cómo detectarlo antes:** un test que pasa un objeto "enviado" por referencia a otra instancia que lo modifica.
 - **Promovido a CLAUDE.md:** no.
 
+### L-024 · `useTranslation` cambia el objeto `i18n` al cambiar de idioma: un efecto que depende de él se re-ejecuta
+- **Fecha / fase:** 2026-10-17 · P1
+- **Origen:** observación propia (P1.6, recorrido en el navegador)
+- **Contexto:** el efecto que crea el mapa y la simulación de un mundo tenía `t` (y después `i18n`) de `useTranslation` en sus dependencias, para un mensaje de error.
+- **Qué pasó:** al tocar "en" en una ficha se veía "Generating the world…": cambiar de idioma regeneraba el mundo y perdía la corrida. Sacar `t` no alcanzó: react-i18next 17 devuelve otro objeto `i18n` cuando cambia el idioma.
+- **Causa raíz:** dependencias de un efecto caro que no son estables entre idiomas.
+- **Regla:** los efectos con montaje caro (mundo, Workers, renderer) no dependen de `t` ni de `i18n` de `useTranslation`; si necesitan traducir, usan la instancia de la app (`ui/i18n.ts`). El E2E de la UI verifica que cambiar de idioma no regenera el mundo.
+- **Cómo detectarlo antes:** un efecto con limpieza costosa que lista `t` o `i18n` entre sus dependencias.
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)
