@@ -386,3 +386,46 @@ button.link {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* Compartir (P1.7). */
+.share-panel {
+  position: absolute;
+  top: calc(var(--bar) + 0.5rem);
+  right: var(--gap);
+  z-index: 2;
+  width: 32rem;
+  padding: var(--gap);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 0.375rem;
+}
+.share-panel input {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+}
+.share-panel .row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+.banners {
+  position: absolute;
+  top: calc(var(--bar) + 0.5rem);
+  left: 50%;
+  z-index: 1;
+  transform: translateX(-50%);
+  min-width: 26rem;
+  pointer-events: auto;
+}
+.banner {
+  margin: 0 0 0.5rem;
+  padding: 0.5rem var(--gap);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.375rem;
+}
+.banner progress {
+  width: 100%;
+}

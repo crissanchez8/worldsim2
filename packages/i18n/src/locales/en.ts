@@ -143,6 +143,27 @@ export const en: Catalog = {
       create: 'Create another world',
       shortcuts: 'Shortcuts: space pause · ←/→ ±100 years · 1–4 speeds · Esc closes the inspector',
     },
+    share: {
+      button: 'Share',
+      title: 'Share this world',
+      hint: 'The link regenerates the same world and its history with the same engine version ({{version}}).',
+      copy: 'Copy',
+      copied: 'Link copied',
+      copyFailed: 'Could not copy: select the link and copy it by hand.',
+      close: 'Close',
+      worldHash: 'World fingerprint',
+      finalHash: 'Final fingerprint ({{year}})',
+      computeFinal: 'Compute the final fingerprint',
+      notFinished: 'The run is not over yet: the final fingerprint appears at 1900.',
+    },
+    shared: {
+      running: 'Simulating the linked history: {{year}} · {{pct}} %',
+      done: 'History ready: {{years}} years simulated.',
+      play: 'Play from the beginning',
+      finalHash: 'Final fingerprint: {{hash}}',
+      versionMismatch:
+        'This link comes from engine version {{link}} and this is {{engine}}: the world and its history may differ.',
+    },
     rail: {
       mapMode: 'Map mode',
       legend: 'Legend',

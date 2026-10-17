@@ -38,7 +38,11 @@ export interface LiveStatus {
   /** false = historia de otra versión del motor: solo se mira. */
   readonly canContinue: boolean;
   readonly engineVersion: string;
+  /** Link compartido (P1.7): `running` simula todo a máx.; `done` = listo para reproducir. */
+  readonly fastForward: FastForward;
 }
+
+export type FastForward = 'off' | 'running' | 'done';
 
 export interface LiveCallbacks {
   /** El año mostrado cambió: el mapa se actualiza con este marco. */
@@ -65,6 +69,8 @@ export interface LiveOptions {
   readonly file?: Uint8Array;
   readonly createClient?: (events: SimClientEvents) => SimClient;
   readonly loop?: FrameLoop;
+  /** Abrir un link compartido (P1.7): simular todo a máx. y después dejarlo listo en el inicio. */
+  readonly fastForward?: boolean;
 }
 
 export class LiveSession {
@@ -90,6 +96,8 @@ export class LiveSession {
   private lastTime: number | null = null;
   private lastStatusAt = -Infinity;
   private frameHandle: number | null = null;
+  private fastForward: FastForward = 'off';
+  private readonly wantsFastForward: boolean;
   private readonly drawListeners = new Set<() => void>();
   private disposed = false;
 
@@ -97,6 +105,7 @@ export class LiveSession {
     this.world = world;
     this.callbacks = callbacks;
     this.loop = options.loop ?? browserLoop;
+    this.wantsFastForward = options.fastForward ?? false;
     const events: SimClientEvents = {
       onReady: (ready) => {
         this.onReady(ready);
@@ -148,6 +157,10 @@ export class LiveSession {
   setSpeed(speed: Speed): void {
     if (!this.directorValue) return;
     this.directorValue.speed = speed;
+    // Elegir otra velocidad toma el control: se termina el avance rápido del link.
+    if (this.fastForward === 'running' || (this.fastForward === 'done' && speed !== 0)) {
+      this.fastForward = 'off';
+    }
     this.publish();
   }
 
@@ -201,6 +214,10 @@ export class LiveSession {
     this.indexEvents(history.data.events);
     // Una historia cargada sigue desde donde se guardó; una nueva, desde el principio.
     this.directorValue = new Director(clock, this.head);
+    if (this.wantsFastForward && ready.canContinue && this.head < ready.endK) {
+      this.fastForward = 'running';
+      this.directorValue.speed = 'max';
+    }
     this.update(true);
     this.schedule();
   }
@@ -217,6 +234,13 @@ export class LiveSession {
     this.msPerYear = message.msPerYear;
     if (message.registry) this.registry.apply(message.registry);
     this.indexEvents(history.data.events);
+    // Link compartido: al terminar la corrida queda en pausa al principio, lista para reproducir.
+    if (this.fastForward === 'running' && this.head >= this.endK && this.directorValue) {
+      this.fastForward = 'done';
+      this.directorValue.speed = 0;
+      this.directorValue.scrub(0);
+      this.update(true);
+    }
   }
 
   private indexEvents(log: readonly (readonly events.GameEvent[])[]): void {
@@ -283,6 +307,7 @@ export class LiveSession {
       msPerYear: this.msPerYear,
       canContinue: ready.canContinue,
       engineVersion: ready.engineVersion,
+      fastForward: this.fastForward,
     });
   }
 }

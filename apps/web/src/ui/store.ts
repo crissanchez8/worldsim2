@@ -31,6 +31,8 @@ export interface UiState {
   readonly mapReady: boolean;
   /** Falló el mapa (no el mundo): la simulación y la UI siguen. */
   readonly mapError: string | null;
+  /** Versión del motor de un link compartido (`?v=`), si el mundo se abrió desde uno. */
+  readonly linkVersion: string | null;
   readonly selected: EntityRef | null;
   readonly trail: readonly EntityRef[];
   /** Mundo ya generado en "Crear" para la URL `key` (la vista en vivo no lo regenera). */
@@ -52,6 +54,7 @@ export const useUi = create<UiState>()((set, get) => ({
   liveError: null,
   mapReady: false,
   mapError: null,
+  linkVersion: null,
   selected: null,
   trail: [],
   pending: null,

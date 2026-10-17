@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EntityCard } from '../entity/EntityCard';
 import { saveLive } from '../live/save';
+import { SharedBanner } from '../live/SharedBanner';
 import { Ticker } from '../live/Ticker';
 import { TimeBar } from '../live/TimeBar';
 import { COLOR_MODES, type ColorMode } from '../map/colors';
@@ -13,6 +14,7 @@ import { downloadFile, wsimName } from '../storage/files';
 import { createWorldStore } from '../storage/world-store';
 import { LanguageToggle } from '../ui/LanguageToggle';
 import { entityPath, WorldLink } from '../ui/links';
+import { SharePanel } from '../ui/SharePanel';
 import { useUi } from '../ui/store';
 
 export function LiveHud() {
@@ -30,6 +32,7 @@ export function LiveHud() {
   const mapReady = useUi((s) => s.mapReady);
   const mapError = useUi((s) => s.mapError);
   const [colorMode, setColorMode] = useState<ColorMode>('political');
+  const [sharing, setSharing] = useState(false);
   const [store] = useState(createWorldStore);
   if (!world) return null;
 
@@ -91,6 +94,16 @@ export function LiveHud() {
         <button type="button" disabled={!session || !status?.canContinue} onClick={onExport}>
           {t('ui.world.export')}
         </button>
+        <button
+          type="button"
+          aria-expanded={sharing}
+          disabled={!session}
+          onClick={() => {
+            setSharing((v) => !v);
+          }}
+        >
+          {t('ui.share.button')}
+        </button>
         {savedYear !== null && (
           <span className="meta">
             {t('live.saves.saved', { year: formatYear(i18n, savedYear) })}
@@ -102,6 +115,16 @@ export function LiveHud() {
         <LanguageToggle />
       </header>
 
+      {sharing && (
+        <SharePanel
+          onClose={() => {
+            setSharing(false);
+          }}
+        />
+      )}
+      <div className="banners">
+        <SharedBanner />
+      </div>
       <aside className="rail">
         <p className="eyebrow">{t('ui.rail.mapMode')}</p>
         <div role="radiogroup" aria-label={t('ui.rail.mapMode')}>

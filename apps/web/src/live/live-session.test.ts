@@ -12,7 +12,7 @@ vi.setConfig({ testTimeout: 60_000 });
 const world = createGridWorld({ seed: 5, width: 16, height: 8 });
 
 /** Worker en el mismo proceso (mensajes copiados) + bucle de cuadros manual. */
-function rig() {
+function rig(fastForward = false) {
   const tasks: (() => void)[] = [];
   let clock = 0;
   const fake: SimWorkerLike = {
@@ -44,6 +44,7 @@ function rig() {
       },
     },
     {
+      fastForward,
       createClient: (events) => new SimClient(fake, events),
       loop: {
         request: (run) => {
@@ -101,5 +102,22 @@ describe('sesión en vivo', () => {
     for (let i = 0; i < 120; i++) reference.step();
     const state = await r.session.fullState(120);
     expect(state.hash).toBe(reference.hash());
+  });
+
+  it('link compartido: simula todo a máx. y queda en pausa al principio, listo para reproducir', () => {
+    const r = rig(true);
+    expect(r.statuses.at(-1)?.fastForward).toBe('running');
+    expect(r.statuses.at(-1)?.speed).toBe('max');
+    r.frame(0);
+    r.frame(16); // con "máx." el objetivo es toda la corrida
+    r.work();
+    expect(r.engine.head).toBe(13900);
+    const done = r.statuses.at(-1);
+    expect(done?.fastForward).toBe('done');
+    expect(done?.speed).toBe(0);
+    expect(done?.k).toBe(0);
+    // Elegir una velocidad toma el control.
+    r.session.setSpeed(1);
+    expect(r.statuses.at(-1)?.fastForward).toBe('off');
   });
 });

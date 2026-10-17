@@ -148,6 +148,27 @@ export const es = {
       shortcuts:
         'Atajos: espacio pausa · ←/→ ±100 años · 1–4 velocidades · Esc cierra el inspector',
     },
+    share: {
+      button: 'Compartir',
+      title: 'Compartir este mundo',
+      hint: 'El link regenera el mismo mundo y su historia con la misma versión del motor ({{version}}).',
+      copy: 'Copiar',
+      copied: 'Link copiado',
+      copyFailed: 'No se pudo copiar: seleccioná el link y copialo a mano.',
+      close: 'Cerrar',
+      worldHash: 'Huella del mundo',
+      finalHash: 'Huella final ({{year}})',
+      computeFinal: 'Calcular la huella final',
+      notFinished: 'La corrida todavía no terminó: la huella final aparece al llegar a 1900.',
+    },
+    shared: {
+      running: 'Simulando la historia del link: {{year}} · {{pct}} %',
+      done: 'Historia lista: {{years}} años simulados.',
+      play: 'Reproducir desde el principio',
+      finalHash: 'Huella final: {{hash}}',
+      versionMismatch:
+        'Este link es de la versión {{link}} del motor y esta es la {{engine}}: el mundo y su historia pueden ser distintos.',
+    },
     rail: {
       mapMode: 'Modo de mapa',
       legend: 'Leyenda',

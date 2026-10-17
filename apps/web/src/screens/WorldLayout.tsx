@@ -71,6 +71,7 @@ export function WorldLayout() {
       liveError: null,
       mapReady: false,
       mapError: null,
+      linkVersion: p.version,
       selected: null,
       trail: [],
       savedYear: null,
@@ -114,7 +115,8 @@ export function WorldLayout() {
                   useUi.getState().patch({ liveError: message });
                 },
               },
-              file ? { file } : {},
+              // Un link compartido (con `?v=`) simula todo a máx. antes de reproducir (P1.7).
+              { ...(file ? { file } : {}), fastForward: p.version !== null && !file },
             );
             window.__live = liveDebug(live, store, () => useUi.getState().status);
             useUi.getState().patch({ session: live });

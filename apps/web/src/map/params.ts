@@ -37,6 +37,8 @@ export interface MapParams {
   readonly distance: number | null;
   /** Id del mundo guardado que se continúa (`?load=`); null = corrida nueva. */
   readonly load: number | null;
+  /** Versión del motor de un link compartido (`?v=`, P1.7); null = no es un link compartido. */
+  readonly version: string | null;
 }
 
 /** Semilla por defecto: el primer mundo que ve quien abre la página sin parámetros. */
@@ -111,6 +113,7 @@ export function readMapParams(search: string): MapParams {
     x: num(p, 'x'),
     z: num(p, 'z'),
     distance: num(p, 'distance'),
+    version: p.get('v'),
     load: (() => {
       const id = num(p, 'load');
       return id !== null && Number.isInteger(id) && id > 0 ? id : null;

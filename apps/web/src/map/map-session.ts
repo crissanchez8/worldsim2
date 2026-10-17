@@ -62,7 +62,8 @@ export class MapSession {
       const message = error instanceof Error ? error.message : String(error);
       this.report.error = message;
       if (!this.disposed) callbacks.onError(message);
-      console.error(error);
+      // Fallo manejado: la UI lo muestra y la simulación sigue (P1.6). Aviso, no error de consola.
+      console.warn('[map]', error);
     });
   }
 

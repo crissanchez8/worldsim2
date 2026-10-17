@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test';
+import { expect, firefox, type Page, test } from '@playwright/test';
 import type { LiveDebug } from '../src/live/debug';
 
 // Mundo chico (rápido) y un año de control antes del final. La seed 7 es tardía: agricultura hacia
@@ -6,6 +6,8 @@ import type { LiveDebug } from '../src/live/debug';
 const WORLD = '?seed=7&size=small&map=continents&land=0.3';
 const K = 3000;
 const K_POLITIES = 13_000;
+/** Último estado de la corrida (−12000 → 1900). */
+const END_K = 13_900;
 const WAIT = { timeout: 120_000, polling: 250 };
 
 type Win = Window & { __live?: LiveDebug };
@@ -102,7 +104,8 @@ test('UI v1: crear → vivo → inspector → resumen → ficha; es/en sin regen
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   page.on('console', (m) => {
-    if (m.type() === 'error') errors.push(m.text());
+    if (m.type() === 'error')
+      errors.push(`${m.text()} @ ${m.location().url}:${m.location().lineNumber}`);
   });
   await page.goto('/');
   await page.getByLabel('Semilla').fill('7');
@@ -148,4 +151,77 @@ test('UI v1: crear → vivo → inspector → resumen → ficha; es/en sin regen
     ),
   ).toBe(true);
   expect(errors).toEqual([]);
+});
+
+/** Link de compartir del mundo abierto (lo arma el panel "Compartir"). */
+async function shareLink(page: Page): Promise<string> {
+  await page.getByRole('button', { name: 'Compartir' }).click();
+  const link = await page
+    .getByRole('dialog', { name: 'Compartir este mundo' })
+    .getByRole('textbox')
+    .inputValue();
+  expect(link).toContain('v=');
+  return link;
+}
+
+/** Abre un link compartido y espera la historia completa; devuelve la huella final que muestra. */
+async function openShared(page: Page, link: string): Promise<string> {
+  await page.goto(link);
+  const done = page.getByText(/Huella final: /);
+  await expect(done).toBeVisible({ timeout: 180_000 });
+  const text = (await done.textContent()) ?? '';
+  return text.replace(/.*Huella final: /, '').trim();
+}
+
+test('compartir: el link regenera el mundo, simula a máx. y da la misma huella final', async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(String(e)));
+  await page.goto(WORLD);
+  await live(page);
+  const link = await shareLink(page);
+  // Referencia: la misma corrida a máx. hasta el final (k = 13.900, año 1900).
+  await page.evaluate(() => {
+    (window as Win).__live?.setSpeed('max');
+  });
+  await page.waitForFunction(
+    (k) => ((window as Win).__live?.status()?.head ?? 0) >= k,
+    END_K,
+    WAIT,
+  );
+  const reference = await page.evaluate((k) => (window as Win).__live?.hash(k) ?? '', END_K);
+  const fromLink = await openShared(page, link);
+  expect(fromLink).toBe(reference);
+  // Queda en pausa al principio, lista para reproducir.
+  const s = await page.evaluate(() => (window as Win).__live?.status());
+  expect([s?.k, s?.speed, s?.fastForward]).toEqual([0, 0, 'done']);
+  await page.getByRole('button', { name: 'Reproducir desde el principio' }).click();
+  await expect(page.getByRole('radio', { name: '1×' })).toHaveAttribute('aria-checked', 'true');
+  expect(errors).toEqual([]);
+});
+
+test('compartir: el mismo link en otro navegador da la misma huella', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== 'chromium', 'abre el link de Chromium en Firefox');
+  await page.goto(WORLD);
+  await live(page);
+  const link = await shareLink(page);
+  const here = await openShared(page, link);
+  const other = await firefox.launch();
+  try {
+    const there = await openShared(await other.newPage(), link);
+    expect(there).toBe(here);
+  } finally {
+    await other.close();
+  }
+});
+
+test('compartir: un link de otra versión del motor avisa', async ({ page }) => {
+  await page.goto(`${WORLD}&v=0.0.0`);
+  await expect(page.getByText(/Este link es de la versión 0\.0\.0 del motor/)).toBeVisible({
+    timeout: 120_000,
+  });
 });

@@ -20,6 +20,8 @@ describe('parámetros de la URL', () => {
     expect(p.load).toBeNull();
     expect(readMapParams('?load=3').load).toBe(3);
     expect(readMapParams('?load=x').load).toBeNull();
+    expect(p.version).toBeNull();
+    expect(readMapParams('?seed=3&v=0.1.3').version).toBe('0.1.3');
   });
 
   it('lee mundo, backend y medición; descarta valores inválidos', () => {
