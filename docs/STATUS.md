@@ -8,7 +8,7 @@
 | **Última actualización** | 2026-10-17 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | Checkpoint 3 con Cristian (recorrido en el preview) → QA gate y P1.10 Cierre (borrar `spikes/`, `model.md` v1.1, ADR-008, REPORT, prompt de P2, base del bench del runner desde el artefacto `bench-ci`). Pendiente de Cristian: medición visible del mapa (checkpoint 1) |
+| **Próximo paso** | Checkpoint 3 de Cristian → completar el REPORT (`docs/phases/P01/REPORT.md`, borrador) con su resultado, base del bench del runner desde el artefacto `bench-ci`, QA gate y OK de cierre. Pendiente de Cristian: medición visible del mapa (checkpoint 1) y si se publica el tag `p00-spikes` |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -34,6 +34,17 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-17 (sesión P1-2, P1.10 preparada, sin cerrar):**
+  - **spikes borrados (D52):** se cumplieron las condiciones (todo lo de D47 reescrito y el job `determinism` sobre el motor real). Se quitaron del workspace, del lint de fronteras, de ESLint, de `launch.json`, de CLAUDE.md y del README. Quedan en el tag **local** `p00-spikes` (sin publicar: D52 pide el OK de Cristian);
+  - **`model.md` v1.1:** cambios D51, D53 y D55 marcados en sus filas, campos nuevos de P1, lo que no entró marcado ⏳, la historia como quedó (§14), §16 y §18;
+  - **prompt de P2 refrescado:** estado de partida (pantallas y componentes a re-vestir, wireframes D57, color político provisorio, cómo sacar renders reales, `packages/ui` vacío, E2E por nombres accesibles) y trampas de P1 (lint de texto, L-024, rendimiento medido);
+  - **REPORT de P1 en borrador:** tareas, desvíos, decisiones, métricas, evidencia, criterios de salida con lo pendiente marcado (checkpoint 3, base del runner), deuda y recomendaciones;
+  - **pendiente para cerrar:**
+    1. el resultado del checkpoint 3 en el REPORT;
+    2. la base del bench del runner: `gh run download <id> -n bench-ci`, guardarla como `docs/phases/P01/bench-baseline-ci.json` y pasar la comparación del CI a esa base;
+    3. marcar las casillas del BRIEF;
+    4. el OK de cierre en `decisions.md`.
+
 - **2026-10-17 (sesión P1-2, P1.9 hecha):**
   - **`ws bench` con el escenario `world-medium`** (medido antes de optimizar, como pide el BRIEF): corrida completa del mediano con la historia grabada; ms/año (prom y p95), costo de grabar, keyframe, `.wsim`, mapa y estado completo a la fecha y hash final;
   - **presupuestos absolutos** en el bench (el CI falla si se pasan): worldgen ≤ 20 s, ms/año ≤ 10 y p95 ≤ 25, mapa ≤ 16 ms, estado completo ≤ 500 ms, `.wsim` ≤ 20 MB. Los de tiempo se escalan por la calibración de la máquina (referencia M1 Pro); los tamaños ya no se normalizan;

@@ -2,10 +2,11 @@
 
 | | |
 |---|---|
-| **Versión** | 1.0 (P0.11) |
-| **Fecha** | 2026-10-15 |
-| **Estado** | ✅ Aprobado el 2026-10-15 con M1–M8 (D42) |
-| **Implementado en P0** | Solo las primitivas de `packages/core` (rng, math, store, serialize; luego events, modifiers, time). Las entidades llegan en su fase |
+| **Versión** | 1.1 (P1.10) |
+| **Fecha** | 2026-10-17 |
+| **Estado** | ✅ v1.0 aprobada el 2026-10-15 con M1–M8 (D42); v1.1 recoge los cambios aprobados en P1 (D51, D53, D55) y lo implementado |
+| **Implementado en P0** | Solo las primitivas de `packages/core` (rng, math, store, serialize; luego events, modifiers, time) |
+| **Implementado en P1** | `WorldStatic` v1 (§4); `World`, `Province`, `Pop`, `Settlement`, `Culture`, `Language`, `Name`, `Polity`, `Title`, `Person`, `War` y `Front` con los campos marcados P1; 11 sistemas (production, demography, knowledge, characters, succession, statecraft, diplomacy, military, settlements, ledger, derive); 17 tipos de evento; historia (§14) |
 | **Fuentes** | DEVELOPMENT_PLAN §8, §10, §11 y §16 (P1–P11); LEARNINGS (herencia H-01…H-14) |
 
 > Este documento es la **fuente de verdad del estado del motor**: qué entidades existen, qué
@@ -250,16 +251,17 @@ varios sistemas pueden nombrar entidades o crear modificadores sin violar el esc
 | title | ref<Title> | id | statecraft | P7 | título de menor nivel que la contiene |
 | control | f32 | fraction | statecraft | P7 | eficacia administrativa sobre la provincia |
 | submerged | bool | flag | environment | P3 | deglaciación; sin dueño ni pops (I4) |
-| landUse | f32 × 5 | fraction | production | P1/P4 | forrajeo, pastoreo, horticultura, cultivo intensivo, sin uso; suman 1 |
-| roads | u8 | score [0, 5] | settlements | P1/P6 | infraestructura que baja el costo del grafo |
+| cropShare | f32 | fraction | production | P1 | parte cultivada de lo cultivable; el resto se forrajea (D55: reemplaza a `landUse` ×5 en P1) |
+| landUse | f32 × 5 | fraction | production | ⏳ P4 | forrajeo, pastoreo, horticultura, cultivo intensivo, sin uso; suman 1. Reemplaza a `cropShare` si P4 lo necesita |
+| roads | u8 | score [0, 5] | settlements | ⏳ P6 | infraestructura que baja el costo del grafo (no entró en P1) |
 | irrigation | f32 | fraction | settlements | P4 | del área cultivable |
 | harvestLastYear | f32 | tons | production | P6 | madera extraída: la lee `environment` el tick siguiente (M4) |
-| foodSecurity | f32 | fraction | demography | P1 | alimento disponible / necesario del año; lo leen migration, statecraft y la crónica |
+| foodSecurity | f32 | fraction | demography | P1 | alimento disponible / necesario del año, acotado a 1 (arranca en 1); lo leen statecraft y los eventos de hambruna |
 | forestCover | f32 | fraction | environment | P10 | |
 | soilDepletion | f32 | fraction | environment | P10 | |
 | tempAnomaly | f32 | celsius | environment | P10 | del año en curso |
 | precipAnomaly | f32 | ratio | environment | P10 | multiplicador del año |
-| knownInnovations | bits | bits | knowledge | P1 (≈10) / P5 (≈150) | ⏳ portador del conocimiento (P5.2) |
+| knownInnovations | bits | bits | knowledge | P1 (14) / P5 (≈150) | ⏳ portador del conocimiento (P5.2). Los efectos de las innovaciones son datos de contenido sobre este bitset (`withInnovations`), no filas de `Modifier` (D55) |
 | domesticatedSpecies | bits | bits | knowledge | P4 | especies domesticadas disponibles (sobre `WildSpecies`); la domesticación es un proceso de siglos |
 | name | ref<Name> | id | culture | P4 | ⏳ topónimo en el idioma de la cultura dominante; el renombre es un evento explícito |
 
@@ -299,11 +301,13 @@ por provincia (I5).
 | province | ref<Province> | id | settlements | P1 |
 | urbanShare | f32 | fraction | settlements | P1 · fracción de la población de la provincia que vive acá (Σ por provincia ≤ 1, I17) |
 | level | u8 | enum<SettlementLevel> | settlements | P1 · campamento → … → metrópoli, con histéresis (§6) |
-| fortification | u8 | score [0, 10] | settlements | P1/P9 |
+| fortification | u8 | score [0, 10] | settlements | ⏳ P9 (no entró en P1) |
 | port | bool | flag | settlements | P4 |
 | founded | i32 | year | settlements | P1 |
 | ruined | i32 | year | settlements | P4 · 0 = habitado |
-| name | ref<Name> | id | settlements | P4 |
+| name | ref<Name> | id | settlements | P1 (D53) |
+
+En P1 hay a lo sumo un asentamiento por provincia (varios: P4).
 
 `Building`: settlement (ref), type (enum<BuildingType>), level (u8 · score [1, 5]), built (year),
 condition (fraction). Dueño: settlements. Fase P4/P6. La población urbana en `persons` es una vista
@@ -327,11 +331,17 @@ el idioma cambie (la evolución de nombres es un evento explícito ⏳ P11). Los
 |---|---|---|---|
 | `Innovation` | C | domain, prerequisites (refs<Innovation>), materials (refs<Good>), environment (requisitos: costa, río…), needTriggers, difficulty (score [0, 1]), effects (modificadores y desbloqueos) | — |
 | Conocimiento por provincia | T | `Province.knownInnovations` (bits) + adopción de innovaciones de práctica ⏳ | knowledge |
-| `InventionRecord` | S | innovation (ref), province (ref), year, inventor (ref<Person>), independent (flag) | knowledge |
+| `InventionRecord` | S | innovation (ref), province (ref), year, inventor (ref<Person>), independent (flag) | knowledge · ⏳ P5: en P1 la invención es solo el evento `innovation.invented` (D55, M2) |
 
 ⏳ **P5.2 (🔶 del plan):** portador por provincia (recomendado) vs. por comunidad cultura×polity.
 El modelo reserva el bitset por provincia; si P5 elige otra cosa, cambia esta sección.
-La **era** de una provincia o polity es una vista derivada del conjunto conocido (§13).
+La **era** de una provincia o polity es una vista derivada del conjunto conocido (§13); la **era
+dominante** del mundo (la más avanzada que alcanza el 10 % de la población, D48) marca el ritmo de
+la reproducción.
+
+**P1 (D55):** la probabilidad de invención de una provincia es ∝ (área / 160.000 km²) × √(densidad /
+0,1) (no ∝ población: evita el bucle explosivo población ↔ técnica); la difusión entre vecinas se
+pondera por el costo del camino en días (referencia 23 días).
 
 ### 5.7 Economía · P6 (P1 sin mercados)
 
@@ -353,16 +363,16 @@ conectividad (§13).
 
 | Entidad | Almacén | Campos (tipo · unidad) | Dueño | Fase |
 |---|---|---|---|---|
-| `Polity` | S | name (ref<Name>), capital (ref<Province>), primaryTitle (ref<Title>), founded (year), ended (year), endReason (enum), colorSeed (u32 · id: color estable, D25/P2) | statecraft | P1 |
+| `Polity` | S | name (ref<Name>), capital (ref<Province>), primaryTitle (ref<Title>), founded (year), ended (year), endReason (enum: activa, absorbida, conquistada), colorSeed (u32 · id: color estable, D25/P2), succession (enum<Law>), warCooldownUntil (year · dueño **diplomacy**: no declara guerras antes de ese año) | statecraft (salvo warCooldownUntil) | P1 |
 | ″ régimen | S (campos de Polity) | authority (enum: tribal, divina, hereditaria, electiva, burocrática), powerBalance (score [−1 gobernante, +1 estamentos]), landTenure (enum: clanes, feudos hereditarios, gobernadores designados, familias patricias) | regime | P7 |
 | ″ leyes | S | laws (por categoría · enum<Law>: sucesión, impuestos, levas, religión, comercio, servidumbre) | statecraft | P1 (sucesión) / P7 |
 | ″ fisco | S | treasury (coins ≥ 0), debt (coins ≥ 0), interestRate (per_year), taxIncome, spending (coins_per_year) | statecraft | P7 |
 | ″ estado interno | S | stability (score [−100, 100]), legitimacy (score [0, 100]), adminCapacity (score ≥ 0) — **base**; el valor efectivo = base + modificadores (§5.12) | statecraft | P7 |
-| `Title` | S | level (enum: reino, gran feudo, feudo menor), holder (ref<Person> · dueño **succession**), liege (ref<Title>), contract: taxShare, levyShare, autonomy (fraction), created, destroyed (year) | statecraft (salvo holder) | P7 |
+| `Title` | S | polity (ref), level (enum: reino, gran feudo, feudo menor · P1: solo el principal), holder (ref<Person> · dueño **succession**), heir (ref<Person> · dueño **characters**, D55), liege (ref<Title>) ⏳, contract: taxShare, levyShare, autonomy (fraction) ⏳, created, destroyed (year) | statecraft (salvo holder y heir) | P1 mínimo (D53) / P7 |
 | `Estate` | T | polity (ref), type (enum: nobleza, clero, mercaderes, campesinado, burguesía, obreros), power (score [0, 100]), satisfaction (score [−100, 100]) | estates | P7 |
 | `EstateDemand` | S | estate (ref), law (enum<Law>), since (year), urgency (score [0, 1]) | estates | P7 |
 | `Faction` | S | polity (ref), goal (enum), target (ref), members (refs<Person>), strength (score [0, 100]), state (enum, §6), started (year) | **factions** (nuevo, M5) | P7 |
-| `Claim` | S | claimant (ref<Person> o ref<Polity>), title o province (ref), kind (heredado, histórico, fabricado), since (year) | **ledger** (aplica solicitudes de succession, schemes, diplomacy; M1) | P7 |
+| `Claim` | S | claimant (ref<Person> o ref<Polity>), title o province (ref), kind (heredado, histórico, fabricado), since (year) | **ledger** (aplica solicitudes de succession, schemes, diplomacy; M1) | P7 (D51: los reclamos y `claimRequests` no entran en P1) |
 | `Agenda` | S | polity (ref), goals: kind (expandir, asegurar ruta, defender, recuperar sitio sagrado, consolidar, reformar), target (ref), priority (score [0, 1]), since (year), budgetShare (fraction) | agenda | P9 |
 
 La **etiqueta del régimen** (monarquía feudal, república mercantil…) y el **tipo de polity**
@@ -373,7 +383,7 @@ La **etiqueta del régimen** (monarquía feudal, república mercantil…) y el *
 | Entidad | Almacén | Campos (tipo · unidad) | Dueño |
 |---|---|---|---|
 | `House` | S | name (ref<Name>), founder (ref<Person>), parent (ref<House>, rama cadete), prestige (score ≥ 0), language (ref), founded, extinct (year) | characters |
-| `Person` (registro permanente, liviano) | S | name (ref<Name>), house (ref), father, mother (ref<Person>), sex (enum), born, died (year), deathCause (enum), culture, religion (ref), **traits ×8** (ambición, marcialidad, diplomacia, administración, erudición, piedad, crueldad, honor · score [−1, 1], fijados al nacer), detail (ref<CharacterDetail>; 0 si es liviano) | characters |
+| `Person` (registro permanente, liviano) | S | name (ref<Name>), house (ref) ⏳, father, mother (ref<Person>), sex (enum), born, died (year), deathCause (enum), culture, religion (ref) ⏳, **traits ×8** ⏳ (ambición, marcialidad, diplomacia, administración, erudición, piedad, crueldad, honor · score [−1, 1], fijados al nacer), detail (ref<CharacterDetail>; 0 si es liviano) ⏳ | characters · P1 sin rasgos, casa ni religión (D53) / P7 |
 | `CharacterDetail` (completo) | S | person (ref), role (enum: gobernante, heredero, general, profeta, inventor, cortesano), skills ⏳, health (fraction), fertility (fraction), spouse (ref<Person>), promoted (year) | characters |
 | `Scheme` | S | author (ref<Person>), target (ref), kind (usurpar, asesinar, fabricar reclamo, alianza matrimonial), progress (fraction), state (enum, §6), started (year) | schemes |
 
@@ -395,13 +405,14 @@ pierden. Presupuesto: ≤ 3.000 `CharacterDetail` vivos (P7.3).
 
 | Entidad | Almacén | Campos (tipo · unidad) | Dueño | Fase |
 |---|---|---|---|---|
-| `War` | S | name (ref<Name>), started, ended (year), casusBelli (ref<Event>), outcome (enum), treaty (ref<Treaty>) | diplomacy | P1 abstracta / P9 |
-| `WarSide` | S | war (ref), side (u8 · enum), polities (refs<Polity>), goals (kind + target), score (score [−100, 100] · dueño military), exhaustion (fraction · dueño military) | diplomacy / military por campo | P9 |
+| `War` | S | P1 (D55): attacker, defender (ref<Polity>), started, ended (year), outcome (enum: en curso, victoria del atacante, del defensor, paz blanca). ⏳ P9: name (ref<Name>), casusBelli (ref<Event>), treaty (ref<Treaty>) | diplomacy | P1 abstracta / P9 |
+| `Front` | S | war (ref), score (score [−100, 100], + favorece al atacante), attackerExhaustion, defenderExhaustion (fraction), gained (count: provincias cedidas), lastContact (year) | military | P1 (D55: en lugar de `WarSide`; un frente por guerra, sin coaliciones) |
+| `WarSide` | S | war (ref), side (u8 · enum), polities (refs<Polity>), goals (kind + target), score (score [−100, 100] · dueño military), exhaustion (fraction · dueño military) | diplomacy / military por campo | ⏳ P9 (coaliciones; reemplaza a `Front`) |
 | `Army` / `Fleet` | S | owner (ref<Polity>), general (ref<Person>), units (por tipo · persons o count), morale (fraction), supply (fraction), location (ref<Province> o ref<SeaZone>), order (enum + target), raised (year), state (enum, §6) | military | P9 |
-| `Battle` / `Siege` | S | war (ref), place (ref<Province>), year, season, attackers/defenders (refs<Army>), casualties (persons por bando), outcome (enum), name (ref<Name>), siege: duration (season), assault (flag) | military | P1 (registro abstracto) / P9 |
+| `Battle` / `Siege` | S | war (ref), place (ref<Province>), year, season, attackers/defenders (refs<Army>), casualties (persons por bando), outcome (enum), name (ref<Name>), siege: duration (season), assault (flag) | military | P9 · en P1 la batalla es solo el evento `battle.fought` (D55, M2) |
 | `Relation` | S | pair (polityA < polityB), trust (score [−100, 100]); la opinión = modificadores (§5.12) | diplomacy | P9 |
 | `Grievance` | S | from, to (ref<Polity>), kind (enum), magnitude (score), decay (per_year), source (ref<Event>) | diplomacy | P9 |
-| `Treaty` | S | kind (no agresión, alianza, matrimonio, tributo, vasallaje, comercio, paz con términos), parties (refs<Polity>), terms (kind + valor + target), signed, expires (year), broken (year), breaker (ref) | diplomacy | P1 (paz) / P9 |
+| `Treaty` | S | kind (no agresión, alianza, matrimonio, tributo, vasallaje, comercio, paz con términos), parties (refs<Polity>), terms (kind + valor + target), signed, expires (year), broken (year), breaker (ref) | diplomacy | P9 · en P1 la paz es solo el evento `treaty.signed` (D55, M2) |
 | `ClimateShock` | S | kind (invierno volcánico, sequía, inundación), provinces (refs), start, end (year), magnitude (score [0, 1]) | environment | P10 |
 | `Pathogen` | S | name (ref<Name>), transmissibility (ratio), lethality (fraction), immunity (years), origin (ref<Province>), reservoir (enum), emerged (year) | epidemics | P4 básico / P10 |
 | `Infection` | T | province, pathogen (ref), susceptible, infected, recovered (fraction) | epidemics | P4 / P10 |
@@ -525,11 +536,11 @@ Todos se vacían antes de terminar el tick (I9). Un buffer tiene **productores d
 |---|---|---|---|
 | `popDeltas` | demography (nacimientos, muertes naturales y por hambre), epidemics (muertes por enfermedad), military (bajas), migration (transferencias pop → provincia), assimilation (transferencias de cultura y religión), production (movilidad entre estratos), environment (migración forzada por inundación) | ledger | `{pop, kind, persons, target?, cause}` |
 | `territoryRequests` | environment (sumersión), statecraft (expansión, formación, absorción), military (cesión en P1), diplomacy (tratados, P9), factions (secesión), regime (colapso, fragmentación) | ledger | `{province, newOwner, priority, cause}` |
-| `claimRequests` | succession (herencia), schemes (fabricados), diplomacy (por tratado o matrimonio) | ledger | `{claimant, target, kind, add/remove, cause}` |
+| `claimRequests` | succession (herencia), schemes (fabricados), diplomacy (por tratado o matrimonio) | ledger | `{claimant, target, kind, add/remove, cause}` · ⏳ P7 (D51) |
 | `productionOutput` | production | markets (P1: demography) | toneladas por provincia × bien |
 | `consumption` | markets (P1: production) | demography, statecraft | satisfacción por pop y nivel de necesidad (fraction); alimento per cápita |
 | `eventBus` | todos los sistemas | chronicle | eventos del tick (§11) |
-| `visualDeltas` | chronicle | `history` (grabador) | cambios de dueño, niveles, mayorías, ejércitos, precios resumidos (ADR-008) |
+| `visualDeltas` | chronicle | `history` (grabador) | cambios de dueño, niveles, mayorías, ejércitos, precios resumidos (ADR-008) · en P1 no es un buffer: el grabador lee el estado después de cada tick (§14) |
 
 **Resolución de `territoryRequests`** (determinista): por prioridad (sumersión > tratado >
 colapso/secesión > cesión por guerra > formación/absorción > expansión a tierra sin dueño); a
@@ -875,6 +886,20 @@ tick t.
   de la simulación no retrocede (§8.4 del plan).
 - El formato `.wsim` v0 se especifica en el ADR-008 (lo informa el spike B).
 
+**Como quedó en P1** (`packages/history`, ADR-008 opción B, D44 y D50):
+- el grabador corre **fuera del pipeline**, después de cada tick: no es un sistema ni estado, y
+  re-simular para el estado completo no vuelve a grabar. El sistema `chronicle` no existe todavía
+  (la significancia se calcula al emitir; la crónica es P11);
+- en memoria: keyframe completo cada 100 años, marco visual (dueño, nivel, cultura mayoritaria,
+  innovaciones, capitales) cada 100 años + deltas anuales, serie por provincia cada 10 años
+  (población en u16 logarítmico, fracción urbana en u8), agregados mundiales por año y eventos;
+- en el `.wsim`: lo mismo con keyframes cada 1.000 años + el estado final exacto (5,7 MB para la
+  corrida completa del mediano);
+- en la web, el Worker graba y manda lotes; el hilo principal arma un espejo sin keyframes y
+  reproduce desde ahí (D49). El "por qué" a una fecha pide el estado exacto al Worker;
+- los **registros permanentes** (nombres, fundación y fin, nacimiento y muerte, guerras) los
+  manda el Worker desde la cabeza de la simulación; la UI filtra por la fecha mostrada.
+
 ---
 
 ## 15. Contenido (`packages/content`)
@@ -910,6 +935,10 @@ solo con el mismo contenido).
 | La movilidad entre estratos la decide `production` (trabajo por método) | P4.6: la estratificación emerge del excedente y del trabajo | — |
 | Costo de movimiento en **days** | Unidad física e interpretable | M7 |
 | Moneda de cuenta `coins` = plata estándar | Comparar precios entre eras y monedas | M8 |
+| P1: `Settlement.name`, `Title` mínimo (gobernante y heredero), `Person` sin rasgos ni casa; el ledger aplica transferencias sin productor hasta P4 | Lo mínimo para nombrar y gobernar en la rebanada | D53 |
+| P1: `Province.cropShare` en lugar de `landUse` ×5; `Title.heir` (characters); guerra = `War` + `Front` en lugar de `WarSide`; batallas, tratados e invenciones solo como eventos; efectos de innovaciones como datos sobre el bitset; invención ∝ área × √densidad; difusión por días | Cambios de la simulación v1 (P1.3) | D55 |
+| P1: sin reclamos (`Claim`, `claimRequests`) | Sin productores hasta P7 | D51 |
+| P1: el grabador de la historia corre fuera del pipeline; `chronicle` como sistema pasa a P11 | Re-simular para el estado completo no debe volver a grabar | ADR-008, §14 |
 
 ---
 
@@ -981,3 +1010,4 @@ ley y tipo de cambio. Sin esto, comparar riqueza entre siglos o entre monedas es
 |---|---|---|
 | 1.0-rc | 2026-10-15 | Primera versión completa para el gate de P0 |
 | 1.0 | 2026-10-15 | Aprobada por Cristian con M1–M8 tal como se recomendaron (D42) |
+| 1.1 | 2026-10-17 | Cierre de P1: cambios aprobados D51, D53 y D55 (cropShare, Title mínimo con heir, Person sin rasgos, War + Front, eventos en lugar de registros, efectos de innovación como datos, sin reclamos), campos nuevos de P1 (`Polity.succession`, `Polity.warCooldownUntil`), lo que no entró en P1 marcado ⏳, y la historia como quedó (§14) |
