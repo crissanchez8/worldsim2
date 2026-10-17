@@ -8,7 +8,7 @@
 | **Última actualización** | 2026-10-17 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | P1.7 Compartir v1 (link con seed + parámetros + versión del motor; abrir un link simula a máx. con progreso) → checkpoint 3 (recorrido completo). Pendiente de Cristian: medición visible del mapa (checkpoint 1) |
+| **Próximo paso** | Checkpoint 3 con Cristian: recorrido completo en el preview (crear → mirar a 1× → rebobinar → resumen → link en otro navegador; Safari en la página de determinismo). Después P1.9 Rendimiento → QA gate → REPORT. Pendiente de Cristian: medición visible del mapa (checkpoint 1) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -34,6 +34,21 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-17 (sesión P1-2, P1.7 hecha):**
+  - **compartir:**
+    - el botón "Compartir" abre un panel con el link (parámetros del mundo + `v=<versión del motor>`), copiar y las huellas: hash del mundo y hash del estado final, para comparar a ojo el mismo link en otro navegador;
+    - abrir un link (`?v=`) regenera el mundo y simula todo a máx. con barra de progreso; al terminar queda en pausa al principio, con la huella final y "Reproducir desde el principio";
+    - si la versión del link no es la del motor, se muestra un aviso;
+  - **verificación:**
+    - test de la sesión (avance rápido → pausa en k = 0 → tomar el control);
+    - E2E: el link da la misma huella final que la corrida sin cortes (Chromium y Firefox); el mismo link en Firefox, abierto desde el test de Chromium, da la misma huella (`3b5328aa…` para la seed 7 del mundo chico, igual que Node); un link de otra versión avisa;
+  - **CI:**
+    - con el arreglo de P1.6 (la simulación no espera al mapa), el Firefox del runner ya pasa vivo y guardar/continuar;
+    - el E2E de la UI fallaba por un `console.error` del mapa al no poder crear el renderer, y ahora ese fallo manejado va como aviso;
+    - si el E2E falla, el CI sube `apps/web/test-results` como artefacto;
+  - **Δ:** el modo "link compartido" lo marca `v=` en la URL. Los mundos abiertos desde "Crear" (sin `v`) se reproducen a 1× desde el principio, como antes;
+  - **próximo:** checkpoint 3 con Cristian; después P1.9.
+
 - **2026-10-17 (sesión P1-2, P1.6 hecha):**
   - **D57:** wireframes aprobados con las 3 recomendaciones (resumen durante la corrida hasta lo visto, ficha = inspector, mundos guardados en "Crear");
   - **UI v1** (`apps/web`), con TanStack Router, zustand, TanStack Virtual y uPlot (versiones con ≥ 2 semanas en el catálogo):
