@@ -272,6 +272,26 @@
 - **Cómo detectarlo antes:** probar la capa con `side = DoubleSide` antes de buscar el error en el shader.
 - **Promovido a CLAUDE.md:** no.
 
+### L-022 · Un archivo que difiere solo en mayúsculas de otro rompe el typecheck en macOS
+- **Fecha / fase:** 2026-10-17 · P1
+- **Origen:** observación propia (P1.5, línea de tiempo)
+- **Contexto:** el modelo puro estaba en `live/timeline.ts` y el componente iba a ser `live/Timeline.tsx`.
+- **Qué pasó:** `tsc` falló con "differs from already included file name only in casing" y ESLint no encontró el archivo en el proyecto. En el disco de macOS (sin distinción de mayúsculas) son el mismo nombre; en el runner de Linux serían dos archivos.
+- **Causa raíz:** nombrar el componente igual que el módulo de lógica, cambiando solo la mayúscula.
+- **Regla:** el componente y su lógica pura llevan nombres distintos más allá de las mayúsculas (`timeline.ts` + `TimelineView.tsx`).
+- **Cómo detectarlo antes:** un `import './X'` cuando ya existe `./x` en la misma carpeta.
+- **Promovido a CLAUDE.md:** no.
+
+### L-023 · Probar un protocolo de `postMessage` en Node sin copiar los mensajes engaña
+- **Fecha / fase:** 2026-10-17 · P1
+- **Origen:** observación propia (P1.5, Worker de simulación)
+- **Contexto:** el test del motor del Worker le pasaba al espejo de la historia el mismo objeto `ready.data` que el Worker seguía usando.
+- **Qué pasó:** el primer lote falló con "lote desde k = 1, se esperaba 121": el espejo y el Worker compartían los arrays, así que cada `append` se sumaba dos veces. En el navegador no pasa, porque `postMessage` copia.
+- **Causa raíz:** el arnés de Node no reproducía la semántica de copia del canal real.
+- **Regla:** los arneses de Node de un protocolo de Worker copian cada mensaje con `structuredClone` (en `apps/`; en los paquetes del motor, con una copia explícita, porque el lint prohíbe `globalThis`).
+- **Cómo detectarlo antes:** un test que pasa un objeto "enviado" por referencia a otra instancia que lo modifica.
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)

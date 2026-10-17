@@ -5,10 +5,10 @@
 
 | | |
 |---|---|
-| **Última actualización** | 2026-10-16 |
+| **Última actualización** | 2026-10-17 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | P1.5 Tiempo y director v1 (Worker por tandas, IndexedDB); en paralelo, la medición visible del mapa por Cristian (checkpoint 1, `phases/P01/mapa.md` §8) |
+| **Próximo paso** | Decisión pendiente: calibración del ritmo por era (la mediana da 13,7 min, no 10 ± 1; ver handoff). Después P1.6, que empieza por los wireframes 🎨; en paralelo, la medición visible del mapa por Cristian (checkpoint 1) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -34,6 +34,38 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-17 (sesión P1-2, P1.5 hecha):**
+  - **Worker de simulación** (`apps/web/src/worker/sim-*`):
+    - simula por tandas de 16 ms y cede con un `MessageChannel` propio; protocolo tipado; motor `SimEngine` separado del `onmessage` y probado en Node;
+    - graba la historia y manda lotes transferibles: `History.viewData` / `drain` / `append`; el hilo principal arma un espejo sin keyframes completos y reproduce desde ahí (D49);
+    - estado completo a una fecha y guardado (`.wsim`) a pedido;
+  - **reloj por era** (`PlaybackClock`, `PLAYBACK` en `packages/history`): cada año dura 1/ritmo de la era dominante, con transición suave (τ = 3 s) y piso de 15 min (D48); con fechas tipo Tierra da 9,6 min, como la tabla de D01-a;
+  - **director:** pausa, 1×, 2×, 4× y máx.; colchón de 500 años por delante; si la reproducción alcanza a la simulación, espera; rebobinar mueve el reloj;
+  - **línea de tiempo:**
+    - bandas de eras y marcadores de eventos con significancia ≥ 0,8, solo hasta lo ya visto (D49); con 0,6 eran ~9.000 marcas;
+    - lo simulado por delante va como franja neutra;
+    - se navega con clic, arrastre y ←/→;
+  - **mapa en vivo:** relleno político (un color por id de polity) y asentamientos reales por nivel;
+  - **mundos guardados** en IndexedDB (bytes del `.wsim` + metadatos): guardar, lista, cargar (`?load=<id>` regenera el mundo y continúa desde el último año) y borrar;
+  - **verificación:**
+    - tests de historia y de la web;
+    - E2E de Playwright (`apps/web/e2e`, Chromium y Firefox, 4/4): reproducción, polities y asentamientos en el mapa, rebobinar con la línea de tiempo, guardar → recargar → cargar → continuar con el mismo hash; en el CI corre en el job `determinism`;
+    - en el navegador: el hash del estado en k = 1.500 y el final después de guardar en 1753, recargar y continuar son idénticos a los de Node (`ab57ea65…`, `3b5328aa…`);
+    - captura en `docs/phases/P01/img/vivo-p15.jpg`;
+  - **`ws health` mide la duración a 1×.** Con 10 seeds la mediana da **13,7 min** (rango 4,0–15,0) y solo 1 de 10 queda en 9–11 min. La causa es la dispersión bimodal de la simulación: 5 seeds llegan a la era moderna hacia el −6000 y tocan el piso de 15 min; una no tiene agricultura hasta el 798 y dura 4 min. La tabla de D48 no lo arregla. **Decisión pendiente** con Cristian; la línea base de salud se regeneró con el campo nuevo (mismos resultados, solo cambian los tiempos);
+  - **Δ (para el REPORT):**
+    - `PLAYBACK` vive en `packages/history` y no en la config de `apps/web` (D48), para que `ws health` use la misma función;
+    - el color político sale del id de polity (el coloreo de grafo es P2.4);
+    - la línea de tiempo funcional y neutra ya está en P1.5; su lugar y aspecto los fijan los wireframes de P1.6;
+    - una historia cargada arranca en su último año;
+    - `dominantEra` se separó de `summarize` (es barata) para medir el ritmo por año;
+  - **riesgos:**
+    - con un archivo cargado, el estado completo de un año viejo cuesta hasta 999 años de re-simulación (1,5–2,1 s, todavía sin barra de progreso; la necesita el inspector de P1.6);
+    - el mapa y el Worker tienen cada uno su copia del mundo (memoria sin medir: P1.9);
+    - con el panel oculto del navegador integrado, el mundo chico tardó 70–114 s en cargar (L-019): la verificación visual se hizo con Playwright headless;
+  - LEARNINGS L-022 (nombres que difieren solo en mayúsculas) y L-023 (arneses de `postMessage` sin copia);
+  - **próximo:** la decisión del ritmo, y P1.6 empezando por los wireframes 🎨 (mock-first).
+
 - **2026-10-16 (sesión P1-2, P1.8 y P1.4 hechas):**
   - **`ws health`** (32ae77f): N seeds en paralelo con invariantes por tick, bandas y ventanas del Apéndice A escaladas por la tierra de cada mundo, reporte MD + HTML en `out/health/`, comparación contra la línea base (`docs/phases/P01/health-baseline.json`, generada con el contenido calibrado `15186f8…`; su etiqueta dice motor 0.1.2 porque la versión se subió después, sin cambios de comportamiento); job `health` en el CI por PR;
   - **calibración v1** (10 seeds del mediano, D55: `cropReach`, invención ∝ área × √densidad): 0 invariantes rotos, 0 hegemones; medianas: agricultura −10.194, primera ciudad −4.218, bronce −3.655, escritura −3.268; 235 M personas en el 1 d.C. (7/10 dentro de la banda); 44 polities activas; `ENGINE_VERSION` 0.1.3;
