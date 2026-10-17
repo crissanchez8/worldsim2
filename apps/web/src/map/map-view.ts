@@ -332,6 +332,12 @@ export class MapView {
     if (this.report.scene) this.report.scene.battles = markers.length;
   }
 
+  /** Lleva el objetivo de la cámara a una celda (x con wrap, z = fila). */
+  focus(x: number, z: number): void {
+    this.pose.x = x;
+    this.pose.z = z;
+  }
+
   setVerticalExaggeration(value: number): void {
     this.exaggeration = value;
     const h = this.maxHeightCells();

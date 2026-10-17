@@ -1,6 +1,7 @@
 // Sesión en vivo (P1.5): une el Worker de simulación, el espejo de la historia, el reloj por era y
 // el director. Corre su propio bucle de cuadros: avanza la reproducción, avisa al mapa cuando cambia
 // el año mostrado, le marca al Worker hasta dónde simular (D49) y le pasa a React un estado resumido.
+import type { events } from '@ws/core';
 import { History, PlaybackClock, type VisualFrame } from '@ws/history';
 import type { WorldStatic } from '@ws/worldgen';
 import {
@@ -9,12 +10,16 @@ import {
   type SimClient,
   type SimClientEvents,
   type SimFullState,
+  type SimInspected,
   type SimReady,
   type SimSaved,
 } from '../worker/sim-client';
 import { LIVE, type Speed } from './config';
 import { Director } from './director';
+import { Registry } from './registry';
+import { RulerIndex } from './ruler-index';
 import { MarkerIndex } from './timeline';
+import type { EntityRef } from '../worker/sim-protocol';
 
 export interface LiveStatus {
   /** Estado mostrado (k) y su año calendario. */
@@ -65,6 +70,12 @@ export interface LiveOptions {
 export class LiveSession {
   readonly world: WorldStatic;
   readonly markers = new MarkerIndex();
+  /** Registros permanentes de las entidades (a la cabeza de la simulación: filtrar por fecha). */
+  readonly registry = new Registry();
+  /** Gobernante de cada polity a la fecha (eventos de sucesión). */
+  readonly rulers = new RulerIndex();
+  private readonly eventsById = new Map<number, events.GameEvent>();
+  private indexedYears = 0;
   private readonly callbacks: LiveCallbacks;
   private readonly client: SimClient;
   private readonly loop: FrameLoop;
@@ -117,6 +128,23 @@ export class LiveSession {
     return this.head;
   }
 
+  /** El estado más avanzado que ya se mostró (lo de más adelante no se revela, D49). */
+  get seen(): number {
+    return Math.floor(this.directorValue?.seen ?? 0);
+  }
+
+  /** Año calendario del estado k (el k = 0 se muestra como el año de inicio). */
+  yearAt(k: number): number {
+    const history = this.historyValue;
+    if (!history) return 0;
+    return k <= 0 ? history.startYear : history.yearOf(k);
+  }
+
+  /** Evento por id (para enlazar causas). */
+  eventById(id: number): events.GameEvent | undefined {
+    return this.eventsById.get(id);
+  }
+
   setSpeed(speed: Speed): void {
     if (!this.directorValue) return;
     this.directorValue.speed = speed;
@@ -132,6 +160,11 @@ export class LiveSession {
 
   save(): Promise<SimSaved> {
     return this.client.save();
+  }
+
+  /** Detalle exacto de una entidad en k (el "por qué" del inspector). */
+  inspect(k: number, entity: EntityRef): Promise<SimInspected> {
+    return this.client.inspect(k, entity);
   }
 
   /** Estado completo exacto en k (para el "por qué" y para verificar determinismo). */
@@ -158,13 +191,14 @@ export class LiveSession {
   private onReady(ready: SimReady): void {
     if (this.disposed) return;
     this.ready = ready;
+    this.registry.apply(ready.registry);
     const history = History.fromData(this.world, ready.data);
     this.historyValue = history;
     const clock = new PlaybackClock(ready.endK);
     for (const era of history.data.aggregates.era) clock.push(era);
     this.clock = clock;
     this.head = history.years;
-    this.markers.update(history.data.events);
+    this.indexEvents(history.data.events);
     // Una historia cargada sigue desde donde se guardó; una nueva, desde el principio.
     this.directorValue = new Director(clock, this.head);
     this.update(true);
@@ -181,7 +215,17 @@ export class LiveSession {
     for (let i = before; i < eras.length; i++) clock.push(eras[i] ?? 0);
     this.head = message.head;
     this.msPerYear = message.msPerYear;
-    this.markers.update(history.data.events);
+    if (message.registry) this.registry.apply(message.registry);
+    this.indexEvents(history.data.events);
+  }
+
+  private indexEvents(log: readonly (readonly events.GameEvent[])[]): void {
+    this.markers.update(log);
+    this.rulers.update(log);
+    for (let i = this.indexedYears; i < log.length; i++) {
+      for (const e of log[i] ?? []) this.eventsById.set(e.id, e);
+    }
+    this.indexedYears = log.length;
   }
 
   private schedule(): void {

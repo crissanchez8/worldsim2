@@ -80,8 +80,8 @@ test('guardar a mitad de corrida, recargar, cargar y continuar da el mismo hash'
   if (!saved) throw new Error('no se guardó');
   expect(saved.years).toBeLessThan(K);
 
-  // Recargar y cargar desde la lista (IndexedDB): sigue desde lo guardado y llega al mismo hash.
-  await page.reload();
+  // Cargar desde la lista de "Crear" (IndexedDB): sigue desde lo guardado y llega al mismo hash.
+  await page.goto('/');
   await page.getByRole('button', { name: 'Cargar' }).click();
   await page.waitForURL(/load=/);
   await live(page);
@@ -92,7 +92,53 @@ test('guardar a mitad de corrida, recargar, cargar y continuar da el mismo hash'
   expect(await hashAfterMax(page, K)).toBe(reference);
 
   // Borrar lo saca de la lista.
+  await page.goto('/');
   await page.getByRole('button', { name: 'Borrar' }).click();
   await expect(page.getByText('Todavía no hay mundos guardados.')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('UI v1: crear → vivo → inspector → resumen → ficha; es/en sin regenerar', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(String(e)));
+  page.on('console', (m) => {
+    if (m.type() === 'error') errors.push(m.text());
+  });
+  await page.goto('/');
+  await page.getByLabel('Semilla').fill('7');
+  await page.getByLabel('Chico').check();
+  await page.getByRole('button', { name: 'Generar mundo' }).click();
+  await page.waitForURL(/\/mundo\?/);
+  await live(page);
+  await hashAfterMax(page, K_POLITIES);
+  await page.evaluate((k) => {
+    (window as Win).__live?.setSpeed(0);
+    (window as Win).__live?.scrub(k);
+  }, K_POLITIES);
+
+  // Teletipo → inspector, con el "por qué" a la fecha.
+  await page.locator('.ticker button').first().click();
+  const inspector = page.getByRole('complementary', { name: 'Inspector' });
+  await expect(inspector.getByRole('heading', { level: 2 })).not.toBeEmpty();
+  const why = inspector.getByRole('button', { name: 'Calcular el porqué' });
+  if ((await why.count()) > 0) {
+    await why.click();
+    await expect(inspector.getByText(/calculado para/)).toBeVisible();
+  }
+
+  // Resumen: 3 gráficos y listas; una fila abre su ficha.
+  await page.getByRole('link', { name: 'Resumen' }).click();
+  await page.waitForURL(/\/mundo\/resumen/);
+  await expect(page.locator('figcaption')).toHaveCount(3);
+  await page.locator('.entity-table .tr a').first().click();
+  await page.waitForURL(/\/mundo\/resumen\/polity\//);
+  await expect(page.getByText('Eventos (con sus causas)')).toBeVisible();
+
+  // Cambiar de idioma cambia la UI y los textos de eventos, sin regenerar el mundo.
+  const head = await page.evaluate(() => (window as Win).__live?.status()?.head ?? 0);
+  await page.getByRole('button', { name: 'en', exact: true }).click();
+  await expect(page.getByText('Events (with their causes)')).toBeVisible();
+  await expect(page.getByText(/Generating the world/)).toHaveCount(0);
+  expect(await page.evaluate(() => (window as Win).__live?.status()?.head ?? 0)).toBe(head);
   expect(errors).toEqual([]);
 });

@@ -3,7 +3,11 @@
 // la `MapView`. React solo muestra el estado (textos por i18n).
 import { NO_LEVEL, type VisualFrame } from '@ws/history';
 import type { WorldgenStage, WorldStatic } from '@ws/worldgen';
-import { createWorldgenClient } from '../worker/worldgen-client';
+import {
+  createWorldgenClient,
+  type WorldgenClient,
+  type WorldgenResult,
+} from '../worker/worldgen-client';
 import { type ColorMode, provinceColors } from './colors';
 import { buildMapData } from './map-data';
 import { createRenderer, type Backend, type MapPick, MapView } from './map-view';
@@ -38,12 +42,18 @@ export class MapSession {
   private disposed = false;
   private readonly cleanups: (() => void)[] = [];
 
-  constructor(container: HTMLElement, params: MapParams, callbacks: MapSessionCallbacks) {
+  /** `world`: un mundo ya generado (p. ej. en "Crear"); si no viene, se genera en su Worker. */
+  constructor(
+    container: HTMLElement,
+    params: MapParams,
+    callbacks: MapSessionCallbacks,
+    world?: WorldStatic,
+  ) {
     window.__map = this.report;
     this.colorMode = params.colors;
     this.markers = params.markers;
     this.report.antialias = params.antialias;
-    void this.run(container, params, callbacks).catch((error: unknown) => {
+    void this.run(container, params, callbacks, world).catch((error: unknown) => {
       const message = error instanceof Error ? error.message : String(error);
       this.report.error = message;
       if (!this.disposed) callbacks.onError(message);
@@ -55,18 +65,26 @@ export class MapSession {
     container: HTMLElement,
     params: MapParams,
     cb: MapSessionCallbacks,
+    given: WorldStatic | undefined,
   ): Promise<void> {
-    const client = createWorldgenClient();
+    let client: WorldgenClient | null = null;
+    let worldPromise: Promise<WorldgenResult>;
+    if (given) {
+      worldPromise = Promise.resolve({ world: given, generateMs: 0, transferMs: 0, wallMs: 0 });
+    } else {
+      const c = createWorldgenClient();
+      client = c;
+      worldPromise = c.generate(params.world, (stage, index, total) => {
+        if (!this.disposed) cb.onProgress(stage, index, total);
+      });
+    }
     this.cleanups.push(() => {
-      client.dispose();
+      client?.dispose();
     });
     const rendererPromise = createRenderer(params.backend, params.antialias);
-    const worldPromise = client.generate(params.world, (stage, index, total) => {
-      if (!this.disposed) cb.onProgress(stage, index, total);
-    });
     // Si el mundo falla, el renderer igual se libera.
     const [handleResult, worldResult] = await Promise.allSettled([rendererPromise, worldPromise]);
-    client.dispose();
+    client?.dispose();
     if (
       handleResult.status === 'fulfilled' &&
       (this.disposed || worldResult.status === 'rejected')
@@ -133,6 +151,16 @@ export class MapSession {
     if (this.view && this.world) {
       this.view.setProvinceColors(provinceColors(mode, this.world.provinces, this.owner));
     }
+  }
+
+  /** Centra la cámara en una provincia (teletipo, inspector). */
+  focus(province: number): void {
+    const world = this.world;
+    if (!world || province === 0) return;
+    this.view?.focus(
+      world.provinces.centroidX[province] ?? 0,
+      world.provinces.centroidY[province] ?? 0,
+    );
   }
 
   /** Muestra un año de la historia: relleno político y asentamientos (P1.5). */

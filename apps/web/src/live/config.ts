@@ -10,6 +10,8 @@ export const LIVE = {
   maxFrameSeconds: 0.25,
   /** Cada cuánto se le avisa a React el estado de la reproducción (ms). */
   uiUpdateMs: 100,
+  /** Cada cuánto manda el Worker los cambios del registro de entidades (ms). */
+  registryMs: 250,
 } as const;
 
 /** Velocidades de la reproducción (D10): 0 = pausa; "max" = seguir a la cabeza de la simulación. */
@@ -33,4 +35,11 @@ export const TIMELINE = {
   aheadColor: '#ececec',
   markerColor: '#7a2e2e',
   playheadColor: '#111111',
+} as const;
+
+export const TICKER = {
+  /** Significancia mínima de un evento para el teletipo (0–1): ~1–3 por año en P1. */
+  minSignificance: 0.3,
+  /** Eventos que se muestran (los más recientes hasta la fecha). */
+  rows: 30,
 } as const;

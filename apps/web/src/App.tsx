@@ -1,17 +1,15 @@
-import { createI18n, DEFAULT_LANGUAGE } from '@ws/i18n';
+import { RouterProvider } from '@tanstack/react-router';
 import { I18nextProvider } from 'react-i18next';
-import { MapScreen } from './MapScreen';
+import { appI18n } from './ui/i18n';
+import { createAppRouter } from './ui/router';
 
-const i18n = createI18n(DEFAULT_LANGUAGE);
+const router = createAppRouter();
 
-/**
- * App placeholder: en P1.2 monta el mapa con `?seed=` y `?size=` (el router y las pantallas de
- * crear, vivo y resumen son P1.6, después de los wireframes).
- */
+/** Raíz de la web (P1.6): idioma (toggle es/en en cada barra) y rutas. */
 export function App() {
   return (
-    <I18nextProvider i18n={i18n}>
-      <MapScreen />
+    <I18nextProvider i18n={appI18n}>
+      <RouterProvider router={router} />
     </I18nextProvider>
   );
 }

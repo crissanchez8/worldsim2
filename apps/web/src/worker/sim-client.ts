@@ -1,7 +1,7 @@
 // Cliente tipado del Worker de simulación: eventos de la corrida (listo, lotes, errores) y una
 // promesa por pedido (estado completo, guardar).
 import type { WorldStatic } from '@ws/worldgen';
-import type { SimRequest, SimResponse } from './sim-protocol';
+import type { EntityRef, SimRequest, SimResponse } from './sim-protocol';
 
 /** Lo mínimo de un `Worker` que usa el cliente. */
 export interface SimWorkerLike {
@@ -15,6 +15,7 @@ export type SimReady = Extract<SimResponse, { type: 'ready' }>;
 export type SimBatch = Extract<SimResponse, { type: 'batch' }>;
 export type SimSaved = Omit<Extract<SimResponse, { type: 'saved' }>, 'type' | 'id'>;
 export type SimFullState = Omit<Extract<SimResponse, { type: 'fullState' }>, 'type' | 'id'>;
+export type SimInspected = Omit<Extract<SimResponse, { type: 'inspected' }>, 'type' | 'id'>;
 
 export interface SimClientEvents {
   onReady(ready: SimReady): void;
@@ -23,7 +24,7 @@ export interface SimClientEvents {
 }
 
 interface Pending {
-  readonly resolve: (value: SimSaved | SimFullState) => void;
+  readonly resolve: (value: SimSaved | SimFullState | SimInspected) => void;
   readonly reject: (error: Error) => void;
 }
 
@@ -45,6 +46,7 @@ export class SimClient {
           events.onBatch(m);
           return;
         case 'fullState':
+        case 'inspected':
         case 'saved': {
           const { type: _type, id, ...rest } = m;
           this.pending.get(id)?.resolve(rest);
@@ -82,6 +84,10 @@ export class SimClient {
     return this.request((id) => ({ type: 'fullState', id, k })) as Promise<SimFullState>;
   }
 
+  inspect(k: number, entity: EntityRef): Promise<SimInspected> {
+    return this.request((id) => ({ type: 'inspect', id, k, entity })) as Promise<SimInspected>;
+  }
+
   save(): Promise<SimSaved> {
     return this.request((id) => ({ type: 'save', id })) as Promise<SimSaved>;
   }
@@ -95,7 +101,9 @@ export class SimClient {
     for (const e of entries) e.reject(new Error('simulación: cliente cerrado'));
   }
 
-  private request(make: (id: number) => SimRequest): Promise<SimSaved | SimFullState> {
+  private request(
+    make: (id: number) => SimRequest,
+  ): Promise<SimSaved | SimFullState | SimInspected> {
     if (this.disposed) return Promise.reject(new Error('simulación: cliente cerrado'));
     const id = this.nextId++;
     return new Promise((resolve, reject) => {

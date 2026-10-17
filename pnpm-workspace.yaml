@@ -41,6 +41,12 @@ catalog:
   # Contenido como datos (D54). 4.6.5 y no la última (4.6.7, de hace 4 días): preferimos
   # versiones con ≥ 2 semanas publicadas.
   zod: 4.6.5
+  # UI de P1.6 (D54), con ≥ 2 semanas publicadas al 2026-10-17: router y listas virtualizadas de
+  # TanStack, estado de UI con zustand y gráficos con uPlot.
+  '@tanstack/react-router': 1.170.41
+  '@tanstack/react-virtual': 3.14.13
+  uplot: 1.6.32
+  zustand: 5.0.15
 
 # Todas las versiones exactas; el lockfile manda.
 savePrefix: ''

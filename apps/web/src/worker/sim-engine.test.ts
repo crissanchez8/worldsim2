@@ -91,6 +91,42 @@ describe('Worker de simulación · motor', () => {
     expect(b.of('fullState')[0]?.hash).toBe(referenceHash(260));
   });
 
+  it('el registro viaja completo con ready y después solo lo nuevo o cambiado', () => {
+    const h = harness();
+    h.engine.handle({ type: 'init', world });
+    const ready = h.of('ready')[0];
+    expect(ready?.registry.cultures.length).toBeGreaterThan(0);
+    expect(ready?.registry.languages.length).toBeGreaterThan(0);
+    expect(ready?.registry.cultures[0]?.[1].name).not.toBe('');
+    h.engine.handle({ type: 'target', k: 300 });
+    h.drain();
+    // Las culturas iniciales no cambian: no se reenvían.
+    const resent = h.of('batch').flatMap((b) => b.registry?.cultures ?? []);
+    const initial = new Set(ready?.registry.cultures.map(([id]) => id));
+    expect(resent.filter(([id]) => initial.has(id))).toEqual([]);
+  });
+
+  it('inspect: el detalle exacto de una provincia en k, con el "por qué" de sus stats', () => {
+    const h = harness();
+    h.engine.handle({ type: 'init', world });
+    h.engine.handle({ type: 'target', k: 80 });
+    h.drain();
+    h.engine.handle({ type: 'inspect', id: 3, k: 40, entity: { kind: 'province', id: 5 } });
+    const r = h.of('inspected')[0];
+    expect(r?.k).toBe(40);
+    const d = r?.detail;
+    if (d?.kind !== 'province') throw new Error('se esperaba una provincia');
+    expect(d.population).toBeGreaterThan(0);
+    expect(d.cultures.reduce((a, c) => a + c.persons, 0)).toBeCloseTo(d.population, 3);
+    expect(d.stats.map((x) => x.stat)).toEqual([
+      'cropYield',
+      'forageYield',
+      'cropReach',
+      'diffusionRate',
+      'urbanShare',
+    ]);
+  });
+
   it('un archivo de otro mundo se rechaza con un error claro', () => {
     const a = harness();
     a.engine.handle({ type: 'init', world });
