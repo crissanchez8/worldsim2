@@ -13,6 +13,7 @@ export {
 export { INITIAL_STATE, LEDGER, SIM_DEFAULTS } from './config';
 export type { LedgerTally, SimContext, SimSystem } from './context';
 export { computeDerived, type Derived } from './derive';
+export { explainPolity, explainProvince, type StatExplanation } from './explain';
 export { createEventTypes, type SimEventTypes, type TerritoryChangedData } from './events';
 export type { SimParams } from './init';
 export { checkInvariants, InvariantError, totalPopulation } from './invariants';
