@@ -222,6 +222,22 @@ importers:
         version: 5.0.5(@types/node@24.19.2)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.6.1)(tsx@4.23.15)(yaml@2.9.1))
 
   packages/history:
+    dependencies:
+      '@ws/content':
+        specifier: workspace:*
+        version: link:../content
+      '@ws/core':
+        specifier: workspace:*
+        version: link:../core
+      '@ws/sim':
+        specifier: workspace:*
+        version: link:../sim
+      '@ws/worldgen':
+        specifier: workspace:*
+        version: link:../worldgen
+      fflate:
+        specifier: 'catalog:'
+        version: 0.8.3
     devDependencies:
       vitest:
         specifier: 'catalog:'
@@ -365,9 +381,15 @@ importers:
 
   tools/cli:
     dependencies:
+      '@ws/content':
+        specifier: workspace:*
+        version: link:../../packages/content
       '@ws/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@ws/history':
+        specifier: workspace:*
+        version: link:../../packages/history
       '@ws/sim':
         specifier: workspace:*
         version: link:../../packages/sim

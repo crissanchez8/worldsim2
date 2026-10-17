@@ -57,3 +57,30 @@ hash" y vuelve no verificables los archivos compartidos.
 
 ## Evidencia
 Spike B (`docs/phases/P00/spikes.md`): tamaños y latencias citados arriba.
+
+## Medición con el estado real (P1.4, 2026-10-16)
+Mundo mediano, seed 1, 13.900 años (−12000 → 1900), motor 0.1.3: `pnpm ws run --size medium
+--wsim out/p14/medium-s1.wsim`.
+
+| Bloque | Tamaño en el archivo |
+|---|---|
+| META | 61 B |
+| VKEY (140 marcos visuales) | 0,05 MB |
+| DELT (13.900 deltas anuales) | 0,06 MB |
+| SERI (1.391 muestras × 1.501 provincias, en diferencias zigzag) | 2,14 MB |
+| AGGR (agregados por año) | 0,17 MB |
+| EVNT (51.508 eventos) | 1,69 MB |
+| KEYF (14 keyframes completos de ~84 KB) | 1,18 MB |
+| FINL (estado final exacto) | 0,40 MB |
+| **Total** | **5,69 MB** (presupuesto 20 MB) |
+
+- En memoria: 140 keyframes × ~96 KB = 13,5 MB; marcos visuales 2,7 MB; series 6,3 MB.
+- Mapa a la fecha (VKEY + hasta 99 deltas): ≤ 0,1 ms (D45: 16 ms).
+- Estado completo a la fecha en vivo (keyframe cada 100 años + re-simulación): promedio 167 ms,
+  máximo 278 ms (D45: 500 ms). Desde el archivo (cada 1.000 años): promedio 1,5 s, máximo 2,1 s:
+  con progreso, como prevé D01-c.
+- Grabar cuesta 0,4 ms/año (la simulación, 1,6 ms/año); codificar el archivo 1,7 s, leerlo 0,4 s.
+- **Δ v0:** sin INDX (el archivo se carga entero; el índice de la enciclopedia es P11); eventos por
+  año, no por siglo; la serie va en diferencias (con las muestras crudas eran 3,9 MB).
+- **Riesgo:** EVNT crece con los eventos de cada fase (≈ 33 B por evento comprimido; el codec escribe
+  tipo y datos como texto). Si pesa, va un bloque columnar con diccionario de tipos (P11).

@@ -1,3 +1,5 @@
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { ENGINE_VERSION } from '@ws/core';
 import { parseBenchArgs, runBench } from './bench';
 import { parseHealthArgs, runHealth, writeHealth } from './health';
@@ -27,7 +29,7 @@ const HELP = [
   '  run             Genera un mundo y lo simula headless: hashes por año y resumen',
   '                  --seed N · --size small|medium · --map continents|pangaea|archipelago',
   '                  --land 0.3 · --grid AxB (grilla de prueba) · --years N · --every 1000',
-  '                  --json · --checks',
+  '                  --json · --checks · --wsim archivo (graba la historia y la mide)',
   '  health          Salud histórica (P1.8): N seeds en paralelo contra el Apéndice A',
   '                  --seeds 10 · --seed-list 1,2 · --size · --map · --land · --sample 100',
   '                  --years N · --workers N · --out out/health · --compare base.json · --save base.json',
@@ -57,7 +59,11 @@ export function main(args: readonly string[], io: Io = consoleIo): Promise<numbe
         io.err(error instanceof Error ? error.message : String(error));
         return Promise.resolve(1);
       }
-      const report = runSim(options);
+      const { report, wsim } = runSim(options);
+      if (wsim && options.wsim !== undefined) {
+        mkdirSync(dirname(options.wsim), { recursive: true });
+        writeFileSync(options.wsim, wsim);
+      }
       io.out(options.json ? JSON.stringify(report, null, 2) : formatRun(report));
       return Promise.resolve(0);
     }

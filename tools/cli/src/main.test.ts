@@ -1,6 +1,13 @@
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { ENGINE_VERSION } from '@ws/core';
-import { describe, expect, it } from 'vitest';
+import { decodeWsim } from '@ws/history';
+import { describe, expect, it, vi } from 'vitest';
 import { main, type Io } from './main';
+
+// Generan mundos reales y simulan: bajo la carga de `pnpm check` pasan los 5 s por defecto (L-017).
+vi.setConfig({ testTimeout: 60_000 });
 
 function capture(): Io & { lines: string[]; errors: string[] } {
   const lines: string[] = [];
@@ -61,6 +68,35 @@ describe('ws', () => {
     const bad = capture();
     expect(await main(['run', '--size', 'huge'], bad)).toBe(1);
     expect(bad.errors.join('\n')).toContain('huge');
+  });
+
+  it('run --wsim: graba la historia, escribe el archivo y lo mide', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'ws-wsim-'));
+    const file = join(dir, 'corrida.wsim');
+    const io = capture();
+    const args = ['run', '--size', 'small', '--years', '120', '--wsim', file, '--json'];
+    expect(await main(args, io)).toBe(0);
+    const report = JSON.parse(io.lines.join('\n')) as {
+      history: { fileBytes: number; blocks: { tag: string }[]; memory: { keyframes: number } };
+    };
+    const bytes = readFileSync(file);
+    expect(report.history.fileBytes).toBe(bytes.length);
+    expect(decodeWsim(bytes).header.years).toBe(120);
+    expect(report.history.blocks.map((b) => b.tag)).toEqual([
+      'META',
+      'VKEY',
+      'DELT',
+      'SERI',
+      'AGGR',
+      'EVNT',
+      'KEYF',
+      'FINL',
+    ]);
+    expect(report.history.memory.keyframes).toBe(2);
+    rmSync(dir, { recursive: true, force: true });
+    const grid = capture();
+    expect(await main(['run', '--grid', '4x4', '--wsim', file], grid)).toBe(1);
+    expect(grid.errors.join('\n')).toContain('--wsim');
   });
 
   it('un comando desconocido sale con 1', async () => {

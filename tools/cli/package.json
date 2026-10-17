@@ -15,6 +15,7 @@
   "dependencies": {
     "@ws/content": "workspace:*",
     "@ws/core": "workspace:*",
+    "@ws/history": "workspace:*",
     "@ws/sim": "workspace:*",
     "@ws/worldgen": "workspace:*",
     "tsx": "catalog:"

@@ -211,7 +211,8 @@
 - **Causa raíz:** timeouts por defecto en tests que hacen trabajo pesado de verdad (generar un mundo, simular miles de años), sensibles a la carga de la máquina.
 - **Regla:** todo archivo de tests que genera mundos o simula corridas largas fija `vi.setConfig({ testTimeout, hookTimeout })` explícitos y holgados; un "fallo sin error" en `pnpm check` se busca con `grep -E "FAIL|timed out"` en el log completo (L-011), no se reintenta a ciegas.
 - **Cómo detectarlo antes:** un test que tarda más de ~1 s solo.
-- **Promovido a CLAUDE.md:** no.
+- **Recurrencia:** P1.4: el test de `ws run` con el worldgen real (`tools/cli`) pasó los 5 s cuando se sumó la corrida grabada de `packages/history` al paralelo.
+- **Promovido a CLAUDE.md:** sí (2026-10-16, Convenciones).
 
 ---
 
