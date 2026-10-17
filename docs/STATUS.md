@@ -8,7 +8,7 @@
 | **Última actualización** | 2026-10-17 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | Checkpoint 3 con Cristian: recorrido completo en el preview (crear → mirar a 1× → rebobinar → resumen → link en otro navegador; Safari en la página de determinismo). Después P1.9 Rendimiento → QA gate → REPORT. Pendiente de Cristian: medición visible del mapa (checkpoint 1) |
+| **Próximo paso** | Checkpoint 3 con Cristian (recorrido en el preview) → QA gate y P1.10 Cierre (borrar `spikes/`, `model.md` v1.1, ADR-008, REPORT, prompt de P2, base del bench del runner desde el artefacto `bench-ci`). Pendiente de Cristian: medición visible del mapa (checkpoint 1) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -34,6 +34,31 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-17 (sesión P1-2, P1.9 hecha):**
+  - **`ws bench` con el escenario `world-medium`** (medido antes de optimizar, como pide el BRIEF): corrida completa del mediano con la historia grabada; ms/año (prom y p95), costo de grabar, keyframe, `.wsim`, mapa y estado completo a la fecha y hash final;
+  - **presupuestos absolutos** en el bench (el CI falla si se pasan): worldgen ≤ 20 s, ms/año ≤ 10 y p95 ≤ 25, mapa ≤ 16 ms, estado completo ≤ 500 ms, `.wsim` ≤ 20 MB. Los de tiempo se escalan por la calibración de la máquina (referencia M1 Pro); los tamaños ya no se normalizan;
+  - **en Node (M1 Pro):** 1,43 ms/año (p95 2,1), grabar 0,25 ms/año, keyframe de 394 KB, `.wsim` de 5,7 MB, mapa 0,1 ms, estado completo 237 ms, worldgen 3,8 s; línea base en `docs/phases/P01/bench-baseline.json`;
+  - **en el navegador** (`apps/web/scripts/measure-live.mjs`, build, mediano, link compartido):
+
+    | | Chrome con GPU (WebGPU) | Firefox (WebGL2) |
+    |---|---|---|
+    | worldgen | 3,8 s | 6,6 s |
+    | primer cuadro | 4,6 s | 7,5 s |
+    | corrida a máx. hasta 1900 (presupuesto ≤ 3 min) | 20 s | 42 s |
+    | rebobinar | 0,5 ms | 2 ms |
+    | estado completo | 218 ms | 487 ms |
+    | tareas largas durante la corrida | 0 | 0 |
+
+    No hizo falta optimizar el motor;
+  - **hallazgo:** con el Chromium de Playwright sin GPU (WebGL por software) el hilo principal se satura dibujando (21 s de tareas largas en 21 s), pero el perfil CDP da 98,7 % en código nativo y no en la app. Con GPU real no pasa. Por eso `measure-live` usa el Chrome instalado (`chrome`);
+  - **web:**
+    - las rutas del mundo se cargan a pedido: "Crear" baja 298 kB en lugar de 1,6 MB y el lector de `.wsim` se carga solo al importar;
+    - el mapa no dibuja mientras está tapado por el resumen o una ficha;
+    - el aviso de chunk grande queda en 1 MB, porque es three.js;
+  - **CI:** el bench del runner incluye `world-medium` y sube `out/bench-ci.json` como artefacto `bench-ci`, para regenerar la base del runner al cerrar P1;
+  - **riesgo:** en Firefox el estado completo a una fecha queda justo (487 ms frente a 500), porque su simulación es 2× más lenta. Si pesa, se pueden poner keyframes en memoria cada 50 años (el doble de memoria: ~27 MB en el mediano);
+  - **próximo:** checkpoint 3 (Cristian) → QA gate y P1.10.
+
 - **2026-10-17 (sesión P1-2, P1.7 hecha):**
   - **compartir:**
     - el botón "Compartir" abre un panel con el link (parámetros del mundo + `v=<versión del motor>`), copiar y las huellas: hash del mundo y hash del estado final, para comparar a ojo el mismo link en otro navegador;
