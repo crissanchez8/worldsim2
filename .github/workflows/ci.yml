@@ -62,13 +62,13 @@ jobs:
 
       - name: Bench (regresión contra la línea base del runner)
         # Base propia del runner (x86, linux): comparar contra la del M1 Pro daba falsos positivos
-        # en operaciones limitadas por memoria. Si GitHub cambia el hardware del runner, regenerar
-        # docs/phases/P00/bench-baseline-ci.json desde el log de una corrida.
+        # en operaciones limitadas por memoria. Base de P1 (con world-medium) tomada del artefacto
+        # bench-ci; si GitHub cambia el hardware del runner, regenerarla desde ese artefacto.
         # P1.9: incluye el escenario world-medium y sus presupuestos (escalados por la calibración
         # del runner). El JSON queda como artefacto para regenerar la base del runner al cerrar P1.
         run: |
           mkdir -p out
-          pnpm ws bench --compare docs/phases/P00/bench-baseline-ci.json --tolerance 1.0 --out out/bench-ci.json
+          pnpm ws bench --compare docs/phases/P01/bench-baseline-ci.json --tolerance 1.0 --out out/bench-ci.json
 
       - name: Bench del runner (JSON)
         if: always()

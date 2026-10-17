@@ -8,7 +8,7 @@
 | **Última actualización** | 2026-10-17 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | Checkpoint 3 de Cristian → completar el REPORT (`docs/phases/P01/REPORT.md`, borrador) con su resultado, base del bench del runner desde el artefacto `bench-ci`, QA gate y OK de cierre. Pendiente de Cristian: medición visible del mapa (checkpoint 1) y si se publica el tag `p00-spikes` |
+| **Próximo paso** | Checkpoint 3 de Cristian → completar el REPORT (`docs/phases/P01/REPORT.md`, borrador) con su resultado, QA gate y OK de cierre. Pendiente de Cristian: medición visible del mapa (checkpoint 1) y si se publica el tag `p00-spikes` |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -41,9 +41,9 @@ Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA
   - **REPORT de P1 en borrador:** tareas, desvíos, decisiones, métricas, evidencia, criterios de salida con lo pendiente marcado (checkpoint 3, base del runner), deuda y recomendaciones;
   - **pendiente para cerrar:**
     1. el resultado del checkpoint 3 en el REPORT;
-    2. la base del bench del runner: `gh run download <id> -n bench-ci`, guardarla como `docs/phases/P01/bench-baseline-ci.json` y pasar la comparación del CI a esa base;
-    3. marcar las casillas del BRIEF;
-    4. el OK de cierre en `decisions.md`.
+    2. marcar las casillas del BRIEF;
+    3. el OK de cierre en `decisions.md`;
+  - **base del bench del runner hecha:** `docs/phases/P01/bench-baseline-ci.json` sale del artefacto `bench-ci` de la corrida de a2797f4 (AMD EPYC, todo dentro del presupuesto: 1,84 ms/año, estado completo 325 ms, worldgen 5,0 s) y el CI ya compara contra ella. Keyframe y `.wsim` miden lo mismo, byte por byte, que en el M1 Pro;
 
 - **2026-10-17 (sesión P1-2, P1.9 hecha):**
   - **`ws bench` con el escenario `world-medium`** (medido antes de optimizar, como pide el BRIEF): corrida completa del mediano con la historia grabada; ms/año (prom y p95), costo de grabar, keyframe, `.wsim`, mapa y estado completo a la fecha y hash final;

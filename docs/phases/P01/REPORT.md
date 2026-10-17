@@ -36,7 +36,7 @@ La UI es neutra a propósito: el diseño llega en P2.
 | P1.7 Compartir v1 | ✅ hecha | Link con versión, avance rápido con progreso, huellas, aviso de versión |
 | P1.8 Salud v1 (`ws health`) | ✅ hecha | 10 seeds; calibración v1 con dispersión pendiente (P4/P5) |
 | P1.9 Rendimiento | ✅ hecha | Escenario `world-medium`, presupuestos en el bench, medición en el navegador; no hizo falta optimizar el motor |
-| P1.10 Cierre | ⚠️ en curso | Spikes borrados (tag local `p00-spikes`), `model.md` v1.1, prompt de P2; faltan el checkpoint 3, la base del bench del runner y el OK |
+| P1.10 Cierre | ⚠️ en curso | Spikes borrados (tag local `p00-spikes`), `model.md` v1.1, prompt de P2, bases del bench (M1 Pro y runner); faltan el checkpoint 3 y el OK |
 
 Subtareas: se marcan en el BRIEF al cerrar.
 
@@ -107,7 +107,7 @@ Subtareas: se marcan en el BRIEF al cerrar.
 - Mediciones:
   - mapa: `docs/phases/P01/mapa.md`;
   - historia: ADR-008 §Medición;
-  - bench: `docs/phases/P01/bench-baseline.json` y STATUS (P1.9);
+  - bench: `docs/phases/P01/bench-baseline.json` (M1 Pro) y `bench-baseline-ci.json` (runner del CI): el keyframe y el `.wsim` miden lo mismo byte por byte en las dos máquinas;
   - navegador: `apps/web/scripts/measure-live.mjs`.
 - Salud: `docs/phases/P01/health-p13.md` y `health-baseline.json`.
 - CI: jobs `check`, `determinism` (suite del motor + E2E de la web), `health` y `deploy` en el PR #2.
@@ -130,8 +130,8 @@ Subtareas: se marcan en el BRIEF al cerrar.
 - [ ] Cero errores de consola; CI verde; bench dentro del presupuesto; líneas base regeneradas:
   - ✅ cero errores (E2E);
   - ✅ CI verde hasta P1.7; P1.9 y el cierre, en curso;
-  - ✅ bench dentro del presupuesto;
-  - ⏳ base del runner pendiente (artefacto `bench-ci`).
+  - ✅ bench dentro del presupuesto en el M1 Pro y en el runner (1,84 ms/año, estado completo 325 ms);
+  - ✅ las dos bases regeneradas (`bench-baseline.json`, `bench-baseline-ci.json`).
 - [ ] REPORT escrito, docs actualizados (`model.md` v1.1, ADR-008, `CLAUDE.md`), prompt de P2 refrescado: ✅ los docs y el prompt; ⏳ este REPORT, que cierra con el checkpoint 3
 
 ## 8. Deuda técnica y pendientes
