@@ -32,6 +32,7 @@ function fake(seed: number, scale: number, pop1: number, agriculture: number | n
     wars: { count: 10, meanYears: 5, maxYears: 9 },
     reigns: { count: 100, meanYears: 22 },
     polities: { formed: 50, ended: 30 },
+    playbackSeconds: 540 + seed * 30,
     errors: [],
     finalHash: '',
   };
@@ -56,6 +57,9 @@ describe('ws health · evaluación', () => {
     const agri = s.milestones.find((m) => m.key === 'agriculture');
     expect(agri?.inside).toBe(1);
     expect(agri?.missing).toBe(1);
+    // Duración a 1×: 9,5 / 10 / 10,5 min, las tres dentro de 9–11 min (D48).
+    expect(s.playback.median).toBeCloseTo(10, 6);
+    expect(s.playback.inside).toBe(3);
   });
 
   it('detecta hegemones y errores; el reporte se arma en Markdown y HTML', () => {
@@ -77,6 +81,7 @@ describe('ws health · evaluación', () => {
     const md = toMarkdown(report, report);
     expect(md).toContain('❌ 1 seed(s) con errores');
     expect(md).toContain('| Métrica | Ahora | Antes |');
+    expect(md).toContain('## Ritmo de reproducción (D48)');
     const html = toHtml(report);
     expect(html).toContain('<svg');
     expect(html).toContain('<table>');

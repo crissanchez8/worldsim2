@@ -1,7 +1,7 @@
 {
- "engine": "0.1.2",
- "stateVersion": "0.1.2+15186f8acc4f4229",
- "generatedAt": "2026-10-16T23:42:40.379Z",
+ "engine": "0.1.3",
+ "stateVersion": "0.1.3+15186f8acc4f4229",
+ "generatedAt": "2026-10-17T12:08:40.077Z",
  "summary": {
   "seeds": 10,
   "failures": 0,
@@ -152,8 +152,8 @@
   "warsPerSeed": 961.5,
   "warYears": 5.4741387146623035,
   "reignYears": 31.463325379520764,
-  "msPerYear": 2.64700439147482,
-  "worldgenSeconds": 6.809016750000002,
+  "msPerYear": 2.4055476333812953,
+  "worldgenSeconds": 5.8750997495,
   "events": {
    "battle.fought": 5402.5,
    "famine.ended": 8042,
@@ -172,6 +172,12 @@
    "treaty.signed": 961.5,
    "war.declared": 964,
    "war.ended": 961.5
+  },
+  "playback": {
+   "median": 13.65758813932276,
+   "min": 4.032882075917947,
+   "max": 15.013919137630527,
+   "inside": 1
   }
  },
  "results": []

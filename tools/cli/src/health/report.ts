@@ -23,6 +23,18 @@ export interface MilestoneCheck {
   readonly missing: number;
 }
 
+/** Duración de la reproducción a 1× (D48: mediana 10 ± 1 min). */
+export const PLAYBACK_BAND_MINUTES = [9, 11] as const;
+
+export interface PlaybackCheck {
+  /** Minutos a 1×. */
+  readonly median: number;
+  readonly min: number;
+  readonly max: number;
+  /** Seeds dentro de PLAYBACK_BAND_MINUTES. */
+  readonly inside: number;
+}
+
 export interface HealthSummary {
   readonly seeds: number;
   readonly failures: number;
@@ -40,6 +52,7 @@ export interface HealthSummary {
   readonly msPerYear: number;
   readonly worldgenSeconds: number;
   readonly events: Readonly<Record<string, number>>;
+  readonly playback: PlaybackCheck;
 }
 
 export interface HealthReport {
@@ -106,6 +119,7 @@ export function summarizeHealth(results: readonly SeedResult[]): HealthSummary {
         return s ? f(s) : 0;
       }),
     );
+  const minutes = results.map((r) => r.playbackSeconds / 60);
   const types = new Set(results.flatMap((r) => Object.keys(r.events)));
   const events: Record<string, number> = {};
   for (const t of [...types].sort()) events[t] = median(results.map((r) => r.events[t] ?? 0));
@@ -125,6 +139,13 @@ export function summarizeHealth(results: readonly SeedResult[]): HealthSummary {
     msPerYear: median(results.map((r) => r.msPerYear)),
     worldgenSeconds: median(results.map((r) => r.worldgenMs / 1000)),
     events,
+    playback: {
+      median: median(minutes),
+      min: Math.min(...minutes),
+      max: Math.max(...minutes),
+      inside: minutes.filter((m) => m >= PLAYBACK_BAND_MINUTES[0] && m <= PLAYBACK_BAND_MINUTES[1])
+        .length,
+    },
   };
 }
 
@@ -147,6 +168,7 @@ function keyRows(s: HealthSummary): [string, number, (x: number) => string][] {
     ['Duración media de los reinados (años)', s.reignYears, (x) => x.toFixed(1)],
     ['ms por año (mediana)', s.msPerYear, (x) => x.toFixed(2)],
     ['Worldgen (s, mediana)', s.worldgenSeconds, (x) => x.toFixed(2)],
+    ['Duración a 1× (min, mediana; D48: 10 ± 1)', s.playback.median, (x) => x.toFixed(1)],
     ...s.population.map((b): [string, number, (x: number) => string] => [
       `Población en ${fmtYear(b.year)} (mediana)`,
       b.median,
@@ -187,6 +209,13 @@ export function toMarkdown(report: HealthReport, baseline?: HealthReport): strin
       `| ${m.key} | ${fmtYear(m.from)} – ${fmtYear(m.to)} | ${fmtYear(m.median)} | ${m.inside}/${s.seeds} | ${m.missing} |`,
     );
   }
+  lines.push('');
+  lines.push('## Ritmo de reproducción (D48)');
+  lines.push('');
+  const pb = s.playback;
+  lines.push(
+    `Duración a 1×: mediana **${pb.median.toFixed(1)} min** (rango ${pb.min.toFixed(1)}–${pb.max.toFixed(1)}); ${pb.inside}/${s.seeds} seeds dentro de ${PLAYBACK_BAND_MINUTES[0]}–${PLAYBACK_BAND_MINUTES[1]} min.`,
+  );
   lines.push('');
   lines.push('## Métricas clave');
   lines.push('');

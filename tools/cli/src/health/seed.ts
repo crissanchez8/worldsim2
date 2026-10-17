@@ -2,7 +2,8 @@
 // junta métricas (muestras periódicas del mundo, hitos, eventos, guerras, reinados).
 import { performance } from 'node:perf_hooks';
 import { Innovations, SettlementLevels } from '@ws/content';
-import { Sim, summarize, type WorldSummary, yearHash } from '@ws/sim';
+import { playbackSeconds } from '@ws/history';
+import { dominantEra, Sim, summarize, type WorldSummary, yearHash } from '@ws/sim';
 import { generateWorld, type WorldParams } from '@ws/worldgen';
 
 export interface SeedResult {
@@ -24,6 +25,8 @@ export interface SeedResult {
   readonly wars: { readonly count: number; readonly meanYears: number; readonly maxYears: number };
   readonly reigns: { readonly count: number; readonly meanYears: number };
   readonly polities: { readonly formed: number; readonly ended: number };
+  /** Duración de la reproducción a 1× con el ritmo por era (s; D48). */
+  readonly playbackSeconds: number;
   /** Errores de invariantes o del motor (vacío = sano). */
   readonly errors: readonly string[];
   readonly finalHash: string;
@@ -48,12 +51,15 @@ export function runSeed(params: WorldParams, sample: number, years?: number): Se
   let done = 0;
   let finalHash = '';
   let lastYear = sim.year;
+  /** Era dominante de cada estado k (índice de Eras): el ritmo de la reproducción. */
+  const eras: number[] = [dominantEra(sim.ctx)];
   const t0 = performance.now();
   try {
     while (!sim.finished && (years === undefined || done < years)) {
       const result = sim.step();
       done++;
       lastYear = result.year;
+      eras.push(dominantEra(sim.ctx));
       for (const e of result.events) {
         events[e.type] = (events[e.type] ?? 0) + 1;
         const data = e.data as Readonly<Record<string, unknown>>;
@@ -116,6 +122,7 @@ export function runSeed(params: WorldParams, sample: number, years?: number): Se
     wars: { count: warCount, meanYears: warCount ? warYears / warCount : 0, maxYears: warMax },
     reigns: { count: reignCount, meanYears: reignCount ? reignSum / reignCount : 0 },
     polities: { formed: polity.size, ended },
+    playbackSeconds: playbackSeconds(eras, done),
     errors,
     finalHash,
   };
