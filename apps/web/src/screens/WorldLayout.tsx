@@ -42,6 +42,14 @@ function typing(target: EventTarget | null): boolean {
 export function WorldLayout() {
   const { t, i18n } = useTranslation();
   const searchStr = useRouterState({ select: (s) => s.location.searchStr });
+  // El mapa se ve solo en la vista en vivo; el resumen y las fichas lo tapan (P1.9: no dibuja).
+  const mapVisible = useRouterState({
+    select: (s) => s.location.pathname.replace(/\/$/, '') === '/mundo',
+  });
+  const map = useUi((s) => s.map);
+  useEffect(() => {
+    map?.setVisible(mapVisible);
+  }, [map, mapVisible]);
   const params = useMemo(() => readMapParams(searchStr), [searchStr]);
   const key = worldKey(params.world, params.load);
   const containerRef = useRef<HTMLDivElement>(null);

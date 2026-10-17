@@ -44,6 +44,7 @@ export class MapSession {
   private owner: Uint32Array | undefined;
   /** Último marco pedido (se dibuja cuando el mapa termina de prepararse). */
   private lastFrame: VisualFrame | null = null;
+  private visible = true;
   private disposed = false;
   private readonly cleanups: (() => void)[] = [];
 
@@ -148,6 +149,7 @@ export class MapSession {
     await view.start();
     if (this.isDisposed()) return;
     if (this.lastFrame) this.showFrame(this.lastFrame);
+    view.setPaused(!this.visible);
     cb.onReady({
       backend: handle.backend,
       forcedWebGL2: handle.forced,
@@ -165,6 +167,12 @@ export class MapSession {
     if (this.view && this.world) {
       this.view.setProvinceColors(provinceColors(mode, this.world.provinces, this.owner));
     }
+  }
+
+  /** El mapa se ve o está tapado por una página (resumen, ficha): tapado no dibuja. */
+  setVisible(visible: boolean): void {
+    this.visible = visible;
+    this.view?.setPaused(!visible);
   }
 
   /** Centra la cámara en una provincia (teletipo, inspector). */

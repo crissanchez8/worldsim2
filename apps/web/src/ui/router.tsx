@@ -3,18 +3,16 @@
 //   /mundo?seed=…                   vista en vivo (mapa + simulación)
 //   /mundo/resumen                  resumen hasta lo visto
 //   /mundo/resumen/$kind/$id        ficha de una entidad
+// Las rutas del mundo se cargan a pedido (P1.9): "Crear" no baja three.js, el mapa ni el motor.
 import {
   createRootRoute,
   createRoute,
   createRouter,
+  lazyRouteComponent,
   Outlet,
   redirect,
 } from '@tanstack/react-router';
 import { CreateScreen } from '../screens/CreateScreen';
-import { EntityScreen } from '../screens/EntityScreen';
-import { LiveHud } from '../screens/LiveHud';
-import { SummaryScreen } from '../screens/SummaryScreen';
-import { WorldLayout } from '../screens/WorldLayout';
 
 const rootRoute = createRootRoute({ component: Outlet });
 
@@ -34,25 +32,25 @@ const createWorldRoute = createRoute({
 const worldRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/mundo',
-  component: WorldLayout,
+  component: lazyRouteComponent(() => import('../screens/WorldLayout'), 'WorldLayout'),
 });
 
 const liveRoute = createRoute({
   getParentRoute: () => worldRoute,
   path: '/',
-  component: LiveHud,
+  component: lazyRouteComponent(() => import('../screens/LiveHud'), 'LiveHud'),
 });
 
 const summaryRoute = createRoute({
   getParentRoute: () => worldRoute,
   path: '/resumen',
-  component: SummaryScreen,
+  component: lazyRouteComponent(() => import('../screens/SummaryScreen'), 'SummaryScreen'),
 });
 
 export const entityRoute = createRoute({
   getParentRoute: () => worldRoute,
   path: '/resumen/$kind/$id',
-  component: EntityScreen,
+  component: lazyRouteComponent(() => import('../screens/EntityScreen'), 'EntityScreen'),
 });
 
 const routeTree = rootRoute.addChildren([

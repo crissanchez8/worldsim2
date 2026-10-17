@@ -449,7 +449,16 @@ export class MapView {
     this.rivers.update(cx);
   }
 
+  private paused = false;
+
+  /** Sin dibujar mientras el mapa está tapado (resumen, fichas): ahorra GPU y batería (P1.9). */
+  setPaused(paused: boolean): void {
+    this.paused = paused;
+    this.lastTime = null;
+  }
+
   private readonly frame = (time: number): void => {
+    if (this.paused) return;
     const c0 = performance.now();
     this.fitCanvas();
     const dt = this.lastTime === null ? 0 : time - this.lastTime;

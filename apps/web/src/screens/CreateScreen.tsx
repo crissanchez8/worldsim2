@@ -8,7 +8,7 @@ import { LAND_FRACTION_RANGE, type WorldgenStage, type WorldParams } from '@ws/w
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { parseSeed } from '../map/params';
-import { downloadFile, importedMeta, wsimName } from '../storage/files';
+import { downloadFile, wsimName } from '../storage/files';
 import { createWorldStore, type SavedWorld } from '../storage/world-store';
 import { LanguageToggle } from '../ui/LanguageToggle';
 import { useUi } from '../ui/store';
@@ -88,6 +88,8 @@ export function CreateScreen() {
       .arrayBuffer()
       .then(async (buffer) => {
         const bytes = new Uint8Array(buffer);
+        // El lector de `.wsim` trae el motor: se carga solo al importar (P1.9).
+        const { importedMeta } = await import('../storage/import');
         await store.save(importedMeta(bytes, Date.now()), bytes);
         refresh();
       })
