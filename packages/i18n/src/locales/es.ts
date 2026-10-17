@@ -39,7 +39,8 @@ export const es = {
       webgl2Forced: 'WebGL2 (forzado)',
     },
     colors: {
-      label: 'Relleno de prueba',
+      label: 'Relleno',
+      political: 'Político',
       biome: 'Bioma dominante',
       id: 'Un color por provincia',
       none: 'Sin relleno',
@@ -52,6 +53,43 @@ export const es = {
     },
     selected: 'Seleccionada: provincia {{id}}',
     help: 'Arrastrar para mover · rueda para acercar · Q y E para girar · clic para seleccionar',
+  },
+  live: {
+    status: {
+      starting: 'Preparando la simulación…',
+      year: '{{year}} · {{era}}',
+      waiting: 'esperando a la simulación',
+      ahead: 'simulado hasta {{year}}',
+      finished: 'fin de la corrida',
+      viewOnly:
+        'Historia guardada con la versión {{version}} del motor: se puede mirar, no continuar',
+      cost: '{{ms}} ms por año simulado',
+      error: 'La simulación falló: {{message}}',
+    },
+    speed: {
+      label: 'Velocidad',
+      pause: 'Pausa',
+      x1: '1×',
+      x2: '2×',
+      x4: '4×',
+      max: 'Máx.',
+    },
+    timeline: {
+      label: 'Línea de tiempo: hacé clic o arrastrá para ir a otro año',
+    },
+    saves: {
+      save: 'Guardar',
+      saving: 'Guardando…',
+      saved: 'Guardado hasta {{year}}',
+      title: 'Mundos guardados',
+      empty: 'Todavía no hay mundos guardados.',
+      item: 'Semilla {{seed}} · {{size}} · hasta {{year}}',
+      load: 'Cargar',
+      remove: 'Borrar',
+      loading: 'Cargando el mundo guardado…',
+      notFound: 'No se encontró el mundo guardado {{id}}.',
+      error: 'No se pudo guardar: {{message}}',
+    },
   },
   time: {
     yearBC: '{{year}} a.C.',

@@ -117,6 +117,11 @@ jobs:
         working-directory: tools/determinism
         run: pnpm exec playwright test
 
+      # P1.5: la web en vivo (Worker de simulación, reproducción, guardar en IndexedDB y continuar
+      # con el mismo hash) en Chromium y Firefox, con los navegadores ya instalados arriba.
+      - name: E2E de la web (vivo, guardar y continuar)
+        run: pnpm --filter @ws/web build && pnpm --filter @ws/web e2e
+
   health:
     name: health
     # Salud histórica (P1.8): 10 seeds del mundo mediano contra el Apéndice A. Falla solo si una

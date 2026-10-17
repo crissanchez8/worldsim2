@@ -8,14 +8,17 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p .",
+    "typecheck": "tsc --noEmit -p . && tsc --noEmit -p e2e",
     "lint": "eslint --max-warnings=0 .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "e2e": "playwright test -c e2e"
   },
   "dependencies": {
     "@ws/content": "workspace:*",
     "@ws/core": "workspace:*",
+    "@ws/history": "workspace:*",
     "@ws/i18n": "workspace:*",
+    "@ws/sim": "workspace:*",
     "@ws/worldgen": "workspace:*",
     "i18next": "catalog:",
     "react": "catalog:",
@@ -24,6 +27,8 @@
     "three": "catalog:"
   },
   "devDependencies": {
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@types/three": "catalog:",

@@ -164,9 +164,15 @@ importers:
       '@ws/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@ws/history':
+        specifier: workspace:*
+        version: link:../../packages/history
       '@ws/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@ws/sim':
+        specifier: workspace:*
+        version: link:../../packages/sim
       '@ws/worldgen':
         specifier: workspace:*
         version: link:../../packages/worldgen
@@ -186,6 +192,12 @@ importers:
         specifier: 'catalog:'
         version: 0.186.1
     devDependencies:
+      '@playwright/test':
+        specifier: 'catalog:'
+        version: 1.64.1
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.19.2
       '@types/react':
         specifier: 'catalog:'
         version: 19.3.0

@@ -14,9 +14,12 @@ describe('parámetros de la URL', () => {
     });
     expect(p.backend).toBe('auto');
     expect(p.exaggeration).toBe(DEFAULT_VERTICAL_EXAGGERATION);
-    expect(p.colors).toBe('biome');
+    expect(p.colors).toBe('political');
     expect(p.tour).toBe(false);
     expect(p.repeat).toBe(1);
+    expect(p.load).toBeNull();
+    expect(readMapParams('?load=3').load).toBe(3);
+    expect(readMapParams('?load=x').load).toBeNull();
   });
 
   it('lee mundo, backend y medición; descarta valores inválidos', () => {
@@ -36,7 +39,7 @@ describe('parámetros de la URL', () => {
     expect(bad.world.size).toBe('medium');
     expect(bad.world.mapType).toBe('continents');
     expect(bad.world.landFraction).toBe(0.3);
-    expect([bad.repeat, bad.forcedLod, bad.colors, bad.dpr]).toEqual([1, null, 'biome', null]);
+    expect([bad.repeat, bad.forcedLod, bad.colors, bad.dpr]).toEqual([1, null, 'political', null]);
   });
 
   it('la semilla puede ser un número u32 o un texto', () => {

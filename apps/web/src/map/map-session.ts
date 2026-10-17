@@ -1,12 +1,13 @@
 // Arranque del mapa fuera de React: pide el mundo al Worker de worldgen y, EN PARALELO, inicializa
 // el renderer (con la caché de shaders fría, el init de WebGPU puede tardar segundos); después arma
 // la `MapView`. React solo muestra el estado (textos por i18n).
+import { NO_LEVEL, type VisualFrame } from '@ws/history';
 import type { WorldgenStage, WorldStatic } from '@ws/worldgen';
 import { createWorldgenClient } from '../worker/worldgen-client';
 import { type ColorMode, provinceColors } from './colors';
 import { buildMapData } from './map-data';
 import { createRenderer, type Backend, type MapPick, MapView } from './map-view';
-import { testMarkers } from './markers';
+import { type SettlementMarker, testMarkers } from './markers';
 import type { MapParams } from './params';
 import { createReport, type MapReport } from './report';
 
@@ -30,11 +31,17 @@ export class MapSession {
   readonly report: MapReport = createReport();
   private view: MapView | null = null;
   private world: WorldStatic | null = null;
+  private colorMode: ColorMode;
+  private markers: boolean;
+  /** Dueño por provincia del último marco mostrado (relleno político). */
+  private owner: Uint32Array | undefined;
   private disposed = false;
   private readonly cleanups: (() => void)[] = [];
 
   constructor(container: HTMLElement, params: MapParams, callbacks: MapSessionCallbacks) {
     window.__map = this.report;
+    this.colorMode = params.colors;
+    this.markers = params.markers;
     this.report.antialias = params.antialias;
     void this.run(container, params, callbacks).catch((error: unknown) => {
       const message = error instanceof Error ? error.message : String(error);
@@ -122,8 +129,32 @@ export class MapSession {
   }
 
   setColorMode(mode: ColorMode): void {
-    if (this.view && this.world)
-      this.view.setProvinceColors(provinceColors(mode, this.world.provinces));
+    this.colorMode = mode;
+    if (this.view && this.world) {
+      this.view.setProvinceColors(provinceColors(mode, this.world.provinces, this.owner));
+    }
+  }
+
+  /** Muestra un año de la historia: relleno político y asentamientos (P1.5). */
+  showFrame(frame: VisualFrame): void {
+    const view = this.view;
+    const world = this.world;
+    if (!view || !world) return;
+    this.owner = frame.owner;
+    if (this.colorMode === 'political') {
+      view.setProvinceColors(provinceColors('political', world.provinces, frame.owner));
+    }
+    if (!this.markers) return;
+    const { centroidX, centroidY } = world.provinces;
+    const settlements: SettlementMarker[] = [];
+    for (let p = 1; p < frame.level.length; p++) {
+      const level = frame.level[p] ?? NO_LEVEL;
+      if (level === NO_LEVEL) continue;
+      settlements.push({ x: centroidX[p] ?? 0, y: centroidY[p] ?? 0, level });
+    }
+    view.setSettlements(settlements);
+    // Las batallas reales llegan con el teletipo (P1.6): se sacan las de prueba.
+    view.setBattles([]);
   }
 
   /** Se consulta después de cada `await` (el estado puede cambiar mientras tanto). */

@@ -1,8 +1,10 @@
 // Parámetros de la URL de la página del mapa (P1.2; el router y la pantalla de crear mundo son
 // P1.6). Mundo: `?seed=` (número o texto), `?size=`, `?map=`, `?land=`. Render y medición:
-// `?backend=webgl2`, `?dpr=`, `?aa=0`, `?exaggeration=`, `?colors=biome|id|none`, `?markers=0`,
+// `?backend=webgl2`, `?dpr=`, `?aa=0`, `?exaggeration=`, `?colors=political|biome|id|none`,
+// `?markers=0`,
 // `?tour=1`, `?duration=` (s), `?repeat=N` (estrés), `?lod=N` (LOD fijo), `?lodDist=`,
-// `?warmup=0`, `?x=`, `?z=`, `?distance=` (pose inicial, celdas).
+// `?warmup=0`, `?x=`, `?z=`, `?distance=` (pose inicial, celdas). Vista en vivo (P1.5): `?load=<id>`
+// continúa un mundo guardado (los parámetros del mundo vienen en la misma URL).
 import { rng } from '@ws/core';
 import { MapTypes, WorldSizes } from '@ws/content';
 import { LAND_FRACTION_RANGE, type WorldParams } from '@ws/worldgen';
@@ -33,6 +35,8 @@ export interface MapParams {
   readonly x: number | null;
   readonly z: number | null;
   readonly distance: number | null;
+  /** Id del mundo guardado que se continúa (`?load=`); null = corrida nueva. */
+  readonly load: number | null;
 }
 
 /** Semilla por defecto: el primer mundo que ve quien abre la página sin parámetros. */
@@ -80,7 +84,7 @@ export function readMapParams(search: string): MapParams {
   const p = new URLSearchParams(search);
   const mapType = tableKey(MapTypes, p.get('map'), DEFAULT_MAP_TYPE);
   const [landLo, landHi] = LAND_FRACTION_RANGE;
-  const colors = p.get('colors') ?? 'biome';
+  const colors = p.get('colors') ?? 'political';
   const lod = inRange(num(p, 'lod'), 0, LOD_STEPS.length - 1);
   return {
     world: {
@@ -96,7 +100,7 @@ export function readMapParams(search: string): MapParams {
     exaggeration:
       inRange(num(p, 'exaggeration'), ...VERTICAL_EXAGGERATION_RANGE) ??
       DEFAULT_VERTICAL_EXAGGERATION,
-    colors: isColorMode(colors) ? colors : 'biome',
+    colors: isColorMode(colors) ? colors : 'political',
     markers: p.get('markers') !== '0',
     tour: p.get('tour') === '1',
     tourSeconds: inRange(num(p, 'duration'), 1, 600) ?? MEASURE.tourSeconds,
@@ -107,5 +111,9 @@ export function readMapParams(search: string): MapParams {
     x: num(p, 'x'),
     z: num(p, 'z'),
     distance: num(p, 'distance'),
+    load: (() => {
+      const id = num(p, 'load');
+      return id !== null && Number.isInteger(id) && id > 0 ? id : null;
+    })(),
   };
 }

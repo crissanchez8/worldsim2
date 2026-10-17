@@ -1,14 +1,13 @@
 // Colores por provincia (RGBA8 por id) y paleta de biomas. La API del mapa recibe un array de
-// colores por provincia; en P1.2, sin polities, hay modos de prueba (por bioma dominante, por id).
-// El relleno político real lo pasa P1.3/P1.6 con `colorFromSeed(colorSeed)` (sin coloreo de grafo:
-// eso es P2.4).
+// colores por provincia: el relleno político (P1.5: un color estable por id de polity con
+// `colorFromSeed`; el coloreo de grafo es P2.4) y modos de prueba (bioma dominante, id).
 import { Biomes } from '@ws/content';
 import type { ProvinceStatic } from '@ws/worldgen';
 import { PALETTE } from './config';
 
 export type Rgb = readonly [number, number, number];
 
-export const COLOR_MODES = ['biome', 'id', 'none'] as const;
+export const COLOR_MODES = ['political', 'biome', 'id', 'none'] as const;
 export type ColorMode = (typeof COLOR_MODES)[number];
 
 export function isColorMode(value: string): value is ColorMode {
@@ -72,12 +71,26 @@ function fill(count: number, colorOf: (id: number) => Rgb | null): Uint8Array {
   return out;
 }
 
-/** Colores de prueba por modo. `none` = sin relleno (alfa 0: tampoco hay fronteras políticas). */
+/** Relleno político: un color por polity dueña (los ids no se reutilizan); sin dueño, sin relleno. */
+export function politicalColors(owner: ArrayLike<number>, count: number): Uint8Array {
+  return fill(count, (id) => {
+    const polity = owner[id] ?? 0;
+    return polity === 0 ? null : colorFromSeed(polity);
+  });
+}
+
+/**
+ * Colores por modo. `none` = sin relleno (alfa 0: tampoco hay fronteras políticas); `political`
+ * sin dueños todavía (antes del primer año) = sin relleno.
+ */
 export function provinceColors(
   mode: ColorMode,
   provinces: Pick<ProvinceStatic, 'count' | 'dominantBiome'>,
+  owner?: ArrayLike<number>,
 ): Uint8Array {
   switch (mode) {
+    case 'political':
+      return owner ? politicalColors(owner, provinces.count) : fill(provinces.count, () => null);
     case 'biome': {
       const colors = biomeColors();
       return fill(provinces.count, (id) => colors[provinces.dominantBiome[id] ?? 0] ?? null);
