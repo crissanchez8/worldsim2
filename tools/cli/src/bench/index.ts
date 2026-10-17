@@ -1,8 +1,16 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { calibrate } from './measure';
-import { type BenchReport, compare, formatTable, makeReport, type Metric } from './report';
+import {
+  type BenchReport,
+  compare,
+  formatTable,
+  makeReport,
+  type Metric,
+  overBudget,
+} from './report';
 import { coreScenario } from './scenarios/core';
 import { syntheticScenario } from './scenarios/synthetic';
+import { worldScenario } from './scenarios/world';
 import { worldgenScenario } from './scenarios/worldgen';
 
 export interface BenchOptions {
@@ -11,6 +19,8 @@ export interface BenchOptions {
   readonly out?: string;
   readonly compareTo?: string;
   readonly tolerance: number;
+  /** Sin la corrida completa del mundo mediano (~30 s): para iterar rápido en local. */
+  readonly quick: boolean;
 }
 
 export function parseBenchArgs(args: readonly string[]): BenchOptions {
@@ -24,6 +34,7 @@ export function parseBenchArgs(args: readonly string[]): BenchOptions {
     json: args.includes('--json'),
     years: Number(value('--years') ?? 1000),
     tolerance: Number(value('--tolerance') ?? 0.5),
+    quick: args.includes('--quick'),
     ...(out === undefined ? {} : { out }),
     ...(compareTo === undefined ? {} : { compareTo }),
   };
@@ -45,9 +56,18 @@ export function runBench(options: BenchOptions): {
   metrics.push(...syntheticScenario(options.years));
   sample();
   const worldgen = worldgenScenario();
-  metrics.push(worldgen);
+  metrics.push(worldgen.metric);
   sample();
-  const report = makeReport(calibrationMs, metrics, Math.round(peak / 1048576), worldgen.value);
+  if (!options.quick) {
+    metrics.push(...worldScenario(worldgen.world));
+    sample();
+  }
+  const report = makeReport(
+    calibrationMs,
+    metrics,
+    Math.round(peak / 1048576),
+    worldgen.metric.value,
+  );
   if (options.out) writeFileSync(options.out, `${JSON.stringify(report, null, 2)}\n`);
 
   let baseline: BenchReport | undefined;
@@ -64,5 +84,13 @@ export function runBench(options: BenchOptions): {
   }
   if (options.compareTo && regressions.length === 0)
     lines.push(`sin regresiones (tolerancia ${options.tolerance * 100}%)`);
-  return { report, text: lines.join('\n'), regressions: regressions.length };
+  const budget = overBudget(report);
+  for (const b of budget) {
+    lines.push(`FUERA DE PRESUPUESTO ${b.key}: ${b.value.toFixed(3)} > ${b.budget}`);
+  }
+  return {
+    report,
+    text: lines.join('\n'),
+    regressions: regressions.length + budget.length,
+  };
 }

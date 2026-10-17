@@ -1,0 +1,108 @@
+{
+  "engine": "0.1.3",
+  "machine": {
+    "cpu": "Apple M1 Pro",
+    "platform": "darwin-arm64",
+    "node": "v24.21.0"
+  },
+  "calibrationMs": 4.7479999999999905,
+  "worldgenSeconds": 3.7584141250000003,
+  "peakHeapMB": 87,
+  "metrics": [
+    {
+      "key": "core.rng.uniform",
+      "value": 48.91537499999998,
+      "unit": "ns/llamada"
+    },
+    {
+      "key": "core.math.exp",
+      "value": 16.40645799999993,
+      "unit": "ns/llamada"
+    },
+    {
+      "key": "core.math.sin",
+      "value": 22.619624999999814,
+      "unit": "ns/llamada"
+    },
+    {
+      "key": "core.serialize.15kPops",
+      "value": 0.4138749999999618,
+      "unit": "ms"
+    },
+    {
+      "key": "core.hashState.15kPops",
+      "value": 0.3569999999999709,
+      "unit": "ms"
+    },
+    {
+      "key": "core.scheduler.tick8Systems",
+      "value": 0.5566659999999501,
+      "unit": "µs/tick"
+    },
+    {
+      "key": "core.buffer.objects30k",
+      "value": 0.4595839999999498,
+      "unit": "ms"
+    },
+    {
+      "key": "core.buffer.soa30k",
+      "value": 0.4079999999999018,
+      "unit": "ms"
+    },
+    {
+      "key": "synthetic.msPerYear.avg",
+      "value": 2.34784271222223,
+      "unit": "ms/año"
+    },
+    {
+      "key": "synthetic.msPerYear.p95",
+      "value": 2.5991250000001855,
+      "unit": "ms/año"
+    },
+    {
+      "key": "worldgen.medium",
+      "value": 3.7584141250000003,
+      "unit": "s"
+    },
+    {
+      "key": "world.medium.msPerYear",
+      "value": 1.4310000279856148,
+      "unit": "ms"
+    },
+    {
+      "key": "world.medium.msPerYearP95",
+      "value": 2.1120839999966847,
+      "unit": "ms"
+    },
+    {
+      "key": "world.medium.recordMsPerYear",
+      "value": 0.24605508043165553,
+      "unit": "ms"
+    },
+    {
+      "key": "world.medium.keyframeKB",
+      "value": 394.3623046875,
+      "unit": "KB"
+    },
+    {
+      "key": "world.medium.wsimMB",
+      "value": 5.693156,
+      "unit": "MB"
+    },
+    {
+      "key": "world.medium.mapAtMaxMs",
+      "value": 0.0950410000004922,
+      "unit": "ms"
+    },
+    {
+      "key": "world.medium.fullStateMaxMs",
+      "value": 237.36041600000317,
+      "unit": "ms"
+    },
+    {
+      "key": "world.medium.finalHashMs",
+      "value": 17.162250000001222,
+      "unit": "ms"
+    }
+  ]
+}

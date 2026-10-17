@@ -47,3 +47,34 @@ export function calibrate(): number {
   }, 15);
   return stats(samples).p50;
 }
+
+/** Tiempos de una consulta (ms). */
+export interface Latency {
+  readonly samples: number;
+  readonly avgMs: number;
+  readonly maxMs: number;
+}
+
+export function latency(run: (k: number) => void, ks: readonly number[]): Latency {
+  const ms: number[] = [];
+  for (const k of ks) {
+    const t0 = performance.now();
+    run(k);
+    ms.push(performance.now() - t0);
+  }
+  return {
+    samples: ms.length,
+    avgMs: ms.reduce((a, b) => a + b, 0) / Math.max(1, ms.length),
+    maxMs: Math.max(0, ...ms),
+  };
+}
+
+/** k repartidos en la corrida, cada uno en el peor caso respecto de `every` (k ≡ every − 1). */
+export function worstCaseIndices(years: number, every: number, count: number): number[] {
+  const out: number[] = [];
+  for (let i = 0; i < count; i++) {
+    const k = Math.floor(((i + 0.5) * years) / count / every) * every + every - 1;
+    if (k <= years) out.push(k);
+  }
+  return out;
+}

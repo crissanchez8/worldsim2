@@ -26,6 +26,7 @@ const HELP = [
   '  --version, -v   Versión del motor',
   '  bench           Bench: primitivas del core y año sintético (P0.17)',
   '                  --json · --years N · --out archivo · --compare base.json · --tolerance 0.5',
+  '                  --quick (sin la corrida completa del mundo mediano)',
   '  run             Genera un mundo y lo simula headless: hashes por año y resumen',
   '                  --seed N · --size small|medium · --map continents|pangaea|archipelago',
   '                  --land 0.3 · --grid AxB (grilla de prueba) · --years N · --every 1000',

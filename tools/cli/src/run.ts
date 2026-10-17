@@ -19,7 +19,7 @@ import {
   type WorldParams,
   type WorldStatic,
 } from '@ws/worldgen';
-import { stats } from './bench/measure';
+import { type Latency, latency, stats, worstCaseIndices } from './bench/measure';
 
 /** Mundo de la corrida: el generado por el worldgen (por defecto) o una grilla de prueba. */
 export type RunWorld =
@@ -86,13 +86,6 @@ export function parseRunArgs(args: readonly string[]): RunOptions {
     throw new Error('--years: entero ≥ 0');
   }
   return options;
-}
-
-/** Tiempos de una consulta (ms). */
-export interface Latency {
-  readonly samples: number;
-  readonly avgMs: number;
-  readonly maxMs: number;
 }
 
 /** Medición de la historia grabada (P1.4; presupuestos de D44/D45). */
@@ -162,30 +155,6 @@ function buildWorld(spec: RunWorld): { world: WorldStatic; description: string }
 export interface RunResult {
   readonly report: RunReport;
   readonly wsim?: Uint8Array;
-}
-
-function latency(run: (k: number) => void, ks: readonly number[]): Latency {
-  const ms: number[] = [];
-  for (const k of ks) {
-    const t0 = performance.now();
-    run(k);
-    ms.push(performance.now() - t0);
-  }
-  return {
-    samples: ms.length,
-    avgMs: ms.reduce((a, b) => a + b, 0) / Math.max(1, ms.length),
-    maxMs: Math.max(0, ...ms),
-  };
-}
-
-/** k repartidos en la corrida, cada uno en el peor caso respecto de `every` (k ≡ every − 1). */
-function worstCaseIndices(years: number, every: number, count: number): number[] {
-  const out: number[] = [];
-  for (let i = 0; i < count; i++) {
-    const k = Math.floor(((i + 0.5) * years) / count / every) * every + every - 1;
-    if (k <= years) out.push(k);
-  }
-  return out;
 }
 
 function measureHistory(
