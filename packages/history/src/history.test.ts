@@ -5,10 +5,12 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import {
   captureFrame,
   canContinue,
+  cloneFrame,
   decodeWsim,
   dequantizePopulation,
   encodeWsim,
   History,
+  type HistoryData,
   quantizePopulation,
   type VisualFrame,
 } from './index';
@@ -18,12 +20,34 @@ import {
 // (frágiles en paralelo): las mide `ws run --wsim` sobre el mundo medium.
 vi.setConfig({ testTimeout: 120_000, hookTimeout: 120_000 });
 
+/** Copia profunda de lo visible, como la que hace `postMessage` con `viewData`. */
+function copyData(d: HistoryData): HistoryData {
+  const a = d.aggregates;
+  return {
+    ...d,
+    visual: d.visual.map(cloneFrame),
+    deltas: d.deltas.map((x) => x.slice()),
+    series: d.series.map((x) => ({ population: x.population.slice(), urban: x.urban.slice() })),
+    aggregates: {
+      population: [...a.population],
+      polities: [...a.polities],
+      largestPolity: [...a.largestPolity],
+      era: [...a.era],
+      urbanization: [...a.urbanization],
+    },
+    events: d.events.map((x) => [...x]),
+    keyframes: new Map(),
+  };
+}
+
 const YEARS = 6000;
 const PROBES = [-11950, -11001, -9001, -9000, -7777, -6500, -6001];
 
 let world: WorldStatic;
 let sim: Sim;
 let history: History;
+/** Espejo del hilo principal: arranca con `viewData` y recibe lotes (copiados como en postMessage). */
+let mirror: History;
 const truth = new Map<number, { frame: VisualFrame; hash: string; population: Float64Array }>();
 const allEvents: events.GameEvent[] = [];
 
@@ -31,9 +55,12 @@ beforeAll(() => {
   world = generateWorld({ seed: 1, size: 'small', mapType: 'continents', landFraction: 0.3 });
   sim = Sim.create(world);
   history = History.start(sim);
+  mirror = History.fromData(world, copyData(history.viewData()));
   for (let i = 0; i < YEARS; i++) {
     const result = sim.step();
     history.record(sim, result);
+    // Lotes de largo variable, como las tandas del Worker.
+    if (i % 37 === 0 || i === YEARS - 1) mirror.append(history.drain());
     allEvents.push(...result.events);
     if (PROBES.includes(result.year)) {
       truth.set(result.year, {
@@ -119,6 +146,32 @@ describe('historia · consultas a la fecha', () => {
     const at = history.polityAt(id, -6001);
     expect(at.provinces.length).toBeGreaterThan(0);
     expect(at.population).toBeGreaterThan(0);
+  });
+});
+
+describe('historia · espejo del hilo principal (lotes del Worker, D49)', () => {
+  it('con los lotes, el espejo ve lo mismo que la historia del Worker', () => {
+    expect(mirror.years).toBe(YEARS);
+    for (const [year, t] of truth) expectSameFrame(mirror.mapAt(year), t.frame);
+    expect(mirror.data.aggregates).toEqual(history.data.aggregates);
+    expect(mirror.data.series.length).toBe(history.data.series.length);
+    expect([...(mirror.data.series.at(-1)?.population ?? [])]).toEqual([
+      ...(history.data.series.at(-1)?.population ?? []),
+    ]);
+    expect(mirror.eventsBetween(-7000, -6500)).toEqual(history.eventsBetween(-7000, -6500));
+    // Sin keyframes completos: el estado exacto se pide al Worker.
+    expect(mirror.data.keyframes.size).toBe(0);
+    expect(() => mirror.fullStateAt(-9000)).toThrow(/keyframe/);
+  });
+
+  it('un lote fuera de orden se rechaza; uno vacío no cambia nada', () => {
+    const empty = history.drain();
+    expect(empty.deltas.length).toBe(0);
+    mirror.append(empty);
+    expect(mirror.years).toBe(YEARS);
+    expect(() => {
+      mirror.append({ ...empty, fromK: YEARS + 5 });
+    }).toThrow(/lote/);
   });
 });
 

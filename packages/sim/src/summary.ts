@@ -42,6 +42,26 @@ export function eraOf(bits: number): number {
   return era;
 }
 
+/**
+ * Era dominante (índice de Eras): la más avanzada que alcanza al menos DOMINANT_ERA_SHARE de la
+ * población. Barata (una pasada por provincias): la usan los agregados por año y el ritmo (D48).
+ */
+export function dominantEra(w: SimContext, population = totalPopulation(w.state)): number {
+  const n = w.world.provinces.count;
+  const bits = w.state.province.column('knownInnovations');
+  const eraPopulation = new Float64Array(Eras.rows.length);
+  for (let p = 1; p <= n; p++) {
+    const e = eraOf(bits[p - 1] ?? 0);
+    eraPopulation[e] = (eraPopulation[e] ?? 0) + (w.derived.provincePopulation[p] ?? 0);
+  }
+  let reached = 0;
+  for (let e = Eras.rows.length - 1; e >= 0; e--) {
+    reached += eraPopulation[e] ?? 0;
+    if (reached >= DOMINANT_ERA_SHARE * population) return e;
+  }
+  return 0;
+}
+
 export function summarize(w: SimContext, year: number): WorldSummary {
   const { province, settlement, polity, war } = w.state;
   const n = w.world.provinces.count;
@@ -51,23 +71,11 @@ export function summarize(w: SimContext, year: number): WorldSummary {
   const agriculture = 1 << Innovations.indexOf('agriculture');
   let farming = 0;
   let owned = 0;
-  const eraPopulation = new Float64Array(Eras.rows.length);
   for (let p = 1; p <= n; p++) {
-    const b = bits[p - 1] ?? 0;
-    if ((b & agriculture) !== 0) farming++;
+    if (((bits[p - 1] ?? 0) & agriculture) !== 0) farming++;
     if ((owner[p - 1] ?? 0) !== 0) owned++;
-    const e = eraOf(b);
-    eraPopulation[e] = (eraPopulation[e] ?? 0) + (w.derived.provincePopulation[p] ?? 0);
   }
-  let reached = 0;
-  let dominant = 0;
-  for (let e = Eras.rows.length - 1; e >= 0; e--) {
-    reached += eraPopulation[e] ?? 0;
-    if (reached >= DOMINANT_ERA_SHARE * population) {
-      dominant = e;
-      break;
-    }
-  }
+  const dominant = dominantEra(w, population);
   const byLevel = new Array<number>(5).fill(0);
   let urban = 0;
   for (const row of settlement.rows()) {

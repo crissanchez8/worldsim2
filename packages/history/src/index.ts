@@ -13,12 +13,15 @@ export {
 } from './frame';
 export {
   type Aggregates,
+  batchTransferables,
   History,
   HISTORY,
+  type HistoryBatch,
   type HistoryData,
   type PolityAt,
   type ProvinceAt,
 } from './history';
+export { ERA_YEARS_PER_SECOND, PLAYBACK, PlaybackClock, playbackSeconds } from './playback';
 export {
   canContinue,
   decodeWsim,

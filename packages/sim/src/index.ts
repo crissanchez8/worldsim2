@@ -37,4 +37,4 @@ export {
   type P1Stat,
   withInnovations,
 } from './stats';
-export { DOMINANT_ERA_SHARE, eraOf, summarize, type WorldSummary } from './summary';
+export { DOMINANT_ERA_SHARE, dominantEra, eraOf, summarize, type WorldSummary } from './summary';

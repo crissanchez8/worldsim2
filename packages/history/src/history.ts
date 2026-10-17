@@ -4,6 +4,9 @@
 //
 // Índice k = años completados: k = 0 es el estado inicial; el año calendario Y queda en
 // k = tickIndex(Y, startYear) + 1 (el estado al final de Y).
+//
+// En la web (D49) el Worker graba y manda lotes (`drain`) al hilo principal, que arma un espejo
+// sin keyframes completos (`append`): el mapa y la línea de tiempo se leen ahí, sin ida y vuelta.
 import { Eras } from '@ws/content';
 import { type events, time } from '@ws/core';
 import { Sim, type SimOptions, summarize, type TickResult } from '@ws/sim';
@@ -59,6 +62,41 @@ export interface HistoryData {
   readonly keyframes: Map<number, Uint8Array>;
 }
 
+/** Lo grabado desde el último `drain`: del Worker al hilo principal, con buffers transferibles. */
+export interface HistoryBatch {
+  /** k del primer año del lote. */
+  readonly fromK: number;
+  /** Deltas visuales concatenados, cada uno precedido por su largo (palabras u32). */
+  readonly deltas: Uint32Array;
+  /** Eventos de cada año del lote. */
+  readonly events: events.GameEvent[][];
+  /** Agregados de cada año del lote (k = fromK…). */
+  readonly aggregates: {
+    readonly population: Float64Array;
+    readonly polities: Uint32Array;
+    readonly largestPolity: Float64Array;
+    readonly era: Uint8Array;
+    readonly urbanization: Float64Array;
+  };
+  /** Muestras de la serie tomadas en el lote, en orden (copias). */
+  readonly series: SeriesSample[];
+}
+
+/** Buffers de un lote para `postMessage(…, transfer)` (todos son copias propias del lote). */
+export function batchTransferables(batch: HistoryBatch): ArrayBuffer[] {
+  const a = batch.aggregates;
+  const out: ArrayBufferLike[] = [
+    batch.deltas.buffer,
+    a.population.buffer,
+    a.polities.buffer,
+    a.largestPolity.buffer,
+    a.era.buffer,
+    a.urbanization.buffer,
+  ];
+  for (const s of batch.series) out.push(s.population.buffer, s.urban.buffer);
+  return out.filter((b): b is ArrayBuffer => b instanceof ArrayBuffer);
+}
+
 export interface ProvinceAt {
   readonly owner: number;
   readonly level: number;
@@ -81,11 +119,16 @@ export class History {
   readonly world: WorldStatic;
   readonly data: HistoryData;
   private last: VisualFrame;
+  /** Años y muestras de la serie ya enviados con `drain`. */
+  private drainedYears: number;
+  private drainedSeries: number;
 
   private constructor(world: WorldStatic, data: HistoryData, last: VisualFrame) {
     this.world = world;
     this.data = data;
     this.last = last;
+    this.drainedYears = data.deltas.length;
+    this.drainedSeries = data.series.length;
   }
 
   /** Empieza a grabar desde el estado actual de la simulación (k = 0). */
@@ -159,6 +202,86 @@ export class History {
     if (k % d.seriesEvery === 0) d.series.push(captureSeries(ctx));
     this.pushAggregates(sim);
     return delta;
+  }
+
+  /**
+   * Lo visible de la historia (sin keyframes completos), para mandarlo una vez al hilo principal;
+   * desde ahí, `drain` manda solo lo nuevo.
+   */
+  viewData(): HistoryData {
+    this.drainedYears = this.data.deltas.length;
+    this.drainedSeries = this.data.series.length;
+    return { ...this.data, keyframes: new Map() };
+  }
+
+  /** Lo grabado desde el último `drain` o `viewData`. */
+  drain(): HistoryBatch {
+    const d = this.data;
+    const from = this.drainedYears + 1;
+    const deltas = d.deltas.slice(this.drainedYears);
+    let words = 0;
+    for (const x of deltas) words += x.length + 1;
+    const packed = new Uint32Array(words);
+    let at = 0;
+    for (const x of deltas) {
+      packed[at++] = x.length;
+      packed.set(x, at);
+      at += x.length;
+    }
+    const a = d.aggregates;
+    const batch: HistoryBatch = {
+      fromK: from,
+      deltas: packed,
+      events: d.events.slice(this.drainedYears),
+      aggregates: {
+        population: Float64Array.from(a.population.slice(from)),
+        polities: Uint32Array.from(a.polities.slice(from)),
+        largestPolity: Float64Array.from(a.largestPolity.slice(from)),
+        era: Uint8Array.from(a.era.slice(from)),
+        urbanization: Float64Array.from(a.urbanization.slice(from)),
+      },
+      series: d.series
+        .slice(this.drainedSeries)
+        .map((x) => ({ population: x.population.slice(), urban: x.urban.slice() })),
+    };
+    this.drainedYears = d.deltas.length;
+    this.drainedSeries = d.series.length;
+    return batch;
+  }
+
+  /** Agrega un lote del Worker al espejo del hilo principal (marcos visuales incluidos). */
+  append(batch: HistoryBatch): void {
+    const d = this.data;
+    if (batch.fromK !== d.deltas.length + 1) {
+      throw new Error(
+        `historia: lote desde k = ${batch.fromK}, se esperaba ${d.deltas.length + 1}`,
+      );
+    }
+    const words = batch.deltas;
+    let i = 0;
+    let j = 0;
+    while (i < words.length) {
+      const len = words[i++] ?? 0;
+      const delta = words.subarray(i, i + len);
+      i += len;
+      d.deltas.push(delta);
+      applyDelta(this.last, delta);
+      d.events.push(batch.events[j] ?? []);
+      j++;
+      if (d.deltas.length % d.keyframeEvery === 0) d.visual.push(cloneFrame(this.last));
+    }
+    const a = batch.aggregates;
+    if (a.era.length !== j) throw new Error('historia: lote con agregados de otro largo');
+    for (let n = 0; n < j; n++) {
+      d.aggregates.population.push(a.population[n] ?? 0);
+      d.aggregates.polities.push(a.polities[n] ?? 0);
+      d.aggregates.largestPolity.push(a.largestPolity[n] ?? 0);
+      d.aggregates.era.push(a.era[n] ?? 0);
+      d.aggregates.urbanization.push(a.urbanization[n] ?? 0);
+    }
+    for (const s of batch.series) d.series.push(s);
+    this.drainedYears = d.deltas.length;
+    this.drainedSeries = d.series.length;
   }
 
   private pushAggregates(sim: Sim): void {
