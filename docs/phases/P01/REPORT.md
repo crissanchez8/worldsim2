@@ -36,7 +36,7 @@ La UI es neutra a propósito: el diseño llega en P2.
 | P1.7 Compartir v1 | ✅ hecha | Link con versión, avance rápido con progreso, huellas, aviso de versión |
 | P1.8 Salud v1 (`ws health`) | ✅ hecha | 10 seeds; calibración v1 con dispersión pendiente (P4/P5) |
 | P1.9 Rendimiento | ✅ hecha | Escenario `world-medium`, presupuestos en el bench, medición en el navegador; no hizo falta optimizar el motor |
-| P1.10 Cierre | ⚠️ en curso | Spikes borrados (tag local `p00-spikes`), `model.md` v1.1, prompt de P2, bases del bench (M1 Pro y runner); faltan el checkpoint 3 y el OK |
+| P1.10 Cierre | ⚠️ en curso | Spikes borrados (tag `p00-spikes` publicado con el OK de Cristian), `model.md` v1.1, prompt de P2, bases del bench (M1 Pro y runner); faltan el checkpoint 3 y el OK |
 
 Subtareas: se marcan en el BRIEF al cerrar.
 

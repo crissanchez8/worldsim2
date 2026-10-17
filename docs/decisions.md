@@ -74,3 +74,4 @@
 | 2026-10-16 | P0 | Checkpoint 3: decisiones aprobadas (D43–D45) | Mediciones manuales (navegadores visibles, Safari) en curso por Cristian |
 | 2026-10-16 | P0 | **Fase cerrada** (OK de Cristian) | REPORT en `docs/phases/P00/REPORT.md`; merge del PR #1 a `main` con merge commit; próxima fase: P1 con `docs/prompts/P01-rebanada-vertical.md` |
 | 2026-10-16 | P1 | BRIEF aprobado tal cual | D48–D54 (D01-a…e como se recomendaron, reclamos a P7, cambios al modelo de §6, dependencias nuevas); la sesión paralela para P1.2 se propone cuando P1.1 fije `WorldStatic` |
+| 2026-10-17 | P1 | Tag `p00-spikes` publicado (OK de Cristian, D52) | Apunta a a2797f4, el último commit con `spikes/` (spikes A, B y C de P0), antes de borrarlos al cerrar P1 |
