@@ -2,7 +2,6 @@ packages:
   - apps/*
   - packages/*
   - tools/*
-  - spikes/*
 
 # Versiones únicas para todo el monorepo (protocolo `catalog:`).
 # TypeScript queda en 6.0: typescript-eslint 8.x todavía no soporta TS 7 (peer <6.1).

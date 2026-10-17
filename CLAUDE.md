@@ -76,7 +76,7 @@ Si el usuario no indicó tarea, proponé el próximo paso según `STATUS.md`. Si
 |---|---|
 | `pnpm i` · `pnpm dev` | Instalar · app web en desarrollo (http://localhost:5173) |
 | `pnpm check` | Lo mismo que el CI: formato, typecheck, lint (estilo + determinismo + UI + fronteras), tests |
-| `pnpm build` · `pnpm site` | Build de todo · arma `site/` (web + spikes) para desplegar |
+| `pnpm build` · `pnpm site` | Build de todo · arma `site/` (web + páginas de `tools/`) para desplegar |
 | `pnpm ws bench [--compare docs/phases/P01/bench-baseline.json] [--quick]` | Bench del core, año sintético, worldgen y corrida completa del mundo mediano (`world-medium`) con presupuestos; normalizado por calibración (`--quick`: sin la corrida completa) |
 | `pnpm --filter @ws/core exec vitest run` | Tests de un paquete |
 | `pnpm ws run [--seed N] [--size small\|medium] [--map continents\|pangaea\|archipelago] [--land 0.3] [--years N] [--checks] [--wsim archivo]` | Genera un mundo y lo simula headless: hash cada N años y resumen (`--grid AxB`: grilla de prueba; `--checks`: guard e invariantes; `--wsim`: graba la historia, escribe el `.wsim` y mide tamaños y latencias) |
@@ -84,9 +84,10 @@ Si el usuario no indicó tarea, proponé el próximo paso según `STATUS.md`. Si
 | `pnpm --filter @ws/determinism build && pnpm --filter @ws/determinism e2e` | Suite de determinismo del motor real: referencia de Node + Playwright en Chromium/Firefox/WebKit (WebKit local no anda en macOS 26.0: L-012) |
 | `node apps/web/scripts/measure-live.mjs chrome <link compartido>` | Mide la vista en vivo contra el build (`vite preview`): worldgen, corrida a máx., tareas largas, rebobinar, estado completo (`chrome` = Chrome instalado con GPU real) |
 | `pnpm --filter @ws/web build && pnpm --filter @ws/web e2e` | E2E de la web (Playwright, Chromium y Firefox): vivo, línea de tiempo, guardar en IndexedDB y continuar con el mismo hash |
-| `pnpm --filter @ws/spike-worker measure:node [años] [--hash]` | Medición headless del spike B |
 
-Previews: el CI comenta el link en cada PR (`<rama>.worldsim2.pages.dev`; spikes en `/spikes/<nombre>/`).
+Previews: el CI comenta el link en cada PR (`<rama>.worldsim2.pages.dev`; la suite de determinismo
+en `/tools/determinism/`). Los spikes de P0 se borraron al cerrar P1 (D52): quedan en el tag
+`p00-spikes`.
 
 ## Qué NO hacer
 - Empezar una fase sin BRIEF aprobado, o la siguiente sin el OK de cierre.

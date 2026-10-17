@@ -1,7 +1,8 @@
 // Arma el sitio estático que se despliega en Cloudflare Pages (D31, D33):
 //   site/                  ← apps/web/dist
 //   site/tools/<name>/     ← tools/<name>/dist (páginas de desarrollo, p. ej. determinismo)
-//   site/spikes/<name>/    ← spikes/<name>/dist (si existe; se borran al cerrar P1, D52)
+//   site/spikes/<name>/    ← spikes/<name>/dist (si algún día vuelve a haber spikes: los de P0 se
+//                            borraron al cerrar P1, D52; quedan en el tag `p00-spikes`)
 import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 

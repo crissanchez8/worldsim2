@@ -87,12 +87,6 @@ export default defineConfig(
   },
 
   determinismConfig,
-  // La simulación ficticia del spike B también tiene que ser determinista (la compara el spike C).
-  {
-    ...determinismConfig,
-    name: 'ws/determinism-spike-sim',
-    files: ['spikes/worker/src/sim/**/*.ts'],
-  },
 
   {
     name: 'ws/react',

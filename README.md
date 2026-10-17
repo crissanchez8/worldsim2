@@ -45,9 +45,9 @@ pnpm dev
 | `pnpm lint:deps`     | Solo fronteras entre paquetes (dependency-cruiser)                  |
 | `pnpm test`          | Tests (Vitest) de todos los paquetes                                |
 | `pnpm format`        | Formatea con Prettier                                               |
-| `pnpm ws bench`      | Bench del core y año sintético (`--compare` contra la línea base)   |
-| `pnpm --filter @ws/spike-determinism e2e` | Determinismo en Chromium, Firefox y WebKit (Playwright) |
-| `pnpm site`          | Arma `site/` (web + spikes) para desplegar; requiere `pnpm build`   |
+| `pnpm ws bench`      | Bench del core, worldgen y mundo mediano (`--compare` contra la línea base) |
+| `pnpm --filter @ws/determinism e2e` | Determinismo del motor real en Chromium, Firefox y WebKit (Playwright) |
+| `pnpm site`          | Arma `site/` (web + páginas de `tools/`) para desplegar; requiere `pnpm build` |
 
 ## Estructura
 
@@ -64,9 +64,9 @@ packages/
   i18n/          catálogos es/en (headless)
   ui/            Design System (desde P2)
 tools/
-  cli/           ws: CLI de desarrollo
+  cli/           ws: CLI de desarrollo (bench, run, health)
+  determinism/   suite de determinismo del motor real (Node + Chromium/Firefox/WebKit)
   lint/          reglas de determinismo y texto de UI + sus tests
-spikes/          experimentos descartables de P0: terrain (A), worker (B), determinism (C)
 docs/            plan, estado, decisiones, aprendizajes, fases, prompts, ADRs
 ```
 
