@@ -8,7 +8,7 @@
 | **Última actualización** | 2026-10-17 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | Decisión pendiente: calibración del ritmo por era (la mediana da 13,7 min, no 10 ± 1; ver handoff). Después P1.6, que empieza por los wireframes 🎨; en paralelo, la medición visible del mapa por Cristian (checkpoint 1) |
+| **Próximo paso** | Checkpoint 🎨: Cristian revisa los wireframes de P1.6 (`docs/phases/P01/wireframes/`) y responde las 3 preguntas de estructura; con su OK, P1.6. En paralelo, su medición visible del mapa (checkpoint 1) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -34,6 +34,11 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-17 (sesión P1-2, después de P1.5):**
+  - **D56:** el ritmo de D48 queda como está; el objetivo de 10 ± 1 min se mide después de calibrar la simulación en P4/P5, y en el cierre de P1 ese criterio figura como no cumplido, con su causa;
+  - **wireframes 🎨 de P1.6** en `docs/phases/P01/wireframes/` (`index.html` + 4 PNG): crear mundo, vista en vivo, resumen v1 y ficha genérica, de baja fidelidad (se aprueba la estructura, no el aspecto), con el mapa de pantallas y 3 preguntas de estructura (resumen durante la corrida, ficha = inspector, mundos guardados en "crear");
+  - **próximo:** el OK de Cristian sobre los wireframes → P1.6 (router, crear, vivo con inspector y teletipo, resumen con listas y gráficos).
+
 - **2026-10-17 (sesión P1-2, P1.5 hecha):**
   - **Worker de simulación** (`apps/web/src/worker/sim-*`):
     - simula por tandas de 16 ms y cede con un `MessageChannel` propio; protocolo tipado; motor `SimEngine` separado del `onmessage` y probado en Node;

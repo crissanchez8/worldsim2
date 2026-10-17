@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wireframes P1.6</title>
+    <style>
+      /* Baja fidelidad a propósito: cajas grises, sin estilo. Se aprueba la ESTRUCTURA, no el aspecto (P2). */
+      :root {
+        --line: #8a8a8a;
+        --box: #e6e6e6;
+        --box2: #d2d2d2;
+        --ink: #222;
+        --note: #444;
+      }
+      body {
+        margin: 0;
+        padding: 24px 16px 64px;
+        background: #f4f4f4;
+        color: var(--ink);
+        font:
+          14px/1.45 ui-monospace,
+          Menlo,
+          monospace;
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0 0 4px;
+      }
+      h2 {
+        font-size: 16px;
+        margin: 40px 0 8px;
+      }
+      p,
+      li {
+        max-width: 980px;
+      }
+      .frame {
+        position: relative;
+        width: 1280px;
+        height: 760px;
+        background: #fff;
+        border: 2px solid var(--ink);
+        overflow: hidden;
+      }
+      .b {
+        position: absolute;
+        background: var(--box);
+        border: 1px solid var(--line);
+        box-sizing: border-box;
+        padding: 6px 8px;
+        overflow: hidden;
+      }
+      .b.dark {
+        background: var(--box2);
+      }
+      .b.x {
+        background:
+          linear-gradient(
+            to top right,
+            transparent calc(50% - 1px),
+            var(--line) 50%,
+            transparent calc(50% + 1px)
+          ),
+          linear-gradient(
+            to bottom right,
+            transparent calc(50% - 1px),
+            var(--line) 50%,
+            transparent calc(50% + 1px)
+          ),
+          #f0f0f0;
+      }
+      .b.dash {
+        background: #fafafa;
+        border-style: dashed;
+      }
+      .lbl {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #555;
+        margin-bottom: 4px;
+      }
+      .btn {
+        display: inline-block;
+        border: 1px solid var(--ink);
+        padding: 1px 8px;
+        margin: 2px 3px 2px 0;
+        background: #fff;
+      }
+      .btn.on {
+        background: var(--ink);
+        color: #fff;
+      }
+      .field {
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 1px 6px;
+        display: inline-block;
+        min-width: 120px;
+      }
+      .row {
+        margin: 3px 0;
+      }
+      .muted {
+        color: #666;
+      }
+      .n {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: #fff;
+        font-size: 12px;
+        line-height: 22px;
+        text-align: center;
+        z-index: 2;
+      }
+      .bar {
+        height: 10px;
+        background: var(--box2);
+        border: 1px solid var(--line);
+      }
+      .bar > i {
+        display: block;
+        height: 100%;
+        background: #9a9a9a;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 12px;
+      }
+      td,
+      th {
+        border: 1px solid var(--line);
+        padding: 2px 6px;
+        text-align: left;
+        background: #fff;
+      }
+      th {
+        background: var(--box2);
+      }
+      .notes {
+        counter-reset: n;
+        padding-left: 0;
+        list-style: none;
+      }
+      .notes li {
+        counter-increment: n;
+        margin: 4px 0;
+        padding-left: 30px;
+        position: relative;
+      }
+      .notes li::before {
+        content: counter(n);
+        position: absolute;
+        left: 0;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: #fff;
+        font-size: 12px;
+        text-align: center;
+        line-height: 22px;
+      }
+      .flow {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 8px 0 0;
+      }
+      .flow .b {
+        position: static;
+      }
+      .q {
+        border-left: 4px solid var(--ink);
+        background: #fff;
+        padding: 8px 12px;
+        margin: 10px 0;
+        max-width: 980px;
+      }
+      .scroll {
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>worldSim2 · P1.6 · Wireframes de baja fidelidad 🎨</h1>
+    <p class="muted">
+      Checkpoint 🎨 del BRIEF de P1: se aprueba la <b>estructura</b> (qué hay en cada pantalla,
+      dónde y cómo se navega), no el aspecto: colores, tipografía y componentes llegan con el Design
+      System en P2. Todo texto de la UI real va por i18n (es/en). Los números del mundo son de
+      ejemplo.
+    </p>
+
+    <h2>0 · Mapa de pantallas</h2>
+    <div class="flow">
+      <div class="b">Crear mundo<br /><span class="muted">/crear</span></div>
+      →
+      <div class="b">Vista en vivo<br /><span class="muted">/mundo?seed=…</span></div>
+      ⇄
+      <div class="b">Resumen<br /><span class="muted">/mundo/resumen</span></div>
+      →
+      <div class="b">Ficha<br /><span class="muted">/mundo/resumen/:tipo/:id</span></div>
+      <div class="b dash">
+        Link compartido (P1.7) → vista en vivo, simulando a máx. con progreso
+      </div>
+      <div class="b dash">Mundo guardado → vista en vivo desde su último año</div>
+    </div>
+    <p class="muted">
+      El router tipado (TanStack Router, D54) lleva los parámetros del mundo en la URL: la misma URL
+      regenera el mismo mundo (P1.7). Sin landing ni galería (P13).
+    </p>
+
+    <!-- ───────────────────────── 1 · CREAR ───────────────────────── -->
+    <h2>1 · Crear mundo</h2>
+    <div class="scroll">
+      <div class="frame">
+        <div class="b dark" style="left: 0; top: 0; width: 1280px; height: 44px">
+          <b>worldSim2</b>
+          <span style="float: right"
+            ><span class="btn on">es</span><span class="btn">en</span>
+            <span class="muted">motor v0.1.3</span></span
+          >
+        </div>
+
+        <div class="b" style="left: 40px; top: 80px; width: 560px; height: 430px">
+          <div class="lbl">Parámetros del mundo</div>
+          <div class="row">
+            Semilla <span class="field">Tierra Media</span> <span class="btn">Aleatoria</span>
+            <span class="muted">número o texto</span>
+          </div>
+          <div class="row">
+            Tamaño <span class="btn">Chico</span><span class="btn on">Mediano</span>
+            <span class="muted">400 / 1.500 provincias</span>
+          </div>
+          <div class="row">
+            Tipo de mapa <span class="btn on">Continentes</span><span class="btn">Pangea</span
+            ><span class="btn">Archipiélago</span>
+          </div>
+          <div class="row">
+            Fracción de tierra
+            <span class="field" style="min-width: 220px">──────●────── 0,30</span>
+          </div>
+          <div class="row muted">El rango de tierra depende del tipo de mapa.</div>
+          <div class="row" style="margin-top: 24px"><span class="btn on">Generar mundo</span></div>
+        </div>
+        <div class="n" style="left: 28px; top: 70px">1</div>
+
+        <div class="b dash" style="left: 40px; top: 530px; width: 560px; height: 170px">
+          <div class="lbl">Generando (estado mientras corre el Worker de worldgen)</div>
+          <div class="row">Relieve · etapa 3 de 10 · 1,2 s</div>
+          <div class="bar"><i style="width: 30%"></i></div>
+          <div class="row muted">
+            placas ✓ · relieve … · erosión · clima · ríos y lagos · biomas · provincias · mares ·
+            caminos · verificación
+          </div>
+          <div class="row muted">Error → mensaje + <span class="btn">Reintentar</span></div>
+        </div>
+        <div class="n" style="left: 28px; top: 520px">2</div>
+
+        <div class="b" style="left: 640px; top: 80px; width: 600px; height: 620px">
+          <div class="lbl">Mundos guardados (este navegador)</div>
+          <table>
+            <tr>
+              <th>Mundo</th>
+              <th>Hasta</th>
+              <th>Guardado</th>
+              <th></th>
+            </tr>
+            <tr>
+              <td>Semilla 7 · Chico · Continentes</td>
+              <td>1753 d.C.</td>
+              <td>hoy 09:12</td>
+              <td>
+                <span class="btn">Cargar</span><span class="btn">Exportar</span
+                ><span class="btn">Borrar</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Tierra Media · Mediano · Pangea</td>
+              <td>412 a.C.</td>
+              <td>ayer</td>
+              <td>
+                <span class="btn">Cargar</span><span class="btn">Exportar</span
+                ><span class="btn">Borrar</span>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4" class="muted">Otra versión del motor → "solo para mirar"</td>
+            </tr>
+          </table>
+          <div class="row" style="margin-top: 12px"><span class="btn">Importar .wsim…</span></div>
+          <div class="row muted" style="margin-top: 12px">
+            Vacío → "Todavía no hay mundos guardados."
+          </div>
+        </div>
+        <div class="n" style="left: 628px; top: 70px">3</div>
+      </div>
+    </div>
+    <ol class="notes">
+      <li>
+        Parámetros validados con los rangos del worldgen; la semilla acepta número u otro texto (se
+        convierte a número). Sin vista previa ni génesis animada (P3).
+      </li>
+      <li>
+        Progreso por etapa, que reporta el Worker de worldgen (P1.2). Al terminar se pasa a la vista
+        en vivo. Si falla, se ve un error con reintento.
+      </li>
+      <li>
+        Mundos guardados (D51) en IndexedDB: cargar, exportar e importar `.wsim`, borrar. Vive acá
+        hasta que exista la galería (P13).
+      </li>
+    </ol>
+
+    <!-- ───────────────────────── 2 · VIVO ───────────────────────── -->
+    <h2>2 · Vista en vivo</h2>
+    <div class="scroll">
+      <div class="frame">
+        <div class="b dark" style="left: 0; top: 0; width: 1280px; height: 44px">
+          <b>Semilla 7 · Chico · Continentes</b>
+          <span style="margin-left: 120px"><b>1001 a.C. · Neolítico</b></span>
+          <span style="float: right"
+            ><span class="btn">Resumen</span><span class="btn">Guardar</span
+            ><span class="btn">Exportar</span><span class="btn">Compartir</span>
+            <span class="btn on">es</span><span class="btn">en</span></span
+          >
+        </div>
+        <div class="n" style="left: 330px; top: 11px">1</div>
+
+        <div class="b" style="left: 0; top: 44px; width: 170px; height: 536px">
+          <div class="lbl">Modo de mapa</div>
+          <div class="row"><span class="btn on">Político</span></div>
+          <div class="row"><span class="btn">Bioma (prueba)</span></div>
+          <div class="lbl" style="margin-top: 16px">Leyenda</div>
+          <div class="row">▢ sin dueño</div>
+          <div class="row">● aldea … metrópolis</div>
+          <div class="row">✕ batalla reciente</div>
+        </div>
+        <div class="n" style="left: 140px; top: 54px">2</div>
+
+        <div class="b x" style="left: 170px; top: 44px; width: 750px; height: 536px">
+          <span style="background: #fff; padding: 2px 6px"
+            >Mapa 3D (P1.2): relleno, fronteras, ríos, marcadores, picking</span
+          >
+        </div>
+
+        <div class="b" style="left: 920px; top: 44px; width: 360px; height: 536px">
+          <div class="lbl">Inspector · a la fecha</div>
+          <div class="row muted">Provincia › Reino de Ashkur › Gobernante</div>
+          <div class="row"><b>Provincia 214 · Valle de Oru</b></div>
+          <div class="row">Dueño: <u>Reino de Ashkur</u></div>
+          <div class="row">Asentamiento: <u>Oru</u> (pueblo)</div>
+          <div class="row">Población: 12.400 · urbana 8 %</div>
+          <div class="row">Cultura: <u>Kesh</u> · Conoce: agricultura, cerámica</div>
+          <div class="b dash" style="position: static; margin-top: 10px; height: 200px">
+            <div class="lbl">¿Por qué? (estado exacto a la fecha)</div>
+            <div class="row">Rendimiento de cultivo 0,8 t</div>
+            <div class="row">
+              &nbsp;+ arado +25 % <span class="muted">(innovación, desde −1800)</span>
+            </div>
+            <div class="row">
+              &nbsp;− hambruna −10 % <span class="muted">(evento de −1004)</span>
+            </div>
+            <div class="row muted">
+              calculando… (en vivo ≤ 0,5 s; desde un archivo, con progreso)
+            </div>
+          </div>
+          <div class="row muted" style="margin-top: 8px">
+            Vacío → "Hacé clic en el mapa para inspeccionar"
+          </div>
+        </div>
+        <div class="n" style="left: 1250px; top: 54px">3</div>
+
+        <div class="b dark" style="left: 0; top: 580px; width: 1280px; height: 180px">
+          <div class="row">
+            <span class="btn">Pausa</span><span class="btn on">1×</span><span class="btn">2×</span
+            ><span class="btn">4×</span><span class="btn">Máx.</span>
+            <b style="margin-left: 16px">1001 a.C. · Neolítico</b>
+            <span class="muted" style="margin-left: 16px"
+              >simulado hasta 512 a.C. · 1,0 ms por año</span
+            >
+          </div>
+          <div class="b" style="left: 8px; top: 38px; width: 1264px; height: 34px">
+            <span class="muted"
+              >línea de tiempo: bandas de eras · marcadores · cabeza ▍ · franja simulada por
+              delante</span
+            >
+          </div>
+          <div class="b" style="left: 8px; top: 80px; width: 1264px; height: 92px">
+            <div class="lbl">Teletipo</div>
+            <div class="row">
+              1004 a.C. · Hambruna en el Valle de Oru <span class="muted">(cosecha −40 %)</span>
+            </div>
+            <div class="row">
+              1012 a.C. · Ashkur conquista Tell Bar <span class="muted">← guerra de 1019 a.C.</span>
+            </div>
+            <div class="row muted">…</div>
+          </div>
+        </div>
+        <div class="n" style="left: 1250px; top: 588px">4</div>
+        <div class="n" style="left: 1240px; top: 666px">5</div>
+      </div>
+    </div>
+    <ol class="notes">
+      <li>
+        Barra superior: mundo, fecha y era dominante, y acciones: resumen, guardar, exportar
+        `.wsim`, compartir (P1.7) y es/en. Sin menú de ajustes (P13).
+      </li>
+      <li>
+        Riel izquierdo: modos de mapa (en P1, Político más el de bioma de prueba) y la leyenda.
+      </li>
+      <li>
+        Inspector a la fecha (D50) para provincia, asentamiento, polity y personaje, con migas para
+        volver. Los resúmenes salen al instante del espejo de la historia. "¿Por qué?" le pide al
+        Worker el estado exacto (`explain` de los stats de P1). Los enlaces subrayados abren otra
+        ficha.
+      </li>
+      <li>
+        Controles de tiempo y línea de tiempo (P1.5, ya funcionando). Atajos: espacio = pausa, ←/→ =
+        ±100 años, 1–4 = velocidades.
+      </li>
+      <li>
+        Teletipo: eventos con su plantilla es/en, filtrados por lo ya visto (D49). Un clic centra el
+        mapa y abre la ficha del actor; la causa enlazada lleva al evento previo.
+      </li>
+    </ol>
+
+    <!-- ───────────────────────── 3 · RESUMEN ───────────────────────── -->
+    <h2>3 · Resumen v1</h2>
+    <div class="scroll">
+      <div class="frame">
+        <div class="b dark" style="left: 0; top: 0; width: 1280px; height: 44px">
+          <b>Semilla 7 · Chico · Continentes</b>
+          <span class="muted">· resumen hasta 1001 a.C. (lo visto)</span
+          ><span style="float: right"
+            ><span class="btn">← Volver a la vista en vivo</span> <span class="btn on">es</span
+            ><span class="btn">en</span></span
+          >
+        </div>
+
+        <div class="b" style="left: 20px; top: 60px; width: 1240px; height: 70px">
+          <div class="lbl">Números clave</div>
+          <span class="btn">Población 15,9 M</span
+          ><span class="btn">Polities activas 12 (fundadas 31)</span
+          ><span class="btn">Guerras 48</span><span class="btn">Asentamientos 24</span
+          ><span class="btn">Era dominante: Neolítico</span>
+        </div>
+        <div class="n" style="left: 1228px; top: 66px">1</div>
+
+        <div class="b x" style="left: 20px; top: 146px; width: 400px; height: 200px">
+          <span style="background: #fff; padding: 2px 6px">Población mundial × año</span>
+        </div>
+        <div class="b x" style="left: 440px; top: 146px; width: 400px; height: 200px">
+          <span style="background: #fff; padding: 2px 6px">Cantidad de polities × año</span>
+        </div>
+        <div class="b x" style="left: 860px; top: 146px; width: 400px; height: 200px">
+          <span style="background: #fff; padding: 2px 6px">Mayor polity (personas) × año</span>
+        </div>
+        <div class="n" style="left: 1228px; top: 152px">2</div>
+
+        <div class="b" style="left: 20px; top: 362px; width: 1240px; height: 380px">
+          <div class="row">
+            <span class="btn on">Polities</span><span class="btn">Asentamientos</span
+            ><span class="btn">Culturas</span><span class="btn">Personajes</span
+            ><span class="btn">Guerras</span>
+          </div>
+          <table style="margin-top: 6px">
+            <tr>
+              <th>Nombre ▾</th>
+              <th>Fundada</th>
+              <th>Fin</th>
+              <th>Provincias (máx.)</th>
+              <th>Población (máx.)</th>
+              <th>Capital</th>
+            </tr>
+            <tr>
+              <td><u>Reino de Ashkur</u></td>
+              <td>2310 a.C.</td>
+              <td>—</td>
+              <td>14</td>
+              <td>1,9 M</td>
+              <td><u>Oru</u></td>
+            </tr>
+            <tr>
+              <td><u>Tell Bar</u></td>
+              <td>2702 a.C.</td>
+              <td>1012 a.C. (conquista)</td>
+              <td>5</td>
+              <td>0,4 M</td>
+              <td><u>Bar</u></td>
+            </tr>
+            <tr>
+              <td colspan="6" class="muted">
+                … lista virtualizada (miles de filas) · clic en encabezado = ordenar
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="n" style="left: 1228px; top: 368px">3</div>
+      </div>
+    </div>
+    <ol class="notes">
+      <li>
+        Los números clave cubren hasta el año ya visto en la reproducción (no se revela el futuro,
+        D49). Al terminar la corrida, es el panorama final.
+      </li>
+      <li>
+        Tres gráficos con uPlot (D54) a partir de los agregados por año de la historia, con el eje x
+        en años del calendario y una marca en el año de la reproducción.
+      </li>
+      <li>
+        Listas virtualizadas (TanStack Virtual) por tipo, ordenables por columna, sin búsqueda (la
+        búsqueda es de la enciclopedia, P11). Cada fila y cada enlace abre la ficha.
+      </li>
+    </ol>
+
+    <!-- ───────────────────────── 4 · FICHA ───────────────────────── -->
+    <h2>4 · Ficha genérica (ejemplo: polity)</h2>
+    <div class="scroll">
+      <div class="frame">
+        <div class="b dark" style="left: 0; top: 0; width: 1280px; height: 44px">
+          <span class="muted">Resumen › Polities ›</span> <b>Reino de Ashkur</b
+          ><span style="float: right"
+            ><span class="btn">← Volver</span> <span class="btn on">es</span
+            ><span class="btn">en</span></span
+          >
+        </div>
+
+        <div class="b" style="left: 20px; top: 60px; width: 1240px; height: 76px">
+          <div class="row"><b>Reino de Ashkur</b> · polity · fundada en 2310 a.C. · activa</div>
+          <div class="row">
+            Mostrar: <span class="btn on">a la fecha (1001 a.C.)</span
+            ><span class="btn">al final</span>
+            <span class="muted">(solo con la corrida terminada)</span>
+          </div>
+        </div>
+        <div class="n" style="left: 1228px; top: 66px">1</div>
+
+        <div class="b" style="left: 20px; top: 152px; width: 600px; height: 590px">
+          <div class="lbl">Datos</div>
+          <div class="row">Capital: <u>Oru</u> · Provincias: 14 · Población: 1,9 M</div>
+          <div class="row">
+            Gobernante: <u>Taru II</u> (desde 1030 a.C.) · Heredero: <u>Ennu</u>
+          </div>
+          <div class="row">Cultura mayoritaria: <u>Kesh</u> · Idioma: <u>Kesh antiguo</u></div>
+          <div class="lbl" style="margin-top: 16px">Relaciones</div>
+          <div class="row">Guerras: <u>contra Tell Bar (1019–1012 a.C.)</u> · …</div>
+          <div class="row">Gobernantes: <u>Ashkur I</u> → <u>Taru I</u> → <u>Taru II</u></div>
+          <div class="row">Asentamientos: <u>Oru</u>, <u>Bar</u>, …</div>
+          <div class="row muted" style="margin-top: 16px">
+            Otro tipo (provincia, asentamiento, cultura, personaje, guerra) = misma estructura,
+            distintos datos.
+          </div>
+        </div>
+        <div class="n" style="left: 588px; top: 158px">2</div>
+
+        <div class="b" style="left: 640px; top: 152px; width: 620px; height: 590px">
+          <div class="lbl">Eventos de la entidad (en orden, con causas)</div>
+          <div class="row">2310 a.C. · Fundación del Reino de Ashkur</div>
+          <div class="row">
+            1030 a.C. · Taru II sucede a Taru I <span class="muted">← muerte de Taru I</span>
+          </div>
+          <div class="row">1019 a.C. · Ashkur declara la guerra a Tell Bar</div>
+          <div class="row">
+            1012 a.C. · Conquista de Tell Bar <span class="muted">← guerra de 1019 a.C.</span>
+          </div>
+          <div class="row muted">… solo hasta lo visto (D49)</div>
+        </div>
+        <div class="n" style="left: 1228px; top: 158px">3</div>
+      </div>
+    </div>
+    <ol class="notes">
+      <li>
+        Cada ficha tiene una URL propia (se puede enlazar y volver). Se muestra "a la fecha" de la
+        reproducción, o el estado final si la corrida ya terminó.
+      </li>
+      <li>
+        Es el mismo componente que el inspector de la vista en vivo, a página completa: datos y
+        relaciones. Todo enlace abre otra ficha (criterio de salida: toda entidad listada tiene
+        ficha navegable).
+      </li>
+      <li>
+        Eventos donde la entidad es actor, con sus causas enlazadas: se navega causa → evento →
+        ficha.
+      </li>
+    </ol>
+
+    <h2>Preguntas de estructura (las mismas que en el chat)</h2>
+    <div class="q">
+      <b>P1 · ¿El resumen se puede abrir durante la corrida?</b><br />Recomiendo: sí, y muestra
+      hasta lo ya visto (D49). Al terminar la corrida es el panorama final. Alternativa: que solo
+      exista al final (más simple, pero no se puede consultar a mitad).
+    </div>
+    <div class="q">
+      <b>P2 · ¿Ficha e inspector son una sola pieza?</b><br />Recomiendo: un solo componente con dos
+      densidades (panel en vivo, página en el resumen). Alternativa: dos vistas distintas (más
+      libertad, el doble de trabajo y de inconsistencias).
+    </div>
+    <div class="q">
+      <b>P3 · ¿Dónde viven los mundos guardados en P1?</b><br />Recomiendo: en "Crear mundo", hasta
+      la galería de P13. Alternativa: un menú en la vista en vivo (escondido para quien recién
+      llega).
+    </div>
+  </body>
+</html>
