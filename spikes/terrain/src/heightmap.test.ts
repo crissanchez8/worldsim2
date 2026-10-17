@@ -1,6 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { MAP_HEIGHT, MAP_WIDTH } from './config';
 import { generateHeightmap, heightmapHash } from './heightmap';
+
+// El mapa completo tarda ~4 s solo; en el runner del CI pasa los 5 s por defecto (L-017).
+vi.setConfig({ testTimeout: 120_000 });
 
 describe('generateHeightmap', () => {
   it('es determinista y depende de la seed', () => {

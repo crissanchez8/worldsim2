@@ -211,7 +211,7 @@
 - **Causa raíz:** timeouts por defecto en tests que hacen trabajo pesado de verdad (generar un mundo, simular miles de años), sensibles a la carga de la máquina.
 - **Regla:** todo archivo de tests que genera mundos o simula corridas largas fija `vi.setConfig({ testTimeout, hookTimeout })` explícitos y holgados; un "fallo sin error" en `pnpm check` se busca con `grep -E "FAIL|timed out"` en el log completo (L-011), no se reintenta a ciegas.
 - **Cómo detectarlo antes:** un test que tarda más de ~1 s solo.
-- **Recurrencia:** P1.4: el test de `ws run` con el worldgen real (`tools/cli`) pasó los 5 s cuando se sumó la corrida grabada de `packages/history` al paralelo.
+- **Recurrencia:** P1.4: el test de `ws run` con el worldgen real (`tools/cli`) pasó los 5 s cuando se sumó la corrida grabada de `packages/history` al paralelo. En el CI, el test del mapa completo de `spikes/terrain` (~4 s local) dejó el job `check` en rojo desde ce6ac27: el runner es más lento que la máquina local, así que "pasa local" no alcanza.
 - **Promovido a CLAUDE.md:** sí (2026-10-16, Convenciones).
 
 ---
