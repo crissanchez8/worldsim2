@@ -8,7 +8,7 @@
 | **Última actualización** | 2026-10-16 |
 | **Fase actual** | P1 — Rebanada vertical |
 | **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | P1.8 `ws health` (calibrar con 10 seeds) y P1.4 Historia v1; P1.2 Mapa v1 en una sesión paralela (propuesta) |
+| **Próximo paso** | Decidir el merge de P1.2 (rama `claude/eager-lamport-065b7b`, mapa v1) en la rama de fase; después P1.5 Tiempo y director v1 (Worker por tandas, IndexedDB) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -34,6 +34,17 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-16 (sesión P1-2, P1.8 y P1.4 hechas):**
+  - **`ws health`** (32ae77f): N seeds en paralelo con invariantes por tick, bandas y ventanas del Apéndice A escaladas por la tierra de cada mundo, reporte MD + HTML en `out/health/`, comparación contra la línea base (`docs/phases/P01/health-baseline.json`, generada con el contenido calibrado `15186f8…`; su etiqueta dice motor 0.1.2 porque la versión se subió después, sin cambios de comportamiento); job `health` en el CI por PR;
+  - **calibración v1** (10 seeds del mediano, D55: `cropReach`, invención ∝ área × √densidad): 0 invariantes rotos, 0 hegemones; medianas: agricultura −10.194, primera ciudad −4.218, bronce −3.655, escritura −3.268; 235 M personas en el 1 d.C. (7/10 dentro de la banda); 44 polities activas; `ENGINE_VERSION` 0.1.3;
+  - **pendiente de calibración (P4/P5):** la dispersión entre seeds es bimodal (unas despegan temprano: imprenta y pólvora antes de Cristo; otras no llegan) y la población se estanca después del 1500 (366 M en 1900; banda 0,9–2,2 mil M);
+  - **historia v1** (`packages/history`): grabador fuera del pipeline (marcos visuales, deltas anuales, series cada 10 años con población en u16 logarítmico y fracción urbana en u8, agregados por año, eventos, keyframes completos cada 100 años en memoria); consultas `mapAt`, `seriesAt`, `provinceAt`, `polityAt`, `eventsBetween` y `fullStateAt` (keyframe + re-simulación, hash idéntico al real); codec `.wsim` v0 (META, VKEY, DELT, SERI en diferencias zigzag, AGGR, EVNT, KEYF cada 1.000 años, FINL) con `inspectWsim`; continuar desde FINL a mitad de corrida da el mismo hash;
+  - **medición en el mediano** (`ws run --wsim`, detalle en ADR-008): `.wsim` de **5,69 MB** para 13.900 años (presupuesto 20); mapa a la fecha ≤ 0,1 ms; estado completo en vivo 167 ms en promedio y 278 ms como máximo (presupuesto 500); desde el archivo 1,5–2,1 s (con progreso, D01-c); grabar 0,4 ms/año;
+  - **Δ (para el REPORT):** sin bloque INDX (el archivo se carga entero; índice de la enciclopedia en P11); eventos por año, no por siglo; guardar en IndexedDB y el E2E de "cargar a mitad de corrida" van con el Worker en P1.5; las latencias se miden en `ws run --wsim`, no en los tests (frágiles en paralelo); el titular de un título a la fecha sale de los eventos `ruler.succeeded` cuando lo pida el inspector (P1.6);
+  - **riesgos:** EVNT pesa 1,7 MB con 51.508 eventos (~33 B por evento; el codec escribe tipo y datos como texto) y crece con cada fase; los keyframes en memoria suman 13,5 MB;
+  - **P1.2 (mapa v1)** lo hizo una sesión paralela en la rama `claude/eager-lamport-065b7b` (sin pushear): mediano en 4,3–4,7 s en Chrome WebGPU y 7,3–7,6 s en Firefox WebGL2, 60 fps; el merge sobre esta rama choca solo en LEARNINGS y STATUS; falta tu medición en un navegador visible (checkpoint 1) y tu OK para mergear;
+  - **próximo:** tu OK para mergear P1.2 → P1.5 Tiempo y director v1.
+
 - **2026-10-16 (sesión P1-2, P1.3 hecha):**
   - **idioma v1** (`packages/lang`, 03b4084): fonología por seed y nombres romanizados;
   - **guard de contratos por filas comunes** (`core`, 77f9ad7): un campo cambió solo si cambió en una fila que existía antes y después; habilita la propiedad por campo del modelo (p. ej. `Title.holder` de succession en filas que crea statecraft);
