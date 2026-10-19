@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Fecha** | 2026-10-16 |
-| **Estado** | ✅ Aprobado el 2026-10-16 (tal cual; decisiones D48–D54) |
+| **Estado** | ✅ Aprobado el 2026-10-16 (tal cual; decisiones D48–D54) · fase cerrada el 2026-10-19 (REPORT en `REPORT.md`; la duración a 1× queda abierta por D56) |
 | **Tamaño** | L |
 | **Fase anterior** | P0 cerrada el 2026-10-16 ([REPORT](../P00/REPORT.md); OK registrado en `decisions.md`) |
 
@@ -125,22 +125,22 @@ crece").
 ---
 
 **P1.0 Bases que pidió P0 (Δ nueva)**
-- [ ] **Buffers de flujo tipados en SoA** en `core/scheduler`:
+- [x] **Buffers de flujo tipados en SoA** en `core/scheduler`:
   - declarados con un esquema (columnas tipadas con unidad);
   - crecimiento, `size` y `clear()`; el pipeline verifica I9 igual que con `FlowBuffer`;
   - `FlowBuffer<T>` de objetos queda solo para buffers fríos;
   - tests por encima de la capacidad inicial (L-007);
   - bench: SoA contra objetos.
-- [ ] **`packages/content`** con zod:
+- [x] **`packages/content`** con zod:
   - primeras tablas: `Biome`, `SettlementLevel`, `Innovation`, `Era`, `Stratum` (uno),
     `MapType`, `WorldSize`, `Law` (solo sucesión);
   - hash de contenido para la cabecera de snapshots y `.wsim`.
-- [ ] **Esqueleto de `packages/sim`:**
+- [x] **Esqueleto de `packages/sim`:**
   - esquemas de las entidades de P1 desde `model.md` (§6 de este BRIEF);
   - `createSim(worldStatic, params)`, pipeline, estado inicial, snapshot y carga;
   - guard de contratos activo en tests;
   - invariantes I2–I5, I9 e I10 verificados al final de cada tick en dev y tests.
-- [ ] **`ledger` real** (M1), reescrito desde el spike B:
+- [x] **`ledger` real** (M1), reescrito desde el spike B:
   - `popDeltas` (nacimiento, muerte con causa, transferencia) y `territoryRequests` con
     prioridad;
   - creación del pop destino, fusión de pops de menos de 1 persona, contabilidad por causa (I2);
@@ -148,11 +148,11 @@ crece").
   - Δ las transferencias no tienen productor en P1 (migración y asimilación son P4), pero se
     implementan y testean ahora porque son la base de P4;
   - Δ los reclamos van a P7 (ver D01-d).
-- [ ] **`derive` con índices densos (CSR):**
+- [x] **`derive` con índices densos (CSR):**
   - provincia → pops; polity → provincias;
   - agregados por provincia y por polity;
   - vecinos entre polities.
-- [ ] **Suite de determinismo permanente** en `tools/determinism` (Δ workspace nuevo; reemplaza a
+- [x] **Suite de determinismo permanente** en `tools/determinism` (Δ workspace nuevo; reemplaza a
   `spikes/determinism`):
   - batería de math y RNG + hash del `WorldStatic` + hash por año del motor real;
   - referencia de Node generada en el build (creando sus carpetas, L-014);
@@ -160,57 +160,57 @@ crece").
   - página para la verificación manual en Safari;
   - Δ horizonte por PR: los años que entren en ~5 min (2.000 si el motor real no da para
     14.000); la corrida completa, por la noche.
-- [ ] **`ws run`** (seed, parámetros, años → hashes y resumen), base de `ws health` y de la
+- [x] **`ws run`** (seed, parámetros, años → hashes y resumen), base de `ws health` y de la
   referencia de determinismo.
-- [ ] **Política de versión:** `ENGINE_VERSION` pasa a 0.1.0 con el primer golden de simulación.
+- [x] **Política de versión:** `ENGINE_VERSION` pasa a 0.1.0 con el primer golden de simulación.
   Desde ahí, todo cambio intencional del golden la sube.
 
 **P1.1 Worldgen v1** (`packages/worldgen`, en el Worker de worldgen)
-- [ ] Ráster de 2048×1024 (mediano) y 1024×512 (chico, para tests y desarrollo), con wrap E-O
-- [ ] Placas simples (Voronoi sobre el cilindro): elevación por tipo + levantamiento en bordes
+- [x] Ráster de 2048×1024 (mediano) y 1024×512 (chico, para tests y desarrollo), con wrap E-O
+- [x] Placas simples (Voronoi sobre el cilindro): elevación por tipo + levantamiento en bordes
   convergentes + ruido fractal sobre cilindro (reescrito del spike A)
-- [ ] Tipo de mapa por cantidad y tamaño de placas continentales: continentes, pangea,
+- [x] Tipo de mapa por cantidad y tamaño de placas continentales: continentes, pangea,
   archipiélago
-- [ ] Nivel del mar por percentil (`landFraction`); erosión térmica simple
-- [ ] Temperatura por latitud y altitud (gradiente con unidad); humedad por bandas de latitud +
+- [x] Nivel del mar por percentil (`landFraction`); erosión térmica simple
+- [x] Temperatura por latitud y altitud (gradiente con unidad); humedad por bandas de latitud +
   distancia a la costa + sombra orográfica simple
-- [ ] Biomas v1 (8–10 clases, tabla tipo Whittaker en `content`)
-- [ ] Hidrología v1: priority-flood + acumulación de caudal (m³/s) → ríos que terminan en el mar
+- [x] Biomas v1 (8–10 clases, tabla tipo Whittaker en `content`)
+- [x] Hidrología v1: priority-flood + acumulación de caudal (m³/s) → ríos que terminan en el mar
   o en un lago
-- [ ] Provincias v1:
+- [x] Provincias v1:
   - semillas Poisson ponderadas por habitabilidad;
   - crecimiento Dijkstra con costo extra en crestas y ríos, con wrap;
   - `ProvinceStatic` (área, aptitud agrícola, rugosidad, clima medio, bioma dominante,
     habitabilidad, costera, caudal máximo);
   - zonas marítimas;
   - grafo CSR con `baseCost` en días (M7) y largo de frontera en km
-- [ ] Salida `WorldStatic` serializable y hasheada; progreso por etapa hacia la UI
-- [ ] Tests:
+- [x] Salida `WorldStatic` serializable y hasheada; progreso por etapa hacia la UI
+- [x] Tests:
   - determinismo y golden del hash;
   - fracción de tierra dentro de ±5% del parámetro;
   - toda provincia conexa o marcada isla;
   - ríos sin tramos cuesta arriba;
   - costura del wrap con control negativo (validado con una mutación)
-- [ ] Bench: tiempo de worldgen del mundo mediano (≤ 20 s)
+- [x] Bench: tiempo de worldgen del mundo mediano (≤ 20 s)
 - **No hacer:** deriva de placas, erosión hidráulica, vientos, corrientes, suelos, depósitos,
   especies, deglaciación, nombres de provincias, génesis animada.
 
 **P1.2 Mapa v1** (`apps/web/src/map`, enfoque del spike A, D43)
-- [ ] `WebGPURenderer` + TSL con fallback automático a WebGL2; `?backend=webgl2` para depurar
-- [ ] Terreno por chunks:
+- [x] `WebGPURenderer` + TSL con fallback automático a WebGL2; `?backend=webgl2` para depurar
+- [x] Terreno por chunks:
   - heightmap R16F + grilla compartida por LOD;
   - desplazamiento en el vertex shader y normales en el fragment;
   - faldones y esfera envolvente a mano;
   - color por bioma y sombreado; exageración vertical como parámetro
-- [ ] Wrap: chunks reposicionados en la copia más cercana; cámara envuelta a [0, ancho)
-- [ ] Agua con color por profundidad; ríos como líneas con ancho por caudal
-- [ ] Textura de ids de provincia + textura de colores por provincia → relleno político y
+- [x] Wrap: chunks reposicionados en la copia más cercana; cámara envuelta a [0, ancho)
+- [x] Agua con color por profundidad; ríos como líneas con ancho por caudal
+- [x] Textura de ids de provincia + textura de colores por provincia → relleno político y
   fronteras (cambiar de año = actualizar ~1.500 colores)
-- [ ] Zoom semántico v0: de lejos plano coloreado, de cerca relieve
-- [ ] Marcadores instanciados: asentamientos por nivel, batallas recientes
-- [ ] Picking por el ráster de ids (CPU) → selección; nombre al pasar el mouse
-- [ ] Precalentado con un render sincrónico (no `compileAsync` sobre cientos de objetos)
-- [ ] **Medir la primera carga** con caché fría y caliente en Chrome y Firefox (riesgo de P0: un
+- [x] Zoom semántico v0: de lejos plano coloreado, de cerca relieve
+- [x] Marcadores instanciados: asentamientos por nivel, batallas recientes
+- [x] Picking por el ráster de ids (CPU) → selección; nombre al pasar el mouse
+- [x] Precalentado con un render sincrónico (no `compileAsync` sobre cientos de objetos)
+- [x] **Medir la primera carga** con caché fría y caliente en Chrome y Firefox (riesgo de P0: un
   congelamiento de 8 s), anotando el backend
 - **No hacer:** rótulos de reinos, texturas de splat, iluminación cuidada, vegetación, modelos 3D,
   paleta definitiva (P2/P12). Los colores políticos salen de `colorSeed`, sin coloreo de grafo
@@ -218,23 +218,23 @@ crece").
 
 **P1.3 Simulación v1** (`packages/sim`; cada sistema mínimo, con contrato completo, eventos con
 causas y significancia, y plantillas es/en)
-- [ ] **Estado inicial (−12000):**
+- [x] **Estado inicial (−12000):**
   - bandas de forrajeros en toda la tierra habitable, con población total escalada por
     superficie habitable (Apéndice A: 1–10 M a 10.000 a.C.);
   - culturas placeholder por focos (≈1 cada 40 provincias, parámetro), cada una con su idioma v1;
   - un estrato; religión 0.
-- [ ] **`production` v1:**
+- [x] **`production` v1:**
   - uso del suelo en dos categorías (forrajeo, cultivo);
   - alimento = área × uso × `cropYield` (stat con modificadores de innovaciones y bioma);
   - → `productionOutput`;
   - evento `subsistence.shifted`;
   - **no hacer:** pastoreo, bienes, métodos de producción.
-- [ ] **`demography` v1:**
+- [x] **`demography` v1:**
   - `birthRate` y `deathRate` (stats con modificadores) según la subsistencia y
     `foodSecurity` → `popDeltas`;
   - eventos `famine.started` / `.ended`;
   - **no hacer:** salud, edades, migración.
-- [ ] **`knowledge` v1:**
+- [x] **`knowledge` v1:**
   - ≈12 innovaciones con prerrequisitos y requisitos de entorno: agricultura, pastoreo,
     cerámica, cobre, bronce, escritura, rueda, hierro, acuñación, navegación oceánica, imprenta,
     pólvora;
@@ -242,13 +242,13 @@ causas y significancia, y plantillas es/en)
   - difusión por adyacencia (`diffusionRate` con modificadores);
   - `InventionRecord` mínimo; evento `innovation.invented`;
   - **no hacer:** pérdida, inventores, eras regionales.
-- [ ] **`settlements` v1:**
+- [x] **`settlements` v1:**
   - un asentamiento por provincia como máximo;
   - nivel por población urbana con histéresis ±15% (`SettlementLevel` en `content`);
   - nombre del idioma local;
   - eventos `settlement.founded` / `.grew` / `.declined`;
   - **no hacer:** ruinas, edificios, puertos, caminos.
-- [ ] **`statecraft` v1 (polities):**
+- [x] **`statecraft` v1 (polities):**
   - jefaturas que nacen de asentamientos con agricultura;
   - expansión a provincias vecinas sin dueño y absorción pacífica de vecinos débiles, por
     `territoryRequests`;
@@ -256,7 +256,7 @@ causas y significancia, y plantillas es/en)
   - fin de una polity sin provincias;
   - eventos `polity.formed` / `.absorbed`;
   - **no hacer:** régimen, estabilidad, fisco, administración, vasallos.
-- [ ] **`diplomacy` + `military` v1 (guerra abstracta):**
+- [x] **`diplomacy` + `military` v1 (guerra abstracta):**
   - declaración por utilidad simple: relación de fuerzas, frontera, enfriamiento entre guerras;
   - un enfrentamiento por estación (`combatStrength` con modificadores de bronce y hierro + RNG);
   - registro abstracto de `Battle`, bajas como `popDeltas`, puntaje y cansancio por bando;
@@ -265,106 +265,106 @@ causas y significancia, y plantillas es/en)
   - topes contra H-07: una guerra por par, enfriamiento, cansancio creciente;
   - eventos `war.declared` / `.ended`, `battle.fought`, `treaty.signed`;
   - **no hacer:** ejércitos en el mapa, alianzas, objetivos de guerra, sitios.
-- [ ] **`characters` + `succession` v1:**
+- [x] **`characters` + `succession` v1:**
   - gobernante y heredero como `Person` (nombre, sexo, nacimiento, muerte con causa, padre);
   - mortalidad por edad;
   - sucesión por primogenitura; si no hay heredero, gobernante nuevo sin vínculo;
   - eventos `person.died` (gobernantes) y `ruler.succeeded` (causa: la muerte);
   - **no hacer:** rasgos, casas, matrimonios, regencias, crisis sucesorias.
-- [ ] **Idioma v1** (`packages/lang`):
+- [x] **Idioma v1** (`packages/lang`):
   - fonología por idioma desde una seed (inventario + estructura silábica);
   - `nombre(idioma, tipo, rng)` para personas, lugares, polities y guerras;
   - nombres guardados en `Name` al asignarse;
   - **no hacer:** cambio fonético, familias, morfología.
-- [ ] **`chronicle` v1:**
+- [x] **`chronicle` v1:**
   - vacía el bus de eventos al log;
   - arma los deltas visuales, los resúmenes de D01-c y los agregados mundiales por año
     (población, polities, mayor polity, era dominante);
   - **no hacer:** episodios, relato.
-- [ ] Golden de simulación (seed fija, hash cada 1.000 años) y test de guardar/cargar →
+- [x] Golden de simulación (seed fija, hash cada 1.000 años) y test de guardar/cargar →
   continuación idéntica
 
 **P1.4 Historia v1** (`packages/history`, ADR-008 opción B, D44)
-- [ ] Grabador en el Worker:
+- [x] Grabador en el Worker:
   - keyframes completos comprimidos cada 100 años **en memoria**;
   - keyframes visuales; deltas visuales anuales;
   - resúmenes por entidad (D01-c); eventos por siglo
-- [ ] Consultas a la fecha:
+- [x] Consultas a la fecha:
   - mapa (≤ 16 ms);
   - resumen de cualquier entidad (instantáneo);
   - estado completo exacto (keyframe + re-simulación, ≤ 500 ms en vivo) para el "por qué" a la
     fecha
-- [ ] Codec `.wsim` v0 por bloques:
+- [x] Codec `.wsim` v0 por bloques:
   - `META`, `KEYF` cada 1.000 años, `VKEY`, `DELT`, `EVNT`, `FINL` exacto, `INDX`;
   - tests de ida y vuelta;
   - medición del tamaño con el estado real (objetivo ≤ 20 MB)
-- [ ] Δ guardar en IndexedDB = guardar los bytes del `.wsim`. Un solo formato para guardar,
+- [x] Δ guardar en IndexedDB = guardar los bytes del `.wsim`. Un solo formato para guardar,
   exportar e importar; lista de mundos guardados (cargar y borrar)
-- [ ] Cargar a mitad de corrida → continuación con hash idéntico (test de Node + E2E)
+- [x] Cargar a mitad de corrida → continuación con hash idéntico (test de Node + E2E)
 
 **P1.5 Tiempo y director v1**
-- [ ] Worker de simulación por tandas con `MessageChannel`, protocolo tipado y deltas
+- [x] Worker de simulación por tandas con `MessageChannel`, protocolo tipado y deltas
   transferibles (reescrito del spike B), con el acople de D01-b
-- [ ] Velocidades: pausa, 1×, 2×, 4×, máx.
-- [ ] Ritmo por era (D01-a): años por segundo según la era dominante, con transición suave
-- [ ] Línea de tiempo con bandas de eras y marcadores de eventos significativos; scrub para
+- [x] Velocidades: pausa, 1×, 2×, 4×, máx.
+- [x] Ritmo por era (D01-a): años por segundo según la era dominante, con transición suave
+- [x] Línea de tiempo con bandas de eras y marcadores de eventos significativos; scrub para
   rebobinar
 - **No hacer:** cámara que sigue eventos ni pausas automáticas (director de P11).
 
 **P1.6 UI v1 funcional y neutra** (después de los wireframes 🎨)
-- [ ] Router tipado (TanStack Router) y estado de UI (zustand) (§9 del plan)
-- [ ] **Crear mundo:**
+- [x] Router tipado (TanStack Router) y estado de UI (zustand) (§9 del plan)
+- [x] **Crear mundo:**
   - seed, tamaño (chico/mediano), tipo de mapa, fracción de tierra;
   - generar, con progreso por etapa
-- [ ] **Vista en vivo:**
+- [x] **Vista en vivo:**
   - mapa;
   - controles de tiempo y línea de tiempo;
   - teletipo de eventos;
   - inspector de provincia, asentamiento, polity y personaje, con el "por qué" (`explain`) de
     los stats de P1
-- [ ] **Resumen v1:**
+- [x] **Resumen v1:**
   - listas virtualizadas de polities, asentamientos, culturas, personajes y guerras;
   - ficha genérica navegable por entidad;
   - 3 gráficos con uPlot: población mundial, cantidad de polities, mayor polity
-- [ ] Toggle es/en en la barra: toda la UI y los textos de eventos
-- [ ] Estados vacío, cargando y error; atajos mínimos (espacio, ←/→); cero errores de consola
-- [ ] Verificación en el navegador integrado con capturas para el REPORT (L-006)
+- [x] Toggle es/en en la barra: toda la UI y los textos de eventos
+- [x] Estados vacío, cargando y error; atajos mínimos (espacio, ←/→); cero errores de consola
+- [x] Verificación en el navegador integrado con capturas para el REPORT (L-006)
 - **No hacer:** Design System, estilos más allá de un layout legible, animaciones, landing,
   galería, enciclopedia con búsqueda.
 
 **P1.7 Compartir v1**
-- [ ] URL con seed + parámetros + `ENGINE_VERSION`
-- [ ] Abrir un link regenera el mundo y simula a velocidad máxima con progreso; después permite
+- [x] URL con seed + parámetros + `ENGINE_VERSION`
+- [x] Abrir un link regenera el mundo y simula a velocidad máxima con progreso; después permite
   reproducir
-- [ ] Aviso si la versión del link no coincide con la del motor (otra versión no garantiza el
+- [x] Aviso si la versión del link no coincide con la del motor (otra versión no garantiza el
   mismo mundo)
-- [ ] E2E: el mismo link en otro navegador da el mismo hash
+- [x] E2E: el mismo link en otro navegador da el mismo hash
 
 **P1.8 Salud v1 (`ws health`)**
-- [ ] 10 seeds, en paralelo con `worker_threads`
-- [ ] Métricas:
+- [x] 10 seeds, en paralelo con `worker_threads`
+- [x] Métricas:
   - curva de población contra las bandas del Apéndice A (informativa en P1: no frena);
   - cantidad de polities en el tiempo y % de tierra con dueño;
   - extinciones de polities;
   - guerras (cantidad y duración) y duración de reinados;
   - eventos por tipo;
   - invariantes rotos (esto sí frena)
-- [ ] Reporte Markdown + HTML con gráficos; comparación contra la corrida anterior
+- [x] Reporte Markdown + HTML con gráficos; comparación contra la corrida anterior
   (`docs/phases/P01/health-baseline.json`)
-- [ ] CI: job `health` por PR si entra en ≤ 10 min; si no, nocturno
+- [x] CI: job `health` por PR si entra en ≤ 10 min; si no, nocturno
 
 **P1.9 Rendimiento**
-- [ ] Escenario `world-medium` en `ws bench` **antes** de optimizar: worldgen + ms/año (prom y
+- [x] Escenario `world-medium` en `ws bench` **antes** de optimizar: worldgen + ms/año (prom y
   p95) + tamaño del keyframe y del `.wsim`
-- [ ] Perfilado; optimización hasta entrar en el presupuesto: prom ≤ 10 ms/año, p95 ≤ 25 ms;
+- [x] Perfilado; optimización hasta entrar en el presupuesto: prom ≤ 10 ms/año, p95 ≤ 25 ms;
   rebobinar el mapa ≤ 16 ms; estado completo a una fecha ≤ 500 ms (D45)
-- [ ] Regenerar las dos líneas base al cerrar (M1 Pro y runner del CI)
+- [x] Regenerar las dos líneas base al cerrar (M1 Pro y runner del CI)
 
 **P1.10 Cierre (Δ explícita)**
-- [ ] Destino de `spikes/` según D01-e
-- [ ] `model.md` v1.1 con los cambios de §6; ADR-008 actualizado con los tamaños reales
-- [ ] `CLAUDE.md` con los comandos nuevos (`ws run`, `ws health`, suite de determinismo)
-- [ ] REPORT, STATUS, prompt de P2 refrescado
+- [x] Destino de `spikes/` según D01-e
+- [x] `model.md` v1.1 con los cambios de §6; ADR-008 actualizado con los tamaños reales
+- [x] `CLAUDE.md` con los comandos nuevos (`ws run`, `ws health`, suite de determinismo)
+- [x] REPORT, STATUS, prompt de P2 refrescado
 
 ### Sub-hitos y checkpoints con Cristian
 | Checkpoint | Qué se muestra | Cuándo |
@@ -561,20 +561,20 @@ fase.
 | Dependencias nuevas incompatibles entre sí (L-005) | Revisar `peerDependencies` antes de fijar en el catálogo |
 
 ## 8. Criterios de salida (QA gate)
-- [ ] Mundo mediano generado en ≤ 20 s (Chrome, M1 Pro, build)
+- [x] Mundo mediano generado en ≤ 20 s (Chrome, M1 Pro, build)
 - [ ] 12.000 a.C. → 1900 en ≈10 min a velocidad normal y ≤ 3 min a velocidad máxima
-- [ ] Rebobinar a cualquier año: el mapa y el inspector muestran ese año
-- [ ] Guardar/cargar a mitad de corrida → continuación con hash idéntico
-- [ ] Un link compartido reproduce el mismo mundo (hash idéntico)
-- [ ] Toda entidad del resumen tiene ficha navegable; 3 gráficos correctos
-- [ ] El toggle es/en cambia toda la UI y los textos de eventos
-- [ ] Rebobinar el mapa ≤ 16 ms; estado completo a una fecha ≤ 500 ms (D45)
-- [ ] Hash por año idéntico en Chromium, Firefox, WebKit y Node con el motor real (job
+- [x] Rebobinar a cualquier año: el mapa y el inspector muestran ese año
+- [x] Guardar/cargar a mitad de corrida → continuación con hash idéntico
+- [x] Un link compartido reproduce el mismo mundo (hash idéntico)
+- [x] Toda entidad del resumen tiene ficha navegable; 3 gráficos correctos
+- [x] El toggle es/en cambia toda la UI y los textos de eventos
+- [x] Rebobinar el mapa ≤ 16 ms; estado completo a una fecha ≤ 500 ms (D45)
+- [x] Hash por año idéntico en Chromium, Firefox, WebKit y Node con el motor real (job
   `determinism`); Safari a mano en la página de la suite
-- [ ] Δ `.wsim` de una corrida completa ≤ 20 MB (métrica de §2)
-- [ ] Δ `ws health` de 10 seeds sin invariantes rotos; contratos con guard en todos los tests
-- [ ] Cero errores de consola; CI verde · bench dentro del presupuesto, líneas base regeneradas
-- [ ] REPORT escrito, docs actualizados (`model.md` v1.1, ADR-008, `CLAUDE.md`), prompt de P2
+- [x] Δ `.wsim` de una corrida completa ≤ 20 MB (métrica de §2)
+- [x] Δ `ws health` de 10 seeds sin invariantes rotos; contratos con guard en todos los tests
+- [x] Cero errores de consola; CI verde · bench dentro del presupuesto, líneas base regeneradas
+- [x] REPORT escrito, docs actualizados (`model.md` v1.1, ADR-008, `CLAUDE.md`), prompt de P2
   refrescado
 
 ## 9. Preguntas para Cristian

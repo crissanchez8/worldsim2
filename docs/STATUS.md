@@ -5,10 +5,10 @@
 
 | | |
 |---|---|
-| **Última actualización** | 2026-10-17 |
-| **Fase actual** | P1 — Rebanada vertical |
-| **Estado** | 🟢 P1 en curso · BRIEF aprobado el 2026-10-16 (D48–D54) · rama `phase/p01-rebanada` |
-| **Próximo paso** | Checkpoint 3 de Cristian → completar el REPORT (`docs/phases/P01/REPORT.md`, borrador) con su resultado, QA gate y OK de cierre. Pendiente de Cristian: medición visible del mapa (checkpoint 1) |
+| **Última actualización** | 2026-10-19 |
+| **Fase actual** | P1 — Rebanada vertical (cerrada) |
+| **Estado** | ✅ P1 cerrada el 2026-10-19 (OK de Cristian) · el merge del PR #2 a `main` espera su revisión |
+| **Próximo paso** | Cristian revisa y aprueba el merge del PR #2 (`phase/p01-rebanada` → `main`, con merge commit). Después P2 en una sesión nueva con `docs/prompts/P02-diseno.md` (BRIEF primero) |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
 
@@ -17,7 +17,7 @@
 | Fase | Estado | BRIEF | REPORT | Cierre |
 |---|---|---|---|---|
 | P0 Fundaciones de arquitectura | ✅ cerrada | [BRIEF](phases/P00/BRIEF.md) | [REPORT](phases/P00/REPORT.md) | 2026-10-16 |
-| P1 Rebanada vertical | 🟢 en curso | [BRIEF](phases/P01/BRIEF.md) | — | — |
+| P1 Rebanada vertical | ✅ cerrada | [BRIEF](phases/P01/BRIEF.md) | [REPORT](phases/P01/REPORT.md) | 2026-10-19 |
 | P2 Dirección de diseño y DS | ⚪ | — | — | — |
 | P3 El planeta físico | ⚪ | — | — | — |
 | P4 Gente y sustento | ⚪ | — | — | — |
@@ -34,6 +34,15 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-19 (sesión P1-2, cierre de P1):**
+  - **checkpoint 1 (Cristian):**
+    - primer cuadro en frío / recargando: Chrome 8,1 / 4,5 s, Firefox 12,2 / 6,6 s, Safari 9,8 / 20,9 s;
+    - el worldgen queda ≤ 20 s en todos;
+    - la recarga de Safari es una anomalía (worldgen 19 s, 5× más lento que en frío): se re-mide en P3;
+  - **checkpoint 3:** Cristian: la simulación "está ok para empezar, aunque aún le queda". No reportó la comparación de huellas ni Safari en la página de determinismo; los cubren el E2E y el job `determinism`;
+  - **cierre:** REPORT completo, casillas del BRIEF marcadas (queda abierta la duración a 1×, D56) y cierre registrado en `decisions.md`;
+  - **próximo:** la revisión del PR #2 por Cristian y su merge a `main`; después, P2 con su prompt en una sesión nueva.
+
 - **2026-10-17 (sesión P1-2, P1.10 preparada, sin cerrar):**
   - **spikes borrados (D52):** se cumplieron las condiciones (todo lo de D47 reescrito y el job `determinism` sobre el motor real). Se quitaron del workspace, del lint de fronteras, de ESLint, de `launch.json`, de CLAUDE.md y del README. Quedan en el tag `p00-spikes` (a2797f4), publicado en GitHub con el OK de Cristian (D52);
   - **`model.md` v1.1:** cambios D51, D53 y D55 marcados en sus filas, campos nuevos de P1, lo que no entró marcado ⏳, la historia como quedó (§14), §16 y §18;

@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| **Fecha de cierre** | — (borrador del 2026-10-17) |
-| **Estado** | 📝 Borrador: falta el checkpoint 3 (recorrido de Cristian), el QA gate con su evidencia y el OK de cierre |
+| **Fecha de cierre** | 2026-10-19 |
+| **Estado** | ✅ Cerrada el 2026-10-19 (OK de Cristian); el merge a `main` espera su revisión del PR #2 |
 | **BRIEF** | `docs/phases/P01/BRIEF.md` (aprobado el 2026-10-16, D48–D54) |
 | **PR / rama** | https://github.com/crissanchez8/worldsim2/pull/2 · `phase/p01-rebanada` |
 | **Preview** | https://phase-p01-rebanada.worldsim2.pages.dev |
@@ -36,7 +36,7 @@ La UI es neutra a propósito: el diseño llega en P2.
 | P1.7 Compartir v1 | ✅ hecha | Link con versión, avance rápido con progreso, huellas, aviso de versión |
 | P1.8 Salud v1 (`ws health`) | ✅ hecha | 10 seeds; calibración v1 con dispersión pendiente (P4/P5) |
 | P1.9 Rendimiento | ✅ hecha | Escenario `world-medium`, presupuestos en el bench, medición en el navegador; no hizo falta optimizar el motor |
-| P1.10 Cierre | ⚠️ en curso | Spikes borrados (tag `p00-spikes` publicado con el OK de Cristian), `model.md` v1.1, prompt de P2, bases del bench (M1 Pro y runner); faltan el checkpoint 3 y el OK |
+| P1.10 Cierre | ✅ hecha | Spikes borrados (tag `p00-spikes` publicado con el OK de Cristian), `model.md` v1.1, prompt de P2, bases del bench (M1 Pro y runner), checkpoints y OK de cierre |
 
 Subtareas: se marcan en el BRIEF al cerrar.
 
@@ -111,28 +111,37 @@ Subtareas: se marcan en el BRIEF al cerrar.
   - navegador: `apps/web/scripts/measure-live.mjs`.
 - Salud: `docs/phases/P01/health-p13.md` y `health-baseline.json`.
 - CI: jobs `check`, `determinism` (suite del motor + E2E de la web), `health` y `deploy` en el PR #2.
-- ⏳ Checkpoint 3: el recorrido de Cristian (10 min a 1×, rebobinar, resumen, link en otro navegador, Safari en la página de determinismo).
+- **Checkpoint 1 (Cristian, navegadores visibles, mediano, preview):**
+
+  | Navegador | Caché fría: primer cuadro (worldgen) | Recarga: primer cuadro (worldgen) |
+  |---|---|---|
+  | Chrome | 8,1 s (3,5 s) | 4,5 s (3,7 s) |
+  | Firefox | 12,2 s (6,1 s) | 6,6 s (5,8 s) |
+  | Safari | 9,8 s (3,6 s) | 20,9 s (19,1 s) |
+
+  Todos ≤ 20 s de worldgen. La recarga de Safari es una anomalía: su worldgen fue 5× más lento que en frío y cerca del límite (posible ahorro de energía o pestaña en segundo plano); se re-mide en P3, cuando cambie el worldgen. En frío, Chrome pierde 1,3 s compilando shaders (`gpuWarmupMs`) y Safari 3,4 s en el primer cuadro.
+- **Checkpoint 3 (Cristian):** la simulación "está ok para empezar, aunque aún le queda" (coincide con la deuda de calibración). No reportó la comparación de huellas en otro navegador ni el veredicto de Safari en la página de determinismo: quedan cubiertos por el E2E (misma huella en Chromium y Firefox) y por el job `determinism` (WebKit en el CI), sin la verificación manual en Safari.
 
 ## 7. Criterios de salida
 - [x] Mundo mediano generado en ≤ 20 s: 3,8 s en Chrome (build, M1 Pro, `measure-live.mjs`)
 - [ ] 12.000 a.C. → 1900 en ≈10 min a velocidad normal y ≤ 3 min a velocidad máxima:
   - **máx.:** ✅ 20 s en Chrome, 42 s en Firefox;
   - **1×:** ❌ mediana de 13,7 min; queda abierto por D56 hasta P4/P5.
-- [x] Rebobinar a cualquier año: el mapa y el inspector muestran ese año (E2E de la línea de tiempo y del inspector) · ⏳ recorrido de Cristian
+- [x] Rebobinar a cualquier año: el mapa y el inspector muestran ese año (E2E de la línea de tiempo y del inspector; recorrido de Cristian)
 - [x] Guardar/cargar a mitad de corrida → continuación con hash idéntico (test de Node + E2E en Chromium y Firefox)
-- [x] Un link compartido reproduce el mismo mundo: el E2E da la misma huella en Chromium y en Firefox · ⏳ Cristian en otro navegador
+- [x] Un link compartido reproduce el mismo mundo: el E2E da la misma huella en Chromium y en Firefox (la comparación a mano no se reportó)
 - [x] Toda entidad del resumen tiene ficha navegable; 3 gráficos correctos (E2E: fila → ficha; tres gráficos de los agregados por año)
 - [x] El toggle es/en cambia toda la UI y los textos de eventos (E2E; sin regenerar el mundo)
 - [x] Rebobinar el mapa ≤ 16 ms; estado completo a una fecha ≤ 500 ms (Firefox, justo: 487 ms)
-- [x] Hash por año idéntico en Chromium, Firefox, WebKit y Node con el motor real (job `determinism`) · ⏳ Safari a mano (Cristian)
+- [x] Hash por año idéntico en Chromium, Firefox, WebKit y Node con el motor real (job `determinism`) · ⚠️ Safari a mano: no se reportó
 - [x] `.wsim` de una corrida completa ≤ 20 MB: 5,69 MB
 - [x] `ws health` de 10 seeds sin invariantes rotos; contratos con guard en todos los tests
-- [ ] Cero errores de consola; CI verde; bench dentro del presupuesto; líneas base regeneradas:
+- [x] Cero errores de consola; CI verde; bench dentro del presupuesto; líneas base regeneradas:
   - ✅ cero errores (E2E);
-  - ✅ CI verde hasta P1.7; P1.9 y el cierre, en curso;
+  - ✅ CI verde en el último commit de la fase;
   - ✅ bench dentro del presupuesto en el M1 Pro y en el runner (1,84 ms/año, estado completo 325 ms);
   - ✅ las dos bases regeneradas (`bench-baseline.json`, `bench-baseline-ci.json`).
-- [ ] REPORT escrito, docs actualizados (`model.md` v1.1, ADR-008, `CLAUDE.md`), prompt de P2 refrescado: ✅ los docs y el prompt; ⏳ este REPORT, que cierra con el checkpoint 3
+- [x] REPORT escrito, docs actualizados (`model.md` v1.1, ADR-008, `CLAUDE.md`), prompt de P2 refrescado
 
 ## 8. Deuda técnica y pendientes
 | Ítem | Impacto | Cuándo se paga |
@@ -156,7 +165,7 @@ Subtareas: se marcan en el BRIEF al cerrar.
 
 ## 10. Documentos actualizados
 - [x] `docs/model.md` (v1.1)
-- [ ] `docs/DEVELOPMENT_PLAN.md` (no cambió el alcance de las fases; D56 mueve la meta de duración a 1× a P4/P5)
+- [x] `docs/DEVELOPMENT_PLAN.md`: no hizo falta cambiarlo (no cambió el alcance de las fases; D56 mueve la meta de duración a 1× a P4/P5)
 - [x] `docs/decisions.md` (D48–D57)
 - [x] `docs/STATUS.md`
 - [x] `docs/prompts/P02-diseno.md` (refrescado con el estado de partida y las trampas de P1)
