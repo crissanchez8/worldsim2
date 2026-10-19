@@ -69,6 +69,41 @@ export function coreScenario(): Metric[] {
     }, 10),
   );
 
+  // Buffers de flujo: 30.000 deltas de población por tick (≈ 2 por pop), productor + consumidor.
+  const deltas = 30_000;
+  const objects = scheduler.createBuffer<{ pop: number; kind: number; persons: number }>('obj');
+  const objectMs = stats(
+    time(() => {
+      for (let i = 0; i < deltas; i++) objects.push({ pop: i + 1, kind: i & 1, persons: i * 0.5 });
+      let s = 0;
+      for (const d of objects.drain()) s += d.persons * d.kind + d.pop;
+      consume(s);
+    }, 50),
+  );
+  const soa = scheduler.createSoaBuffer('soa', {
+    pop: { type: 'ref', unit: 'id' },
+    kind: { type: 'u8', unit: 'enum' },
+    persons: { type: 'f64', unit: 'persons' },
+  });
+  const soaMs = stats(
+    time(() => {
+      soa.reserve(deltas);
+      const pop = soa.column('pop');
+      const kind = soa.column('kind');
+      const persons = soa.column('persons');
+      for (let i = 0; i < deltas; i++) {
+        const at = soa.append();
+        pop[at] = i + 1;
+        kind[at] = i & 1;
+        persons[at] = i * 0.5;
+      }
+      let s = 0;
+      for (let i = 0; i < soa.size; i++) s += (persons[i] ?? 0) * (kind[i] ?? 0) + (pop[i] ?? 0);
+      soa.clear();
+      consume(s);
+    }, 50),
+  );
+
   const ns = (ms: number) => (ms * 1e6) / n;
   return [
     { key: 'core.rng.uniform', value: ns(rngMs.p50), unit: 'ns/llamada' },
@@ -77,5 +112,7 @@ export function coreScenario(): Metric[] {
     { key: 'core.serialize.15kPops', value: serializeMs.p50, unit: 'ms' },
     { key: 'core.hashState.15kPops', value: hashMs.p50, unit: 'ms' },
     { key: 'core.scheduler.tick8Systems', value: (tickMs.p50 * 1000) / 1000, unit: 'µs/tick' },
+    { key: 'core.buffer.objects30k', value: objectMs.p50, unit: 'ms' },
+    { key: 'core.buffer.soa30k', value: soaMs.p50, unit: 'ms' },
   ];
 }

@@ -5,67 +5,14 @@
 import { hash64 } from '../hash';
 import { type ByteReader, ByteWriter, SerializeError } from '../serialize/bytes';
 import { writeScalar } from '../serialize/scalar-io';
-import type { StatePart } from '../serialize/serializable';
+import type { GuardSnapshot, StatePart } from '../serialize/serializable';
+import { allocColumn, type ColumnArray, type ColumnOf, grown } from './columns';
 import { type Id, IdAllocator } from './id';
 import { checkScalar, describeSchema, type Fields, type ScalarType, type Schema } from './schema';
 
-export type ColumnArray =
-  | Float64Array
-  | Float32Array
-  | Int32Array
-  | Uint32Array
-  | Int16Array
-  | Uint16Array
-  | Int8Array
-  | Uint8Array;
-
-type ColumnOf<T extends ScalarType> = T extends 'f64'
-  ? Float64Array
-  : T extends 'f32'
-    ? Float32Array
-    : T extends 'i32'
-      ? Int32Array
-      : T extends 'u32' | 'ref'
-        ? Uint32Array
-        : T extends 'i16'
-          ? Int16Array
-          : T extends 'u16'
-            ? Uint16Array
-            : T extends 'i8'
-              ? Int8Array
-              : Uint8Array;
-
+export type { ColumnArray } from './columns';
 export type ScalarFields = Fields<ScalarType>;
 export type RowInit<F extends ScalarFields> = { readonly [K in keyof F]?: number };
-
-function allocColumn(type: ScalarType, capacity: number): ColumnArray {
-  switch (type) {
-    case 'f64':
-      return new Float64Array(capacity);
-    case 'f32':
-      return new Float32Array(capacity);
-    case 'i32':
-      return new Int32Array(capacity);
-    case 'u32':
-    case 'ref':
-      return new Uint32Array(capacity);
-    case 'i16':
-      return new Int16Array(capacity);
-    case 'u16':
-      return new Uint16Array(capacity);
-    case 'i8':
-      return new Int8Array(capacity);
-    case 'u8':
-    case 'bool':
-      return new Uint8Array(capacity);
-  }
-}
-
-function grown<A extends ColumnArray>(array: A, capacity: number): A {
-  const next = new (array.constructor as new (n: number) => A)(capacity);
-  next.set(array);
-  return next;
-}
 
 export class Table<K extends string, F extends ScalarFields> implements StatePart {
   readonly schema: Schema<F>;
@@ -295,24 +242,27 @@ export class Table<K extends string, F extends ScalarFields> implements StatePar
     for (const key of this.schema.order) r.numeric(this.column(key), count);
   }
 
-  /** Huella por campo (guard de contratos). Independiente de la compactación. */
-  fieldFingerprints(): ReadonlyMap<string, string> {
-    const out = new Map<string, string>();
+  /** Instantánea para el guard de contratos (solo filas vivas: no depende de la compactación). */
+  guardSnapshot(): GuardSnapshot {
     const rows = new ByteWriter();
     rows.varuint(this.allocator.peek());
+    const ids = new Uint32Array(this.live);
+    const alive = new Uint32Array(this.live);
+    let k = 0;
     for (let row = 0; row < this.used; row++) {
-      if (this.aliveColumn[row] === 1) rows.u32(this.idColumn[row] ?? 0);
+      if (this.aliveColumn[row] !== 1) continue;
+      ids[k] = this.idColumn[row] ?? 0;
+      alive[k++] = row;
+      rows.u32(this.idColumn[row] ?? 0);
     }
-    out.set(`${this.schema.name}.#rows`, hash64(rows.finish()));
+    const fields = new Map<string, Float64Array>();
     for (const key of this.schema.order) {
       const col = this.column(key);
-      const w = new ByteWriter();
-      for (let row = 0; row < this.used; row++) {
-        if (this.aliveColumn[row] === 1) w.f64(col[row] ?? 0);
-      }
-      out.set(`${this.schema.name}.${key}`, hash64(w.finish()));
+      const values = new Float64Array(this.live);
+      for (let i = 0; i < this.live; i++) values[i] = col[alive[i] ?? 0] ?? 0;
+      fields.set(`${this.schema.name}.${key}`, values);
     }
-    return out;
+    return { rows: hash64(rows.finish()), ids, fields };
   }
 
   /** Filas vivas en orden de id. */

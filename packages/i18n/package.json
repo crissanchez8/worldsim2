@@ -16,6 +16,7 @@
     "i18next": "catalog:"
   },
   "devDependencies": {
+    "@ws/content": "workspace:*",
     "vitest": "catalog:"
   }
 }

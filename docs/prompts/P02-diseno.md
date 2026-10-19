@@ -23,9 +23,10 @@ Trabajás como ingeniero principal y diseñador de producto con **Cristian** (Pr
 1. `CLAUDE.md`
 2. `docs/STATUS.md`
 3. `docs/LEARNINGS.md`
-4. `docs/decisions.md` (D5, D7, D23, D25)
+4. `docs/decisions.md` (D5, D7, D23, D25; de P1: D48–D50 tiempo e historia, D57 wireframes)
 5. `docs/DEVELOPMENT_PLAN.md`: §13 (UX y rutas), §15.5 (diseño y anti-slop), §16 · P2
-6. `docs/phases/P01/REPORT.md`, con capturas de la rebanada
+6. `docs/phases/P01/REPORT.md`, con capturas de la rebanada (`docs/phases/P01/img/`), y los
+   wireframes aprobados (`docs/phases/P01/wireframes/`)
 7. Cargá las skills `impeccable`, `frontend-design`, `design-system-generator` y `dataviz` cuando
    llegue su momento
 
@@ -35,6 +36,29 @@ en un **Design System** (`packages/ui` + `docs/design-system.md`), para que toda
 se arme y no se invente. La rebanada se re-viste con el DS.
 
 **Cristian elige la dirección; vos proponés.**
+
+## Estado de partida (lo que dejó P1)
+- **La UI neutra que se re-viste** (`apps/web/src`), con la estructura de los wireframes aprobados
+  (D57). P2 cambia el **aspecto**; cambiar la estructura es una decisión que se pregunta:
+  - rutas (TanStack Router): `/` crear, `/mundo?…` vivo, `/mundo/resumen`, `/mundo/resumen/$kind/$id`;
+  - pantallas en `screens/` (CreateScreen, WorldLayout, LiveHud, SummaryScreen, EntityScreen);
+  - inspector = ficha (`entity/EntityCard`, con `WhyPanel`: el "por qué" de cada stat, base +
+    innovaciones + modificadores); barra de tiempo, línea de tiempo y teletipo en `live/`;
+    gráficos uPlot y lista virtualizada en `summary/`; compartir en `ui/SharePanel`;
+  - estilos: un solo `base.css` neutro con variables (`--bg`, `--fg`, `--panel`, `--line`…).
+- **Mapa:** WebGPU/TSL con respaldo WebGL2 (`apps/web/src/map`). El relleno político hoy es
+  provisorio (`colorFromSeed(id de polity)` en `map/colors.ts`); P2.4 lo reemplaza por el
+  coloreo de grafo (el estado ya tiene `Polity.colorSeed`). Paleta de prueba en `map/config.ts`.
+- **Renders reales para las maquetas:** `pnpm --filter @ws/web build` + `vite preview`, y
+  `node apps/web/scripts/measure-map.mjs chrome "<url>" --shot x.png` (pose con `?x=&z=&distance=`)
+  o `measure-live.mjs`. Usá el Chrome instalado (con GPU): el Chromium de Playwright no tiene GPU
+  y dibuja por software.
+- **`packages/ui`** está vacío: es donde va el DS. No importa el motor (lo hace cumplir
+  dependency-cruiser); recibe datos derivados.
+- **Pruebas que tienen que seguir verdes al re-vestir (P2.11):** el E2E de la web
+  (`apps/web/e2e`, Chromium y Firefox) encuentra los controles por **rol y nombre accesible** en
+  español ("Guardar", "Cargar", "Compartir", "Calcular el porqué", el radio "1×", el slider de la
+  línea de tiempo…). Si un nombre cambia, se cambia el test en el mismo commit.
 
 ## Tareas (detalle en DEVELOPMENT_PLAN §16 · P2)
 - **P2.1 Investigación:** moodboard (cartografía histórica, Paradox, DF Legends, Civ, datos
@@ -90,6 +114,15 @@ se arme y no se invente. La rebanada se re-viste con el DS.
 - **No construyas componentes especulativos:** solo los que necesitan P3–P11 según el plan.
 - **Es una fase de diseño, pero la arquitectura del paquete `ui` también cuenta:** no importa el
   motor; recibe datos derivados.
+- **El lint de texto de UI** rechaza cualquier texto suelto en JSX, puntuación incluida (": ",
+  " · "): las etiquetas van por i18n y los separadores por CSS (patrón `Facts`/`Inline` de
+  `entity/Facts.tsx`).
+- **Efectos caros y el idioma (L-024):** `useTranslation` devuelve otro `t` y otro `i18n` al
+  cambiar de idioma; un efecto con montaje caro (mapa, Workers) no depende de ellos (usá
+  `ui/i18n.ts`). El E2E verifica que cambiar de idioma no regenera el mundo.
+- **Rendimiento ya medido** (P1.9, `docs/phases/P01/REPORT.md`): no lo empeores sin medir
+  (`pnpm ws bench`, `measure-live.mjs`). Las fuentes y los íconos suman peso a la carga de "Crear"
+  (hoy 298 kB).
 
 ## Protocolo de trabajo (obligatorio)
 1. **Punto de partida.**

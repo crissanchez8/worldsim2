@@ -18,6 +18,12 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  # Suite de determinismo (tools/determinism): en los PR, los primeros 3.000 años (la corrida
+  # completa con el motor real tarda ~2 min en Node y ~3 en cada navegador); en main y en el cron,
+  # la completa (12.000 a.C. → 1900). Vacío = completa.
+  DETERMINISM_YEARS: ${{ github.event_name == 'pull_request' && '3000' || '' }}
+
 jobs:
   check:
     name: check
@@ -56,9 +62,22 @@ jobs:
 
       - name: Bench (regresión contra la línea base del runner)
         # Base propia del runner (x86, linux): comparar contra la del M1 Pro daba falsos positivos
-        # en operaciones limitadas por memoria. Si GitHub cambia el hardware del runner, regenerar
-        # docs/phases/P00/bench-baseline-ci.json desde el log de una corrida.
-        run: pnpm ws bench --compare docs/phases/P00/bench-baseline-ci.json --tolerance 1.0
+        # en operaciones limitadas por memoria. Base de P1 (con world-medium) tomada del artefacto
+        # bench-ci; si GitHub cambia el hardware del runner, regenerarla desde ese artefacto.
+        # P1.9: incluye el escenario world-medium y sus presupuestos (escalados por la calibración
+        # del runner). El JSON queda como artefacto para regenerar la base del runner al cerrar P1.
+        run: |
+          mkdir -p out
+          pnpm ws bench --compare docs/phases/P01/bench-baseline-ci.json --tolerance 1.0 --out out/bench-ci.json
+
+      - name: Bench del runner (JSON)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: bench-ci
+          path: out/bench-ci.json
+          retention-days: 30
+          if-no-files-found: ignore
 
       - name: Build
         run: pnpm build
@@ -75,13 +94,12 @@ jobs:
 
   determinism:
     name: determinism
-    # Spike C (P0.15): mismo hash por año en Chromium, Firefox y WebKit que en Node.
+    # Suite permanente (P1.0, tools/determinism): mismo hash por año en Chromium, Firefox y WebKit
+    # que en Node, con el motor real; además contenido, mundo estático, core/math y RNG.
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      # Los 14.000 años completos: los tres motores corren en paralelo (≈ 25 s cada 2.000 años).
-      # Si el job pasa de 5 min, bajar el PR a 2.000 y dejar los 14.000 al cron (BRIEF P0.15).
-      DETERMINISM_YEARS: '14000'
+    # Horizonte: DETERMINISM_YEARS (arriba): 3.000 años en los PR, completa en main y en el cron
+    # (BRIEF P1.0: el PR tiene que entrar en ~5 min).
     steps:
       - uses: actions/checkout@v7
 
@@ -102,15 +120,57 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Navegadores de Playwright
-        working-directory: spikes/determinism
+        working-directory: tools/determinism
         run: pnpm exec playwright install --with-deps chromium firefox webkit
 
       - name: Referencia de Node + build (sin caché de Turbo)
-        run: pnpm --filter @ws/spike-determinism build
+        run: pnpm --filter @ws/determinism build
 
       - name: Comparar en los tres motores
-        working-directory: spikes/determinism
+        working-directory: tools/determinism
         run: pnpm exec playwright test
+
+      # P1.5: la web en vivo (Worker de simulación, reproducción, guardar en IndexedDB y continuar
+      # con el mismo hash) en Chromium y Firefox, con los navegadores ya instalados arriba.
+      - name: E2E de la web (vivo, guardar y continuar)
+        run: pnpm --filter @ws/web build && pnpm --filter @ws/web e2e
+
+      - name: Resultados del E2E de la web (si falla)
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: web-e2e-results
+          path: apps/web/test-results
+          retention-days: 7
+
+  health:
+    name: health
+    # Salud histórica (P1.8): 10 seeds del mundo mediano contra el Apéndice A. Falla solo si una
+    # seed rompe un invariante; las métricas son informativas en P1 y van al artefacto.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: ws health (10 seeds)
+        run: pnpm ws health --seeds 10 --compare docs/phases/P01/health-baseline.json --out out/health
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: health
+          path: out/health/
+          retention-days: 14
+          if-no-files-found: warn
 
   deploy:
     name: deploy

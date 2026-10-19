@@ -2,13 +2,16 @@
 // Usa la configuración real del repo (eslint.config.js), no una copia.
 import { resolve } from 'node:path';
 import { ESLint, type Linter } from 'eslint';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   ENGINE_PACKAGES,
   FORBIDDEN_GLOBALS,
   FORBIDDEN_PROPERTIES,
   MATH_ALLOWED,
 } from './determinism.js';
+
+// Cada caso corre ESLint completo (~2 s local): en el runner del CI, más que el default (L-017).
+vi.setConfig({ testTimeout: 60_000 });
 
 const repoRoot = resolve(import.meta.dirname, '../../..');
 const eslint = new ESLint({ cwd: repoRoot });

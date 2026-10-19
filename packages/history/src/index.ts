@@ -1,2 +1,34 @@
-/** Paquete vacío en P0: el contenido llega en P1 (DEVELOPMENT_PLAN §16). */
-export const PACKAGE_NAME = '@ws/history';
+export {
+  applyDelta,
+  captureFrame,
+  captureSeries,
+  cloneFrame,
+  dequantizePopulation,
+  emptyFrame,
+  encodeDelta,
+  NO_LEVEL,
+  quantizePopulation,
+  type SeriesSample,
+  type VisualFrame,
+} from './frame';
+export {
+  type Aggregates,
+  batchTransferables,
+  History,
+  HISTORY,
+  type HistoryBatch,
+  type HistoryData,
+  type PolityAt,
+  type ProvinceAt,
+} from './history';
+export { ERA_YEARS_PER_SECOND, PLAYBACK, PlaybackClock, playbackSeconds } from './playback';
+export {
+  canContinue,
+  decodeWsim,
+  encodeWsim,
+  inspectWsim,
+  WSIM_FORMAT,
+  WSIM_POLICY,
+  type WsimFile,
+  type WsimHeader,
+} from './wsim';

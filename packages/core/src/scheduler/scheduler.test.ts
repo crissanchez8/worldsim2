@@ -264,6 +264,54 @@ describe('scheduler · guard de contratos', () => {
     expect(run).not.toThrow();
   });
 
+  it('propiedad por campo: quien crea filas inicia todos sus campos sin tocar los de otro', () => {
+    // statecraft es dueño de las filas y de roads; ledger, de owner (en filas existentes).
+    const run = guarded([
+      system(
+        'statecraft',
+        'state',
+        (w) => {
+          w.province.add({ owner: 0, roads: 1 });
+          w.province.set(1, 'roads', 2);
+        },
+        { writes: ['province.#rows', 'province.roads'] },
+      ),
+      system(
+        'ledger',
+        'consolidation',
+        (w) => {
+          w.province.set(3, 'owner', 7); // la fila que creó statecraft en este tick
+        },
+        { writes: ['province.owner'] },
+      ),
+    ]);
+    expect(run).not.toThrow();
+  });
+
+  it('quien crea filas no puede cambiar un campo ajeno en filas que ya existían', () => {
+    const run = guarded([
+      system(
+        'statecraft',
+        'state',
+        (w) => {
+          w.province.add();
+          w.province.set(1, 'owner', 5);
+        },
+        { writes: ['province.#rows', 'province.roads'] },
+      ),
+    ]);
+    expect(run).toThrow(/statecraft escribió "province.owner"/);
+  });
+
+  it('las bajas de filas cuentan como #rows', () => {
+    const run = guarded([
+      system('rogue', 'state', (w) => {
+        w.province.remove(2);
+      }),
+    ]);
+    expect(run).toThrow(/province.#rows/);
+  });
+
   it('campos declarados que no existen en el estado → error (typos)', () => {
     const run = guarded([system('a', 'markets', undefined, { reads: ['province.ownr'] })]);
     expect(run).toThrow(/no existe en el estado/);

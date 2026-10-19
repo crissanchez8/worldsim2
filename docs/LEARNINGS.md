@@ -183,6 +183,125 @@
 - **Cómo detectarlo antes:** un archivo generado en una carpeta que no tiene ningún archivo versionado.
 - **Promovido a CLAUDE.md:** no.
 
+### L-015 · `expect(fn).not.toThrow(Clase)` pasa si se lanza OTRO error
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.0, test de propiedades del ledger)
+- **Contexto:** el test de propiedades verificaba cada tick con `expect(() => sim.step()).not.toThrow(InvariantError)`.
+- **Qué pasó:** revisándolo, sospeché que un `LedgerError` (u otro) no haría fallar el test; lo confirmé con una prueba mínima en Vitest 5: `not.toThrow(A)` pasa cuando se lanza un `TypeError`.
+- **Causa raíz:** la forma negada con clase solo afirma "no se lanzó un A", no "no se lanzó nada".
+- **Regla:** para afirmar que algo no falla, usar `.not.toThrow()` sin argumentos; la forma con clase o mensaje se usa solo en positivo (`.toThrow(Clase)`).
+- **Cómo detectarlo antes:** cualquier `.not.toThrow(` con argumento.
+- **Promovido a CLAUDE.md:** no.
+
+### L-016 · `Stream.sub(n)` reemplaza el sub-stream, no lo anida
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.1, semillas de provincias y de zonas marítimas)
+- **Contexto:** `placeSeeds` recibía un stream y hacía `stream.sub(1)` adentro; las zonas marítimas le pasaban `…stream(worldgenProvinces).sub(2)` para tener azar propio.
+- **Qué pasó:** revisando `core/rng` vi que `sub` crea un stream con ESE sub-id, descartando el anterior: `sub(2).sub(1)` es `sub(1)`. Provincias y mares habrían usado la misma secuencia (semillas correlacionadas, sin error visible).
+- **Causa raíz:** asumí semántica de anidado ("sub-stream de un sub-stream") por el nombre.
+- **Regla:** el sub-stream lo elige quien llama, con constantes nombradas por módulo (`SUB_…`); una función que recibe un `Stream` lo usa con `at(entidad, k)` y nunca vuelve a llamar a `sub`.
+- **Cómo detectarlo antes:** un `.sub(` aplicado sobre un `Stream` que vino por parámetro.
+- **Promovido a CLAUDE.md:** no.
+
+### L-017 · Los tests que generan mundos fallan por timeout solo bajo `pnpm check`
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.3)
+- **Contexto:** `pnpm check` salió con 1 sin error visible en el log filtrado; repetido, pasó. Después falló de nuevo con "Hook timed out in 10000ms" en el `beforeAll` de la rebanada.
+- **Qué pasó:** solos, los tests de worldgen y de la simulación entran en los timeouts por defecto de Vitest (5 s por test, 10 s por hook); con Turborepo corriendo todos los paquetes en paralelo, no.
+- **Causa raíz:** timeouts por defecto en tests que hacen trabajo pesado de verdad (generar un mundo, simular miles de años), sensibles a la carga de la máquina.
+- **Regla:** todo archivo de tests que genera mundos o simula corridas largas fija `vi.setConfig({ testTimeout, hookTimeout })` explícitos y holgados; un "fallo sin error" en `pnpm check` se busca con `grep -E "FAIL|timed out"` en el log completo (L-011), no se reintenta a ciegas.
+- **Cómo detectarlo antes:** un test que tarda más de ~1 s solo.
+- **Recurrencia:** P1.4: el test de `ws run` con el worldgen real (`tools/cli`) pasó los 5 s cuando se sumó la corrida grabada de `packages/history` al paralelo. En el CI, el test del mapa completo de `spikes/terrain` (~4 s local) dejó el job `check` en rojo desde ce6ac27: el runner es más lento que la máquina local, así que "pasa local" no alcanza. P1.5: volvió en el CI con la batería del spike C (1,8 s local); se revisaron los tiempos de `pnpm check` y todo archivo con casos de más de ~1,5 s local quedó con timeout explícito.
+- **Promovido a CLAUDE.md:** sí (2026-10-16, Convenciones).
+
+### L-018 · El primer cuadro no se ve cuando `render()` vuelve
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.2, primera carga del mapa)
+- **Contexto:** medía la carga hasta "primer `render` + un `requestAnimationFrame`" y aparte los cuadros de los 5 s siguientes.
+- **Qué pasó:**
+  - en un `restart` de Chrome (perfil con caché en disco), el "primer cuadro" salía a tiempo;
+  - el cuadro siguiente tardaba **967 ms**: el mapa no se veía hasta ahí;
+  - el tiempo de carga reportado mentía por casi 1 s.
+- **Causa raíz:** `render()` solo envía. Con la caché de shaders fría, la compilación de los pipelines sigue en el proceso de GPU y bloquea los cuadros siguientes. Es la hipótesis más fuerte para el congelamiento de 8 s de Firefox visible en P0.
+- **Regla:**
+  - toda medición de carga espera a que la GPU termine: `device.queue.onSubmittedWorkDone()` en WebGPU, fence en WebGL2 (`waitGpuIdle`);
+  - el precalentado se mide en dos partes, CPU (envío) y GPU (compilación);
+  - siempre se registran los cuadros de los segundos posteriores a la carga (`settle`).
+- **Cómo detectarlo antes:** un primer cuadro "rápido" seguido de un cuadro de cientos de ms.
+- **Promovido a CLAUDE.md:** no.
+
+### L-019 · El panel oculto del navegador integrado también frena los Workers
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.2)
+- **Contexto:** abrir el build del mapa en el navegador integrado para verificarlo y capturarlo.
+- **Qué pasó:**
+  - `preview_start` con `vite preview` no arrancó (`getcwd: Operation not permitted`, igual que en P0);
+  - con el panel oculto, `requestAnimationFrame` corrió a ~1,5 fps;
+  - el worldgen del Worker tardó **13–28 s**, contra 3,8 s en Chrome headless.
+- **Causa raíz:** el panel oculto estrangula la página entera: rAF, timers y Workers. El servidor de `preview_start` corre en un directorio que el sandbox no deja leer.
+- **Regla:**
+  - `vite preview` se levanta por Bash en segundo plano y el integrado se abre con `preview_start({url})`;
+  - en el panel oculto solo se hacen verificaciones funcionales y capturas, nunca tiempos;
+  - los tiempos y los fps se miden con `apps/web/scripts/measure-map.mjs` (Chrome por CDP, Firefox por BiDi), o los mide Cristian con la ventana visible.
+- **Cómo detectarlo antes:** `tabs_context` dice "The Browser pane is currently hidden".
+- **Promovido a CLAUDE.md:** no.
+
+### L-020 · Comparar un `WorldStatic` con `toMatchObject` tarda segundos
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.2, tests del cliente del Worker)
+- **Contexto:** un test resolvía la promesa del cliente con un mundo chico y lo comparaba con `resolves.toMatchObject({ world })`.
+- **Qué pasó:** el test tardó 12 s y cayó por timeout; parecía un problema de la promesa.
+- **Causa raíz:** el comparador recorre elemento por elemento los arrays del ráster (9 × 524.288 celdas en el chico).
+- **Regla:**
+  - en los tests, un mundo se compara por identidad (`toBe`) o por hash (`hashWorldStatic`), nunca con `toEqual` ni `toMatchObject`;
+  - los tests que no necesitan un mundo real usan `createGridWorld`.
+- **Cómo detectarlo antes:** un test sin trabajo pesado propio que tarda segundos.
+- **Promovido a CLAUDE.md:** no.
+
+### L-021 · Geometría armada a mano que no se ve, sin errores: el sentido de los triángulos
+- **Fecha / fase:** 2026-10-16 · P1
+- **Origen:** observación propia (P1.2, ríos)
+- **Contexto:** cintas de río armadas por código (dos vértices por punto, quads entre pares).
+- **Qué pasó:** con 344.648 vértices en la escena y ningún error en la consola, no se veía ni un río.
+- **Causa raíz:**
+  - el sentido de los triángulos depende del lado de la normal: la cara quedaba de espaldas a la cámara;
+  - `MeshBasicNodeMaterial` descarta las caras traseras por defecto.
+- **Regla:**
+  - ante geometría propia invisible, revisar en este orden: `side` / sentido de los triángulos, esfera envolvente (desplazamiento en GPU), `visible` / `count`;
+  - las cintas y los faldones usan `DoubleSide` o caras dobles.
+- **Cómo detectarlo antes:** probar la capa con `side = DoubleSide` antes de buscar el error en el shader.
+- **Promovido a CLAUDE.md:** no.
+
+### L-022 · Un archivo que difiere solo en mayúsculas de otro rompe el typecheck en macOS
+- **Fecha / fase:** 2026-10-17 · P1
+- **Origen:** observación propia (P1.5, línea de tiempo)
+- **Contexto:** el modelo puro estaba en `live/timeline.ts` y el componente iba a ser `live/Timeline.tsx`.
+- **Qué pasó:** `tsc` falló con "differs from already included file name only in casing" y ESLint no encontró el archivo en el proyecto. En el disco de macOS (sin distinción de mayúsculas) son el mismo nombre; en el runner de Linux serían dos archivos.
+- **Causa raíz:** nombrar el componente igual que el módulo de lógica, cambiando solo la mayúscula.
+- **Regla:** el componente y su lógica pura llevan nombres distintos más allá de las mayúsculas (`timeline.ts` + `TimelineView.tsx`).
+- **Cómo detectarlo antes:** un `import './X'` cuando ya existe `./x` en la misma carpeta.
+- **Promovido a CLAUDE.md:** no.
+
+### L-023 · Probar un protocolo de `postMessage` en Node sin copiar los mensajes engaña
+- **Fecha / fase:** 2026-10-17 · P1
+- **Origen:** observación propia (P1.5, Worker de simulación)
+- **Contexto:** el test del motor del Worker le pasaba al espejo de la historia el mismo objeto `ready.data` que el Worker seguía usando.
+- **Qué pasó:** el primer lote falló con "lote desde k = 1, se esperaba 121": el espejo y el Worker compartían los arrays, así que cada `append` se sumaba dos veces. En el navegador no pasa, porque `postMessage` copia.
+- **Causa raíz:** el arnés de Node no reproducía la semántica de copia del canal real.
+- **Regla:** los arneses de Node de un protocolo de Worker copian cada mensaje con `structuredClone` (en `apps/`; en los paquetes del motor, con una copia explícita, porque el lint prohíbe `globalThis`).
+- **Cómo detectarlo antes:** un test que pasa un objeto "enviado" por referencia a otra instancia que lo modifica.
+- **Promovido a CLAUDE.md:** no.
+
+### L-024 · `useTranslation` cambia el objeto `i18n` al cambiar de idioma: un efecto que depende de él se re-ejecuta
+- **Fecha / fase:** 2026-10-17 · P1
+- **Origen:** observación propia (P1.6, recorrido en el navegador)
+- **Contexto:** el efecto que crea el mapa y la simulación de un mundo tenía `t` (y después `i18n`) de `useTranslation` en sus dependencias, para un mensaje de error.
+- **Qué pasó:** al tocar "en" en una ficha se veía "Generating the world…": cambiar de idioma regeneraba el mundo y perdía la corrida. Sacar `t` no alcanzó: react-i18next 17 devuelve otro objeto `i18n` cuando cambia el idioma.
+- **Causa raíz:** dependencias de un efecto caro que no son estables entre idiomas.
+- **Regla:** los efectos con montaje caro (mundo, Workers, renderer) no dependen de `t` ni de `i18n` de `useTranslation`; si necesitan traducir, usan la instancia de la app (`ui/i18n.ts`). El E2E de la UI verifica que cambiar de idioma no regenera el mundo.
+- **Cómo detectarlo antes:** un efecto con limpieza costosa que lista `t` o `i18n` entre sus dependencias.
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)

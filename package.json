@@ -16,7 +16,7 @@
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint && pnpm lint:root && pnpm lint:deps",
     "lint:root": "eslint --max-warnings=0 \"*.js\" \"scripts/**/*.mjs\"",
-    "lint:deps": "depcruise apps packages tools spikes --config .dependency-cruiser.cjs",
+    "lint:deps": "depcruise apps packages tools --config .dependency-cruiser.cjs",
     "test": "turbo run test",
     "bench": "ws bench",
     "ws": "ws",

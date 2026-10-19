@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Determinismo · worldSim2</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: ui-monospace, monospace;
+        font-size: 14px;
+      }
+      body {
+        margin: 0 auto;
+        padding: 16px;
+        max-width: 900px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      td,
+      th {
+        text-align: left;
+        padding: 2px 8px;
+        border-bottom: 1px solid #8883;
+      }
+      .ok {
+        color: #1a7f37;
+      }
+      .bad {
+        color: #cf222e;
+        font-weight: bold;
+      }
+      #verdict {
+        font-size: 20px;
+        margin: 12px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Determinismo · motor real</h1>
+    <p>
+      Compara este navegador contra la referencia de Node: versión del motor, hash del contenido y
+      del mundo estático, cada función de <code>core/math</code>, el RNG y el hash de cada año de la
+      simulación.
+    </p>
+    <div id="verdict">Calculando…</div>
+    <p id="env"></p>
+    <p id="progress"></p>
+    <table id="detail"></table>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

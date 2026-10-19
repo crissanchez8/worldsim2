@@ -5,7 +5,7 @@
 // El índice objetivo+stat → ids es memoria derivada (se reconstruye al cargar), no estado.
 import type { EntityRef } from '../events/types';
 import type { ByteReader, ByteWriter } from '../serialize/bytes';
-import type { StatePart } from '../serialize/serializable';
+import type { GuardSnapshot, StatePart } from '../serialize/serializable';
 import type { Id } from '../store/id';
 import { defineSchema } from '../store/schema';
 import { SparseTable } from '../store/sparse';
@@ -270,7 +270,7 @@ export class ModifierStore<S extends Readonly<Record<string, StatDef>>> implemen
     }
   }
 
-  fieldFingerprints(): ReadonlyMap<string, string> {
-    return this.table.fieldFingerprints();
+  guardSnapshot(): GuardSnapshot {
+    return this.table.guardSnapshot();
   }
 }

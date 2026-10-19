@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Idiomas procedurales (P1/P4)",
+  "description": "Idiomas procedurales: fonología y nombres v1 (P1.3) → P4",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -14,5 +14,8 @@
   },
   "devDependencies": {
     "vitest": "catalog:"
+  },
+  "dependencies": {
+    "@ws/core": "workspace:*"
   }
 }
