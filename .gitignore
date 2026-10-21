@@ -31,6 +31,7 @@ tmp/
 .vscode/*
 !.vscode/extensions.json
 .claude/settings.local.json
+.claude/worktrees/
 site/
 spikes/determinism/public/expected.json
 tools/determinism/public/expected.json

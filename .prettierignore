@@ -8,3 +8,5 @@ playwright-report
 test-results
 # Generado por `ws health --save` (no se formatea a mano)
 docs/phases/**/health-baseline.json
+# Worktrees de sesiones paralelas de Claude Code (cada una tiene su propio chequeo; L-025)
+.claude/
