@@ -7,8 +7,8 @@
 |---|---|
 | **Última actualización** | 2026-10-21 |
 | **Fase actual** | P2 — Dirección de diseño y Design System |
-| **Estado** | 🟢 P2 en curso: BRIEF aprobado el 2026-10-21 (D58–D67) · bloque 1 (dirección) |
-| **Próximo paso** | P2.1 investigación → P2.2 tres direcciones 🎨 → checkpoint 1 (Cristian elige). En paralelo: la sesión de la paleta política (D63) |
+| **Estado** | 🟢 P2 en curso: BRIEF aprobado el 2026-10-21 (D58–D67) · P2.1 y P2.2 hechas · 🎨 checkpoint 1 esperando a Cristian |
+| **Próximo paso** | Cristian mira las 3 direcciones (preview `/tools/design/` o `docs/phases/P02/img/`) y elige dirección o mezcla (P2.3) → nombres (Q5) → P2.4 tokens. Integrar la rama de la sesión de la paleta política (D63) cuando termine |
 | **Bloqueos** | Ninguno |
 | **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 y P1 mergeadas (PR #1 y #2) · rama `phase/p02-diseno` · producción en https://worldsim2.pages.dev |
 
@@ -34,6 +34,20 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-21 (sesión P2-1, P2.1 y P2.2 hechas):**
+  - **P2.1:** `docs/design/research.md` (inventario de superficies, moodboard enlazado, anti-referencias con su regla, escenas, requisitos) y `docs/PRODUCT.md` (contexto estratégico que pide la skill `impeccable`);
+  - **P2.2:**
+    - `?look=` en el mapa (`apps/web/src/map/looks.ts` + `atlasTerrainMaterial`): renders reales de cada dirección; `p1` sigue igual por defecto;
+    - asas `window.__mapDebug` (proyección) y `__live.frameData/names/timeline`;
+    - workspace `tools/design` con portada, maquetas (vivo, inspector, ficha, atlas) y hoja por dirección, todo con datos reales de la semilla 1 en el 1000 d.C. (Mautu);
+    - registro en `docs/phases/P02/direcciones.md` y capturas en `docs/phases/P02/img/`;
+  - **crítica:** detector de `impeccable` con 0 hallazgos; revisión propia en secuencia (sin subagentes). Lo corregido está en `direcciones.md`;
+  - **recomendación:** A · Grabado con las reglas de gráficos de C; B como alternativa para "mirar de noche";
+  - **scope `design`** agregado a commitlint (maquetas en `tools/design`);
+  - LEARNINGS L-025 (el worktree de la sesión paralela entraba en `prettier --check .`);
+  - **sesión paralela** [P2.4 Paleta política](#local_f5fcba15-e73e-4830-b22a-c39ba064f456): trabaja en su worktree (rama `p02-paleta-politica`); se integra cuando termine;
+  - **próximo:** la elección de Cristian (P2.3) → nombres → P2.4.
+
 - **2026-10-21 (sesión P2-1, BRIEF aprobado):**
   - Cristian aprobó el BRIEF tal cual: D58–D67 registradas (D02-a…h como se recomendaron, dependencias nuevas, ficha en dos columnas) y sesión paralela para la paleta política (D63);
   - **próximo:** P2.1 y P2.2 acá; la paleta política en su propia sesión.
