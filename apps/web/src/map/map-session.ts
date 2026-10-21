@@ -9,6 +9,7 @@ import {
   type WorldgenResult,
 } from '../worker/worldgen-client';
 import { type ColorMode, provinceColors } from './colors';
+import { LOOKS, lookPoliticalColors, type MapLook } from './looks';
 import { buildMapData } from './map-data';
 import { createRenderer, type Backend, type MapPick, MapView } from './map-view';
 import { type SettlementMarker, testMarkers } from './markers';
@@ -34,11 +35,25 @@ export interface MapSessionCallbacks {
   onSelect(province: number): void;
 }
 
+/** Asa de las maquetas de P2.2 (`window.__mapDebug`): proyecta puntos del mundo a la pantalla. */
+export interface MapDebug {
+  project(x: number, z: number): readonly [number, number] | null;
+  /** Centroide de una provincia (celdas). */
+  centroid(province: number): readonly [number, number];
+}
+
+declare global {
+  interface Window {
+    __mapDebug?: MapDebug;
+  }
+}
+
 export class MapSession {
   readonly report: MapReport = createReport();
   private view: MapView | null = null;
   private world: WorldStatic | null = null;
   private colorMode: ColorMode;
+  private readonly look: MapLook;
   private markers: boolean;
   /** Dueño por provincia del último marco mostrado (relleno político). */
   private owner: Uint32Array | undefined;
@@ -57,6 +72,7 @@ export class MapSession {
   ) {
     window.__map = this.report;
     this.colorMode = params.colors;
+    this.look = LOOKS[params.look];
     this.markers = params.markers;
     this.report.antialias = params.antialias;
     void this.run(container, params, callbacks, world).catch((error: unknown) => {
@@ -133,6 +149,13 @@ export class MapSession {
     const t1 = performance.now();
     const view = new MapView(container, handle, world, data, params, report);
     this.view = view;
+    window.__mapDebug = {
+      project: (x, z) => view.project(x, z),
+      centroid: (p) => [world.provinces.centroidX[p] ?? 0, world.provinces.centroidY[p] ?? 0],
+    };
+    this.cleanups.push(() => {
+      delete window.__mapDebug;
+    });
     if (params.markers) {
       const markers = testMarkers(world);
       view.setSettlements(markers.settlements);
@@ -165,7 +188,10 @@ export class MapSession {
   setColorMode(mode: ColorMode): void {
     this.colorMode = mode;
     if (this.view && this.world) {
-      this.view.setProvinceColors(provinceColors(mode, this.world.provinces, this.owner));
+      const rgba = provinceColors(mode, this.world.provinces, this.owner);
+      this.view.setProvinceColors(
+        mode === 'political' ? lookPoliticalColors(rgba, this.look) : rgba,
+      );
     }
   }
 
@@ -193,7 +219,9 @@ export class MapSession {
     if (!view || !world) return;
     this.owner = frame.owner;
     if (this.colorMode === 'political') {
-      view.setProvinceColors(provinceColors('political', world.provinces, frame.owner));
+      view.setProvinceColors(
+        lookPoliticalColors(provinceColors('political', world.provinces, frame.owner), this.look),
+      );
     }
     if (!this.markers) return;
     const { centroidX, centroidY } = world.provinces;

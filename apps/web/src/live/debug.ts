@@ -5,6 +5,7 @@ import type { SavedWorld, WorldStore } from '../storage/world-store';
 import type { Speed } from './config';
 import type { LiveSession, LiveStatus } from './live-session';
 import { saveLive } from './save';
+import { eraBands, type EraBand, type Marker } from './timeline';
 
 export interface LiveDebug {
   status(): LiveStatus | null;
@@ -12,6 +13,16 @@ export interface LiveDebug {
   scrub(k: number): void;
   /** Lo que muestra el mapa en k: provincias con dueño, polities y asentamientos (count). */
   frame(k: number): { owned: number; polities: number; settlements: number } | null;
+  /** Datos crudos del marco k (maquetas de P2.2): dueño y nivel por provincia y capitales. */
+  frameData(k: number): {
+    owner: number[];
+    level: number[];
+    capitals: [number, number][];
+  } | null;
+  /** Nombres del registro (maquetas de P2.2): polities y asentamientos con su provincia. */
+  names(): { polities: [number, string][]; settlements: [number, string, number][] };
+  /** Bandas de eras y marcadores de la línea de tiempo hasta k (maquetas de P2.2). */
+  timeline(k: number): { bands: EraBand[]; markers: readonly Marker[] };
   /** Hash del estado completo exacto en k (keyframe + re-simulación en el Worker). */
   hash(k: number): Promise<string>;
   /** Guarda en el store del navegador y devuelve el id. */
@@ -50,6 +61,19 @@ export function liveDebug(
       }
       return { owned, polities: f.capitals.size, settlements };
     },
+    frameData: (k) => {
+      const f = session.history?.frameAtIndex(k);
+      if (!f) return null;
+      return { owner: [...f.owner], level: [...f.level], capitals: [...f.capitals] };
+    },
+    names: () => ({
+      polities: [...session.registry.polities].map(([id, r]) => [id, r.name]),
+      settlements: [...session.registry.settlements].map(([id, r]) => [id, r.name, r.province]),
+    }),
+    timeline: (k) => ({
+      bands: eraBands(session.history?.data.aggregates.era ?? [], k),
+      markers: session.markers.visible(k),
+    }),
     hash: async (k) => (await session.fullState(k)).hash,
     save: async () => (await saveLive(session, store)).id,
     saves: () => store.list(),
