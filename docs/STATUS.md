@@ -5,12 +5,12 @@
 
 | | |
 |---|---|
-| **Última actualización** | 2026-10-19 |
-| **Fase actual** | P1 — Rebanada vertical (cerrada) |
-| **Estado** | ✅ P1 cerrada el 2026-10-19 (OK de Cristian) · el merge del PR #2 a `main` espera su revisión |
-| **Próximo paso** | Cristian revisa y aprueba el merge del PR #2 (`phase/p01-rebanada` → `main`, con merge commit). Después P2 en una sesión nueva con `docs/prompts/P02-diseno.md` (BRIEF primero) |
+| **Última actualización** | 2026-10-21 |
+| **Fase actual** | P2 — Dirección de diseño y Design System |
+| **Estado** | 🟢 P2 en curso: BRIEF aprobado el 2026-10-21 (D58–D67) · bloque 1 (dirección) |
+| **Próximo paso** | P2.1 investigación → P2.2 tres direcciones 🎨 → checkpoint 1 (Cristian elige). En paralelo: la sesión de la paleta política (D63) |
 | **Bloqueos** | Ninguno |
-| **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 mergeada (PR #1) · producción en https://worldsim2.pages.dev |
+| **Repo** | https://github.com/crissanchez8/worldsim2 · `main` con P0 y P1 mergeadas (PR #1 y #2) · rama `phase/p02-diseno` · producción en https://worldsim2.pages.dev |
 
 ## Fases
 
@@ -18,7 +18,7 @@
 |---|---|---|---|---|
 | P0 Fundaciones de arquitectura | ✅ cerrada | [BRIEF](phases/P00/BRIEF.md) | [REPORT](phases/P00/REPORT.md) | 2026-10-16 |
 | P1 Rebanada vertical | ✅ cerrada | [BRIEF](phases/P01/BRIEF.md) | [REPORT](phases/P01/REPORT.md) | 2026-10-19 |
-| P2 Dirección de diseño y DS | ⚪ | — | — | — |
+| P2 Dirección de diseño y DS | 🟢 | [BRIEF](phases/P02/BRIEF.md) | — | — |
 | P3 El planeta físico | ⚪ | — | — | — |
 | P4 Gente y sustento | ⚪ | — | — | — |
 | P5 Conocimiento | ⚪ | — | — | — |
@@ -34,6 +34,19 @@
 Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA · ✅ cerrada
 
 ## Handoff de la última sesión
+- **2026-10-21 (sesión P2-1, BRIEF aprobado):**
+  - Cristian aprobó el BRIEF tal cual: D58–D67 registradas (D02-a…h como se recomendaron, dependencias nuevas, ficha en dos columnas) y sesión paralela para la paleta política (D63);
+  - **próximo:** P2.1 y P2.2 acá; la paleta política en su propia sesión.
+
+- **2026-10-19 (sesión P2-1, apertura de P2):**
+  - leídos los docs de arranque del prompt de P2, las capturas y los wireframes de P1 y el código de la UI (`apps/web/src`, `map/colors.ts`, `map/config.ts`, `base.css`, E2E, lint de texto, fronteras); confirmado que P1 está ✅ cerrada (OK en `decisions.md`) y que el PR #2 ya está mergeado a `main` (653bcbb), aunque el handoff anterior lo daba como pendiente;
+  - **`docs/phases/P02/BRIEF.md` escrito y presentado** (📋 en revisión):
+    - tareas P2.1–P2.12 refinadas con el estado real; Δ: renders por dirección con `?look=`, maquetas en `tools/design`, galería en `tools/gallery`, axe en la galería y en el E2E, guardia de colores literales, presupuesto de peso de "Crear" y cierre P2.12;
+    - 🔶 D02-a tres direcciones (Grabado, Observatorio, Atlas suizo; "Crónica iluminada" descartada) · D02-b un solo tema · D02-c Base UI · D02-d tokens en TS → `tokens.css` + CSS Modules · D02-e galería propia (Ladle trae Vite 6 y no publica desde 2025-11) · D02-f paleta política como vista derivada en el hilo principal · D02-g construir solo lo que tiene datos reales · D02-h marca en P2 e infraestructura en P13;
+  - **hallazgo:** la ficha implementada en P1 quedó en una columna; el wireframe aprobado (D57) tiene dos. El BRIEF propone volver al wireframe (pregunta 4);
+  - sin código ni commits: el BRIEF y este STATUS quedan sin commitear en `phase/p02-diseno` hasta la aprobación;
+  - **próximo:** respuesta de Cristian → registrar la aprobación (D# nuevas) → P2.1.
+
 - **2026-10-19 (sesión P1-2, cierre de P1):**
   - **checkpoint 1 (Cristian):**
     - primer cuadro en frío / recargando: Chrome 8,1 / 4,5 s, Firefox 12,2 / 6,6 s, Safari 9,8 / 20,9 s;
@@ -315,4 +328,4 @@ Leyenda: ⚪ pendiente · 📋 BRIEF en revisión · 🟢 en curso · 🧪 en QA
   Plan aprobado como v1.0. No hay código todavía.
 
 ## Decisiones pendientes
-- Ninguna. BRIEF de P1 aprobado tal cual (D48–D54). La sesión paralela para P1.2 (mapa) se propone cuando P1.1 fije `WorldStatic`.
+- Ninguna. BRIEF de P2 aprobado tal cual (D58–D67). La próxima decisión es la dirección y el nombre, en el checkpoint 🎨 1.
