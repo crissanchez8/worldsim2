@@ -1,0 +1,759 @@
+/* B · Observatorio: placa de grafito bajo un instrumento. Módulos opacos con marcas de esquina
+   (no vidrio), lecturas en mono tabular con unidad, rótulos en grotesca condensada, un solo color
+   de señal (bermellón) para lo vivo. Sin brillos ni neón. */
+
+[data-dir='observatorio'] {
+  --bg: var(--plate);
+  --surface: var(--module);
+  --fg: var(--bone);
+  --fg2: var(--bone-2);
+  --fg3: var(--bone-3);
+  --line: var(--line);
+  --accent: var(--signal);
+  --font-ui: 'IBM Plex Sans Condensed', 'Arial Narrow', sans-serif;
+  --font-num: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-long: 'IBM Plex Sans Condensed', sans-serif;
+  --font-display: 'IBM Plex Sans Condensed', sans-serif;
+  --icon-stroke: 1.5;
+  --icon-cap: butt;
+  --icon-join: miter;
+  --sep: '  /  ';
+  --crumb: '  /  ';
+  --halo: 0 0 2px var(--plate), 0 0 3px var(--plate), 0 0 4px var(--plate);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Módulo de instrumento: fondo opaco, filete fino y marcas de esquina. */
+[data-dir='observatorio'] :is(.rail, .inspector, .cartouche, .bottom) {
+  background: var(--module);
+  border: 1px solid var(--line);
+  background-image:
+    linear-gradient(var(--bone-3), var(--bone-3)), linear-gradient(var(--bone-3), var(--bone-3)),
+    linear-gradient(var(--bone-3), var(--bone-3)), linear-gradient(var(--bone-3), var(--bone-3)),
+    linear-gradient(var(--bone-3), var(--bone-3)), linear-gradient(var(--bone-3), var(--bone-3)),
+    linear-gradient(var(--bone-3), var(--bone-3)), linear-gradient(var(--bone-3), var(--bone-3));
+  background-size:
+    8px 1px,
+    1px 8px,
+    8px 1px,
+    1px 8px,
+    8px 1px,
+    1px 8px,
+    8px 1px,
+    1px 8px;
+  background-position:
+    0 0,
+    0 0,
+    100% 0,
+    100% 0,
+    0 100%,
+    0 100%,
+    100% 100%,
+    100% 100%;
+  background-repeat: no-repeat;
+  padding: 12px 14px;
+}
+
+[data-dir='observatorio'] .panel-title,
+[data-dir='observatorio'] .section-title,
+[data-dir='observatorio'] .why-title,
+[data-dir='observatorio'] .col-title,
+[data-dir='observatorio'] .kicker {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-3);
+}
+
+[data-dir='observatorio'] .section-title {
+  margin: 12px 0 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+[data-dir='observatorio'] .section-title .count {
+  color: var(--bone);
+  letter-spacing: 0;
+}
+
+[data-dir='observatorio'] .why-title span,
+[data-dir='observatorio'] .col-title span {
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--bone-3);
+}
+
+/* Barra superior: lectura de fecha como instrumento. */
+[data-dir='observatorio'] .topbar {
+  background: var(--plate);
+  border-bottom: 1px solid var(--line);
+  height: 56px;
+}
+
+[data-dir='observatorio'] .world-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+[data-dir='observatorio'] .world-params {
+  color: var(--bone-3);
+  font-family: var(--font-num);
+  font-size: 11.5px;
+}
+
+[data-dir='observatorio'] .date {
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  padding: 0 18px;
+  height: 100%;
+  align-items: center !important;
+}
+
+[data-dir='observatorio'] .date .year {
+  font-family: var(--font-num);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--bone);
+}
+
+[data-dir='observatorio'] .date .year::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 10px;
+  vertical-align: middle;
+  background: var(--signal);
+}
+
+[data-dir='observatorio'] .date .era {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .btn {
+  padding: 6px 10px;
+  background: var(--module-2);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+[data-dir='observatorio'] .btn.ghost {
+  background: none;
+  border-color: transparent;
+  padding: 4px 6px;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .lang {
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+[data-dir='observatorio'] .lang button {
+  padding: 5px 9px;
+  font-family: var(--font-num);
+  font-size: 11.5px;
+  color: var(--bone-3);
+}
+
+[data-dir='observatorio'] .lang [aria-pressed='true'] {
+  color: var(--bone);
+  box-shadow: inset 0 -2px 0 var(--signal);
+}
+
+/* Riel */
+[data-dir='observatorio'] .modes {
+  margin: 8px 0 14px;
+  border-top: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .mode {
+  padding: 6px 2px;
+  border-bottom: 1px solid var(--line);
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .mode .dot {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+}
+
+[data-dir='observatorio'] .mode .dot::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border: 1px solid var(--bone-3);
+}
+
+[data-dir='observatorio'] .mode[aria-checked='true'] {
+  color: var(--bone);
+  box-shadow: inset 2px 0 0 var(--signal);
+  padding-left: 8px;
+}
+
+[data-dir='observatorio'] .legend {
+  margin-top: 8px;
+  display: grid;
+  gap: 6px;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .sw.none {
+  border: 1px dashed var(--bone-3);
+}
+
+/* Inspector */
+[data-dir='observatorio'] .panel-bar {
+  margin: -4px -4px 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .kind {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-3);
+}
+
+[data-dir='observatorio'] .entity-name {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+[data-dir='observatorio'] .asof {
+  color: var(--bone-3);
+  font-size: 12px;
+}
+
+[data-dir='observatorio'] .asof .num {
+  color: var(--bone);
+}
+
+[data-dir='observatorio'] .facts {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .facts dt,
+[data-dir='observatorio'] .facts dd {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .facts dt {
+  color: var(--bone-3);
+}
+
+[data-dir='observatorio'] .facts dd {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+[data-dir='observatorio'] .facts .num {
+  font-size: 13px;
+}
+
+[data-dir='observatorio'] .facts .note {
+  color: var(--bone-3);
+  font-size: 11.5px;
+}
+
+[data-dir='observatorio'] a {
+  text-decoration: none;
+  border-bottom: 1px dotted var(--bone-3);
+}
+
+[data-dir='observatorio'] .more {
+  color: var(--bone-3);
+  font-family: var(--font-num);
+  font-size: 11.5px;
+}
+
+[data-dir='observatorio'] .inline-list .num {
+  margin-left: 4px;
+  color: var(--bone-3);
+  font-size: 11.5px;
+}
+
+[data-dir='observatorio'] .why-btn {
+  margin-top: 14px;
+  width: 100%;
+  justify-content: center;
+}
+
+[data-dir='observatorio'] .chip {
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 12px;
+  color: var(--bone-2);
+}
+
+/* Porqué: lectura + regla de factores. */
+[data-dir='observatorio'] .why {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--signal);
+}
+
+[data-dir='observatorio'] .computed {
+  font-family: var(--font-num);
+  font-size: 11px;
+  color: var(--bone-3);
+  margin: 2px 0 6px;
+}
+
+[data-dir='observatorio'] .why .facts {
+  margin: 0 0 6px;
+}
+
+[data-dir='observatorio'] .gauge {
+  margin-top: 12px;
+}
+
+[data-dir='observatorio'] .gauge .readout {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+[data-dir='observatorio'] .gauge h4 {
+  font-weight: 500;
+  font-size: 12.5px;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .gauge .readout .num {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+[data-dir='observatorio'] .gauge .unit {
+  margin-left: 6px;
+  color: var(--bone-3);
+  font-size: 11.5px;
+}
+
+[data-dir='observatorio'] .gauge .bar {
+  margin: 6px 0;
+}
+
+[data-dir='observatorio'] .gauge .seg {
+  background: var(--bone-2);
+}
+
+[data-dir='observatorio'] .gauge .seg.base {
+  background: var(--bone-3);
+  opacity: 0.6;
+}
+
+[data-dir='observatorio'] .gauge .seg:last-child {
+  background: var(--bone);
+}
+
+[data-dir='observatorio'] .gauge td {
+  padding: 2px 0;
+  font-size: 12.5px;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .gauge .base td {
+  color: var(--bone-3);
+}
+
+[data-dir='observatorio'] .gauge .op {
+  color: var(--bone-3);
+  margin-right: 4px;
+}
+
+/* Barra de tiempo: módulo de cinta graduada. */
+[data-dir='observatorio'] .bottom {
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+[data-dir='observatorio'] .speeds {
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+[data-dir='observatorio'] .speeds button {
+  padding: 5px 11px;
+  font-family: var(--font-num);
+  font-size: 12px;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .speeds button + button {
+  border-left: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .speeds [aria-checked='true'] {
+  color: var(--bone);
+  box-shadow: inset 0 -2px 0 var(--signal);
+}
+
+[data-dir='observatorio'] .now .num {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+[data-dir='observatorio'] .now span + span {
+  margin-left: 8px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .head,
+[data-dir='observatorio'] .perf {
+  font-size: 12px;
+  color: var(--bone-3);
+}
+
+[data-dir='observatorio'] .perf {
+  margin-left: auto;
+}
+
+[data-dir='observatorio'] .track {
+  height: 20px;
+  border: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .band span {
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .band + .band {
+  border-left: 1px solid var(--plate);
+}
+
+[data-dir='observatorio'] .ahead {
+  background: var(--plate);
+  border-top: 1px dashed var(--line);
+  border-bottom: 1px dashed var(--line);
+}
+
+[data-dir='observatorio'] .marker {
+  width: 1px;
+  top: 60%;
+  background: var(--bone-2);
+}
+
+[data-dir='observatorio'] .playhead {
+  width: 2px;
+  margin-left: -1px;
+  top: -5px;
+  bottom: -5px;
+  background: var(--signal);
+}
+
+[data-dir='observatorio'] .ticks {
+  font-family: var(--font-num);
+  font-size: 10.5px;
+  color: var(--bone-3);
+}
+
+[data-dir='observatorio'] .ticker {
+  column-gap: 28px;
+  font-size: 12.5px;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .ticker .year {
+  font-size: 11.5px;
+  color: var(--bone-3);
+  width: 66px;
+}
+
+[data-dir='observatorio'] .ticker a {
+  border: 0;
+}
+
+[data-dir='observatorio'] .ticker .battle a {
+  color: var(--bone);
+}
+
+/* Mapa */
+[data-dir='observatorio'] .realm {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: var(--bone);
+  text-shadow: var(--halo);
+}
+
+[data-dir='observatorio'] .realm.is-selected {
+  color: var(--signal);
+}
+
+[data-dir='observatorio'] .mname {
+  font-family: var(--font-num);
+  font-size: 11px;
+  color: var(--bone);
+  text-shadow: var(--halo);
+}
+
+/* Ficha */
+[data-dir='observatorio'] .topbar.page .crumbs {
+  font-family: var(--font-num);
+  font-size: 12px;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .ficha {
+  padding: 22px 28px 0;
+}
+
+[data-dir='observatorio'] .ficha-head {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .ficha .entity-name {
+  font-size: 40px;
+}
+
+[data-dir='observatorio'] .asof-toggle {
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+[data-dir='observatorio'] .asof-toggle button {
+  padding: 6px 12px;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .asof-toggle button + button {
+  border-left: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .asof-toggle [aria-checked='true'] {
+  color: var(--bone);
+  box-shadow: inset 0 -2px 0 var(--signal);
+}
+
+[data-dir='observatorio'] .asof-toggle [disabled] {
+  color: var(--bone-3);
+}
+
+[data-dir='observatorio'] .ficha-cols {
+  column-gap: 28px;
+  padding-top: 16px;
+}
+
+[data-dir='observatorio'] .col.data,
+[data-dir='observatorio'] .col.events {
+  background: var(--module);
+  border: 1px solid var(--line);
+  padding: 14px 16px;
+  height: 700px;
+  overflow: hidden;
+}
+
+[data-dir='observatorio'] .locator {
+  margin: -14px -16px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .locator .pin::before {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin: -6px;
+  border: 1.5px solid var(--signal);
+}
+
+[data-dir='observatorio'] .event-list {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+[data-dir='observatorio'] .event-list li {
+  padding: 3px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .event-list .year {
+  font-size: 12px;
+  color: var(--bone-3);
+}
+
+[data-dir='observatorio'] .event-list a {
+  border: 0;
+}
+
+[data-dir='observatorio'] .event-list .cause {
+  font-size: 12px;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .event-list .por {
+  font-family: var(--font-num);
+  font-size: 11px;
+  color: var(--signal);
+}
+
+[data-dir='observatorio'] .event-list .por::before {
+  content: '← ';
+}
+
+[data-dir='observatorio'] .ficha .why .gauge {
+  display: inline-block;
+  width: calc(50% - 10px);
+  vertical-align: top;
+  margin-right: 16px;
+}
+
+[data-dir='observatorio'] .ficha .why .gauge:last-child {
+  margin-right: 0;
+}
+
+/* Atlas */
+[data-dir='observatorio'] .neatline {
+  inset: 0;
+  border: 28px solid var(--plate);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+[data-dir='observatorio'] .neatline::before,
+[data-dir='observatorio'] .neatline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--bone-3) 1px, transparent 1px) 0 0 / 36px 6px;
+}
+
+[data-dir='observatorio'] .neatline::before {
+  top: -7px;
+}
+
+[data-dir='observatorio'] .neatline::after {
+  bottom: -7px;
+}
+
+[data-dir='observatorio'] .cartouche {
+  right: 44px;
+  top: 44px;
+  width: 300px;
+}
+
+[data-dir='observatorio'] .cartouche h1 {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 6px 0 2px;
+}
+
+[data-dir='observatorio'] .cartouche .sub,
+[data-dir='observatorio'] .cartouche .note {
+  color: var(--bone-3);
+  font-size: 12px;
+}
+
+[data-dir='observatorio'] .cartouche .note {
+  margin-top: 10px;
+  font-size: 11px;
+}
+
+[data-dir='observatorio'] .readouts {
+  margin: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .readouts > div {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .readouts dt {
+  color: var(--bone-3);
+}
+
+[data-dir='observatorio'] .readouts dd .num,
+[data-dir='observatorio'] .readouts dd.num {
+  font-size: 13px;
+}
+
+[data-dir='observatorio'] .readouts dd span {
+  color: var(--bone-3);
+}
+
+[data-dir='observatorio'] .scalebar {
+  margin: 12px 0;
+  font-size: 10.5px;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .scalebar .ruler {
+  border: 1px solid var(--bone-2);
+}
+
+[data-dir='observatorio'] .scalebar .ruler i:nth-child(odd) {
+  background: var(--bone-2);
+}
+
+/* Hoja */
+[data-dir='observatorio'] .hoja h1 {
+  font-size: 60px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+[data-dir='observatorio'] .hoja .tagline {
+  font-size: 18px;
+  color: var(--bone-2);
+}
+
+[data-dir='observatorio'] .hoja h2 {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-3);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+
+[data-dir='observatorio'] .hoja .lead {
+  font-size: 18px;
+}
+
+[data-dir='observatorio'] .t-text {
+  font-size: 18px;
+}
+
+[data-dir='observatorio'] .t-mono {
+  font-family: var(--font-num);
+  font-size: 17px;
+}
+
+[data-dir='observatorio'] .t-realm {
+  letter-spacing: 0.22em;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+[data-dir='observatorio'] .t-long {
+  font-size: 17px;
+  line-height: 1.55;
+}

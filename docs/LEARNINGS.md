@@ -302,6 +302,16 @@
 - **Cómo detectarlo antes:** un efecto con limpieza costosa que lista `t` o `i18n` entre sus dependencias.
 - **Promovido a CLAUDE.md:** no.
 
+### L-025 · El worktree de una sesión paralela cae dentro del `prettier --check .` de la principal
+- **Fecha / fase:** 2026-10-21 · P2
+- **Origen:** observación propia (P2.1)
+- **Contexto:** la sesión paralela de la paleta política trabaja en un worktree en `.claude/worktrees/…`, adentro de la carpeta del repo.
+- **Qué pasó:** `pnpm check` de la sesión principal falló en `format:check` por un archivo del worktree (`docs/phases/P01/health-baseline.json` de la otra rama), que no tiene nada que ver con lo que se commiteaba.
+- **Causa raíz:** `prettier --check .` recorre todo el árbol, y los patrones anclados de `.prettierignore` (`docs/phases/**/…`) no cubren la copia del worktree.
+- **Regla:** `.claude/` va en `.prettierignore` y `.claude/worktrees/` en `.gitignore`; cualquier chequeo nuevo que recorra `.` excluye `.claude/`.
+- **Cómo detectarlo antes:** un `pnpm check` que falla por una ruta que empieza con `.claude/worktrees/`.
+- **Promovido a CLAUDE.md:** no.
+
 ---
 
 ## Herencia del proyecto anterior (`human-history-simulator`)

@@ -12,6 +12,7 @@ import {
   dot,
   float,
   floor,
+  fract,
   fwidth,
   instancedBufferAttribute,
   length,
@@ -52,6 +53,7 @@ import {
 } from 'three/webgpu';
 import type { Node } from 'three/webgpu';
 import { BORDERS, LIGHT, MARKERS, MAX_DEPTH_M, PALETTE, RIVERS, SKIRT_DEPTH } from './config';
+import type { MapLook } from './looks';
 import { COLOR_TABLE_WIDTH } from './textures';
 
 export function createMapUniforms() {
@@ -289,8 +291,204 @@ export function terrainMaterial(tx: MapTextures, u: MapUniforms): MeshBasicNodeM
   return material;
 }
 
+/** Ancho mínimo de `fwidth` (unidades del campo por px) para no dividir por cero en zonas planas. */
+const MIN_FWIDTH = 1e-6;
+
+/**
+ * Línea antialiasada sobre las isolíneas enteras de un campo continuo (curvas de nivel, retícula):
+ * 1 sobre la línea, 0 a más de `px` píxeles.
+ */
+function isoLine(field: FloatNode, px: number): FloatNode {
+  const dist = abs(fract(field.sub(0.5)).sub(0.5)).div(max(fwidth(field), MIN_FWIDTH));
+  return float(1).sub(min(dist.div(px), 1));
+}
+
+/**
+ * Terreno de las direcciones de diseño de P2.2 (`?look=`, ver `looks.ts`): el mismo relieve,
+ * agua, provincias y picking que `terrainMaterial`, con otro lenguaje de atlas (tierra plana o
+ * hipsométrica, sombra con tinte, costa, curvas de nivel, retícula, banda o halo de frontera y
+ * frontera en el tono del relleno). Herramienta de exploración: no reemplaza al material de P1.
+ */
+export function atlasTerrainMaterial(
+  tx: MapTextures,
+  u: MapUniforms,
+  look: MapLook,
+): MeshBasicNodeMaterial {
+  const material = new MeshBasicNodeMaterial();
+  const W = tx.cols;
+  const H = tx.rows;
+  const tableHeight = tx.colors.image.height;
+
+  const worldXZ = modelWorldMatrix.mul(vec4(positionLocal.x, 0, positionLocal.z, 1)).xz;
+  material.positionNode = vec3(
+    positionLocal.x,
+    surfaceHeight(tx, u, worldXZ).add(positionLocal.y.mul(SKIRT_DEPTH)),
+    positionLocal.z,
+  );
+
+  const xz = positionWorld.xz;
+  const uv = uvOf(xz, W, H);
+  const hs = texture(tx.height, uv);
+  const elev = hs.r;
+  const lake = hs.g;
+  const du = vec2(1 / W, 0);
+  const dv = vec2(0, 1 / H);
+  const h = (o: Vec2Node) => max(texture(tx.height, uv.add(o)).r, 0).mul(u.shadeScale);
+  const n = normalize(vec3(h(du.negate()).sub(h(du)), 2, h(dv.negate()).sub(h(dv))));
+  const light = max(dot(n, vec3(SUN.x, SUN.y, SUN.z)), 0)
+    .mul(LIGHT.sunIntensity)
+    .add(LIGHT.ambient);
+  // Luz relativa a la del llano: 1 = sin cambio, < 1 sombra, > 1 ladera al sol.
+  const flatLight = Math.max(SUN.y, 0) * LIGHT.sunIntensity + LIGHT.ambient;
+  const shade = mix(float(1), light.div(flatLight), look.shade.strength);
+
+  const surf = texture(tx.surface, uv);
+  const landMask = surf.a;
+  const land = smoothstep(COAST_ELEVATION_M[0], COAST_ELEVATION_M[1], elev).mul(
+    float(1).sub(smoothstep(LAKE_SHORE[0], LAKE_SHORE[1], lake)),
+  );
+
+  let landBase: Node<'vec3'>;
+  const style = look.land;
+  if (style.mode === 'biome') {
+    landBase = decodeSrgb(surf.rgb.div(max(landMask, 1 / 255)));
+  } else if (style.mode === 'flat') {
+    landBase = linear(style.color);
+  } else {
+    const [first, ...rest] = style.stops;
+    landBase = linear(first?.[1] ?? [0, 0, 0]);
+    let from = first?.[0] ?? 0;
+    for (const [m, color] of rest) {
+      landBase = mix(landBase, linear(color), smoothstep(from, m, elev));
+      from = m;
+    }
+  }
+
+  // Agua: profundidad continua o en bandas; lagos aparte; luz plana o la de P1.
+  const depthT = sqrt(elev.negate().div(MAX_DEPTH_M).clamp(0, 1));
+  const bands = look.water.bands;
+  const t =
+    bands > 1
+      ? floor(depthT.mul(bands))
+          .div(bands - 1)
+          .clamp(0, 1)
+      : depthT;
+  const ocean = mix(linear(look.water.shallow), linear(look.water.deep), t);
+  const water = mix(ocean, linear(look.water.lake), step(0, elev)).mul(
+    look.water.light ?? WATER_LIGHT,
+  );
+
+  const idAt = (p: Vec2Node): FloatNode => {
+    const s = texture(tx.ids, p);
+    return round(s.r.mul(255)).add(round(s.g.mul(255)).mul(256));
+  };
+  const colorOf = (id: FloatNode) =>
+    texture(
+      tx.colors,
+      vec2(
+        mod(id, COLOR_TABLE_WIDTH).add(0.5).div(COLOR_TABLE_WIDTH),
+        floor(id.div(COLOR_TABLE_WIDTH)).add(0.5).div(tableHeight),
+      ),
+    );
+  const isLand = (id: FloatNode) => step(0.5, id);
+  const differs = (a: FloatNode, b: FloatNode) => step(0.5, abs(a.sub(b)));
+  const pol = look.political;
+  const idC = idAt(uv);
+  const colC = colorOf(idC);
+  const edge = (px: number) => {
+    const o = fwidth(xz).mul(px).div(vec2(W, H));
+    const idA = idAt(uv.add(o));
+    const idB = idAt(uv.sub(o));
+    const colA = colorOf(idA);
+    const colB = colorOf(idB);
+    return {
+      province: max(differs(idA, idC).mul(isLand(idA)), differs(idB, idC).mul(isLand(idB))).mul(
+        isLand(idC),
+      ),
+      political: max(
+        step(COLOR_EPSILON, length(colA.sub(colC))).mul(isLand(idA)),
+        step(COLOR_EPSILON, length(colB.sub(colC))).mul(isLand(idB)),
+      ).mul(isLand(idC)),
+    };
+  };
+  /** 1 si a `px` píxeles, en alguna de las 4 diagonales, hay otra polity (o ninguna). */
+  const ring = (px: number): FloatNode => {
+    const o = fwidth(xz).mul(px).div(vec2(W, H));
+    const o2 = vec2(o.x, o.y.negate());
+    const other = (p: Vec2Node) => {
+      const id = idAt(uv.add(p));
+      return step(COLOR_EPSILON, length(colorOf(id).sub(colC))).mul(isLand(id));
+    };
+    return max(max(other(o), other(o.negate())), max(other(o2), other(o2.negate()))).mul(
+      isLand(idC),
+    );
+  };
+
+  const line = edge(pol.border.px * 0.5);
+  const fill = decodeSrgb(colC.rgb);
+  let fillAlpha: FloatNode = colC.a.mul(u.fillOpacity);
+  if (pol.band) {
+    const near = ring(pol.band.px * 0.5);
+    const far = ring(pol.band.px);
+    fillAlpha = fillAlpha.add(colC.a.mul(max(near, far.mul(0.5))).mul(pol.band.alpha)).clamp(0, 1);
+  }
+  const landFilled = mix(landBase, fill, fillAlpha);
+  const landLit = look.shade.shadow
+    ? mix(linear(look.shade.shadow), landFilled, shade.clamp(0, 1)).add(
+        landFilled.mul(max(shade.sub(1), 0)),
+      )
+    : landFilled.mul(shade);
+
+  let color: Node<'vec3'> = mix(water, landLit, land);
+  if (look.graticule) {
+    const g = look.graticule;
+    const gx = xz.x.div((W * g.degrees) / 360);
+    const gz = xz.y.div((H * g.degrees) / 180);
+    color = mix(color, linear(g.color), max(isoLine(gx, g.px), isoLine(gz, g.px)).mul(g.alpha));
+  }
+  if (look.contours) {
+    const c = look.contours;
+    const levels = max(elev, 0).div(c.intervalM);
+    color = mix(
+      color,
+      linear(c.color),
+      isoLine(levels, c.px).mul(step(0.5, levels)).mul(land).mul(c.alpha),
+    );
+  }
+  color = mix(
+    color,
+    linear(look.provinceBorder.color),
+    line.province.mul(u.provinceBorderAlpha).mul(look.provinceBorder.alpha).mul(land),
+  );
+  if (pol.halo) {
+    color = mix(
+      color,
+      linear(pol.halo.color),
+      ring(pol.halo.px).mul(float(1).sub(line.political)).mul(pol.halo.alpha).mul(land),
+    );
+  }
+  const border = pol.border;
+  const borderColor = 'darken' in border ? fill.mul(border.darken) : linear(border.color);
+  color = mix(color, borderColor, line.political.mul(border.alpha).mul(land));
+  if (look.coast) {
+    const k = look.coast;
+    const sea = float(1).sub(min(abs(elev).div(max(fwidth(elev), MIN_FWIDTH).mul(k.px)), 1));
+    const shore = float(1)
+      .sub(min(abs(lake.sub(0.5)).div(max(fwidth(lake), MIN_FWIDTH).mul(k.px)), 1))
+      .mul(step(0, elev));
+    color = mix(color, linear(k.color), max(sea, shore).mul(k.alpha));
+  }
+  const selected = float(1).sub(differs(idC, u.selected)).mul(isLand(idC)).mul(land);
+  material.colorNode = mix(color, linear(look.selection.color), selected.mul(look.selection.alpha));
+  return material;
+}
+
 /** Cintas de río: ancho en px por caudal (con tope en celdas), sobre el relieve. */
-export function riverMaterial(tx: MapTextures, u: MapUniforms): MeshBasicNodeMaterial {
+export function riverMaterial(
+  tx: MapTextures,
+  u: MapUniforms,
+  look?: MapLook,
+): MeshBasicNodeMaterial {
   const material = new MeshBasicNodeMaterial();
   const offset = attribute<'vec2'>('riverOffset', 'vec2');
   const t = attribute<'float'>('riverFlowT', 'float');
@@ -305,7 +503,9 @@ export function riverMaterial(tx: MapTextures, u: MapUniforms): MeshBasicNodeMat
     .add(RIVERS.liftCells)
     .add(dist.mul(RIVER_LIFT_PER_DISTANCE));
   material.positionNode = vec3(positionLocal.x.add(d.x), y, positionLocal.z.add(d.y));
-  material.colorNode = linear(PALETTE.river).mul(WATER_LIGHT);
+  material.colorNode = look
+    ? linear(look.water.river).mul(look.water.light ?? WATER_LIGHT)
+    : linear(PALETTE.river).mul(WATER_LIGHT);
   // El sentido de los triángulos depende del lado de la cinta: se dibujan las dos caras.
   material.side = DoubleSide;
   return material;

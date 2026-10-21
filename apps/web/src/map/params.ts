@@ -3,12 +3,13 @@
 // `?backend=webgl2`, `?dpr=`, `?aa=0`, `?exaggeration=`, `?colors=political|biome|id|none`,
 // `?markers=0`,
 // `?tour=1`, `?duration=` (s), `?repeat=N` (estrés), `?lod=N` (LOD fijo), `?lodDist=`,
-// `?warmup=0`, `?x=`, `?z=`, `?distance=` (pose inicial, celdas). Vista en vivo (P1.5): `?load=<id>`
+// `?warmup=0`, `?x=`, `?z=`, `?distance=` (pose inicial, celdas). Diseño (P2.2): `?look=` (looks.ts). Vista en vivo (P1.5): `?load=<id>`
 // continúa un mundo guardado (los parámetros del mundo vienen en la misma URL).
 import { rng } from '@ws/core';
 import { MapTypes, WorldSizes } from '@ws/content';
 import { LAND_FRACTION_RANGE, type WorldParams } from '@ws/worldgen';
 import { type ColorMode, isColorMode } from './colors';
+import { isLookId, type LookId } from './looks';
 import {
   DEFAULT_VERTICAL_EXAGGERATION,
   LOD_STEPS,
@@ -24,6 +25,8 @@ export interface MapParams {
   readonly antialias: boolean;
   readonly exaggeration: number;
   readonly colors: ColorMode;
+  /** Look de exploración de P2.2 (`?look=`); `p1` = el mapa de P1. */
+  readonly look: LookId;
   readonly markers: boolean;
   readonly tour: boolean;
   readonly tourSeconds: number;
@@ -103,6 +106,10 @@ export function readMapParams(search: string): MapParams {
       inRange(num(p, 'exaggeration'), ...VERTICAL_EXAGGERATION_RANGE) ??
       DEFAULT_VERTICAL_EXAGGERATION,
     colors: isColorMode(colors) ? colors : 'political',
+    look: (() => {
+      const look = p.get('look') ?? 'p1';
+      return isLookId(look) ? look : 'p1';
+    })(),
     markers: p.get('markers') !== '0',
     tour: p.get('tour') === '1',
     tourSeconds: inRange(num(p, 'duration'), 1, 600) ?? MEASURE.tourSeconds,

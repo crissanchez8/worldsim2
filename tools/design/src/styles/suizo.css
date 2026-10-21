@@ -1,0 +1,651 @@
+/* C · Atlas suizo: obra de referencia. Blanco neutro, gris tinta, filete fuerte arriba de cada
+   bloque (no cajas), grotesca editorial para la UI y serif con tamaños ópticos para la lectura
+   larga, rojo editorial para lo actual. Gráficos con títulos que concluyen. */
+
+[data-dir='suizo'] {
+  --bg: var(--white);
+  --surface: var(--white);
+  --fg: var(--ink);
+  --fg2: var(--ink-2);
+  --fg3: var(--ink-3);
+  --line: var(--rule);
+  --accent: var(--red);
+  --font-ui: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-num: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-long: 'Newsreader', Georgia, serif;
+  --font-display: 'Schibsted Grotesk', sans-serif;
+  --icon-stroke: 1.75;
+  --icon-cap: round;
+  --icon-join: round;
+  --sep: '  ·  ';
+  --crumb: '  /  ';
+  --halo: 0 0 2px #fff, 0 0 2px #fff, 0 0 3px #fff, 0 0 4px #fff;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+/* Las cifras tabulares de Schibsted también espacian la puntuación ("d . C ."): en esta dirección
+   las cifras son proporcionales y la alineación la da la grilla. */
+[data-dir='suizo'] .num {
+  font-variant-numeric: lining-nums proportional-nums;
+}
+
+[data-dir='suizo'] :is(.rail, .inspector, .cartouche) {
+  background: var(--white);
+  border-top: 2px solid var(--ink);
+  padding: 12px 16px 14px;
+}
+
+[data-dir='suizo'] .rail {
+  background: var(--grey-1);
+}
+
+[data-dir='suizo'] .panel-title,
+[data-dir='suizo'] .why-title,
+[data-dir='suizo'] .col-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+[data-dir='suizo'] .kicker {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--red);
+}
+
+[data-dir='suizo'] .section-title {
+  margin: 14px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .section-title .count,
+[data-dir='suizo'] .why-title span,
+[data-dir='suizo'] .col-title span {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+/* Barra superior */
+[data-dir='suizo'] .topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+}
+
+[data-dir='suizo'] .world-name {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+[data-dir='suizo'] .world-params {
+  color: var(--ink-3);
+}
+
+[data-dir='suizo'] .date .year {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+[data-dir='suizo'] .date .year::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  vertical-align: 3px;
+  background: var(--red);
+}
+
+[data-dir='suizo'] .date .era {
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .btn {
+  padding: 6px 8px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+[data-dir='suizo'] .actions .btn:first-child {
+  background: var(--ink);
+  color: var(--white);
+}
+
+[data-dir='suizo'] .lang button {
+  padding: 4px 7px;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+[data-dir='suizo'] .lang [aria-pressed='true'] {
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 var(--red);
+}
+
+/* Riel */
+[data-dir='suizo'] .modes {
+  margin: 8px 0 14px;
+}
+
+[data-dir='suizo'] .mode {
+  padding: 5px 6px;
+  border-radius: 3px;
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .mode .dot {
+  width: 18px;
+  display: grid;
+  place-items: center;
+}
+
+[data-dir='suizo'] .mode .dot::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink-3);
+}
+
+[data-dir='suizo'] .mode[aria-checked='true'] {
+  background: var(--white);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+[data-dir='suizo'] .legend {
+  margin-top: 8px;
+  display: grid;
+  gap: 5px;
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .sw.none {
+  background: #e3e7d6;
+  border: 1px solid var(--rule);
+}
+
+/* Inspector */
+[data-dir='suizo'] .panel-bar {
+  margin: -4px -8px 10px 0;
+}
+
+[data-dir='suizo'] .btn.ghost {
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .kind {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+[data-dir='suizo'] .entity-name {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+[data-dir='suizo'] .asof {
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+[data-dir='suizo'] .facts {
+  margin-top: 12px;
+  row-gap: 4px;
+}
+
+[data-dir='suizo'] .facts dt {
+  color: var(--ink-3);
+}
+
+[data-dir='suizo'] .facts dd .num {
+  font-weight: 600;
+}
+
+[data-dir='suizo'] .facts .note {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+[data-dir='suizo'] a {
+  text-decoration-color: rgb(31 31 31 / 0.35);
+  text-underline-offset: 2px;
+}
+
+[data-dir='suizo'] .more {
+  color: var(--ink-3);
+}
+
+[data-dir='suizo'] .inline-list .num {
+  margin-left: 4px;
+  color: var(--ink-3);
+}
+
+[data-dir='suizo'] .why-btn {
+  margin-top: 14px;
+  padding: 7px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+[data-dir='suizo'] .chip {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--grey-1);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+/* Porqué: cascada editorial. */
+[data-dir='suizo'] .why {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 2px solid var(--ink);
+}
+
+[data-dir='suizo'] .computed {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin: 2px 0 6px;
+}
+
+[data-dir='suizo'] .why .facts {
+  margin: 0 0 6px;
+}
+
+[data-dir='suizo'] .waterfall {
+  margin-top: 12px;
+  isolation: isolate;
+}
+
+[data-dir='suizo'] .waterfall h4 {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+[data-dir='suizo'] .waterfall h4 > span {
+  font-weight: 700;
+}
+
+[data-dir='suizo'] .waterfall .unit {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+[data-dir='suizo'] .waterfall li {
+  padding: 2px 0;
+  font-size: 12.5px;
+}
+
+[data-dir='suizo'] .waterfall .track {
+  background: var(--grey-1);
+}
+
+[data-dir='suizo'] .waterfall .bar {
+  background: #5e8fb8;
+}
+
+[data-dir='suizo'] .waterfall .base .bar {
+  background: #b9b9b3;
+}
+
+[data-dir='suizo'] .waterfall .num {
+  font-weight: 600;
+  padding-right: 4px;
+}
+
+/* Barra de tiempo */
+[data-dir='suizo'] .bottom {
+  background: var(--white);
+  border-top: 2px solid var(--ink);
+  padding: 8px 16px 10px;
+  display: grid;
+  gap: 6px;
+}
+
+[data-dir='suizo'] .speeds {
+  background: var(--grey-1);
+  border-radius: 3px;
+  padding: 2px;
+}
+
+[data-dir='suizo'] .speeds button {
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .speeds [aria-checked='true'] {
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 0 0 0 1px var(--rule);
+}
+
+[data-dir='suizo'] .now .num {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+[data-dir='suizo'] .now span + span {
+  margin-left: 8px;
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .head,
+[data-dir='suizo'] .perf {
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+[data-dir='suizo'] .track {
+  height: 22px;
+}
+
+[data-dir='suizo'] .band span {
+  font-size: 11px;
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .band + .band {
+  border-left: 1px solid var(--white);
+}
+
+[data-dir='suizo'] .ahead {
+  background: var(--white);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+[data-dir='suizo'] .marker {
+  width: 1px;
+  top: 60%;
+  background: var(--ink-2);
+}
+
+[data-dir='suizo'] .playhead {
+  width: 2px;
+  margin-left: -1px;
+  top: -4px;
+  bottom: -4px;
+  background: var(--red);
+}
+
+[data-dir='suizo'] .ticks {
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+[data-dir='suizo'] .ticker {
+  column-gap: 32px;
+  font-size: 13px;
+}
+
+[data-dir='suizo'] .ticker .year {
+  font-weight: 600;
+  width: 64px;
+}
+
+[data-dir='suizo'] .ticker a {
+  text-decoration: none;
+}
+
+/* Mapa */
+[data-dir='suizo'] .realm {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: #3d3d3d;
+  text-shadow: var(--halo);
+}
+
+[data-dir='suizo'] .realm.is-selected {
+  color: var(--red);
+}
+
+[data-dir='suizo'] .mname {
+  font-size: 11.5px;
+  font-weight: 500;
+  text-shadow: var(--halo);
+}
+
+/* Ficha */
+[data-dir='suizo'] .topbar.page .crumbs {
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .ficha {
+  padding: 26px 40px 0;
+}
+
+[data-dir='suizo'] .ficha-head {
+  padding-bottom: 16px;
+}
+
+[data-dir='suizo'] .ficha .entity-name {
+  font-size: 44px;
+}
+
+[data-dir='suizo'] .asof-toggle {
+  background: var(--grey-1);
+  border-radius: 3px;
+  padding: 2px;
+}
+
+[data-dir='suizo'] .asof-toggle button {
+  padding: 6px 12px;
+  border-radius: 2px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .asof-toggle [aria-checked='true'] {
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 0 0 0 1px var(--rule);
+}
+
+[data-dir='suizo'] .asof-toggle [disabled] {
+  color: var(--ink-3);
+}
+
+[data-dir='suizo'] .ficha-cols {
+  column-gap: 48px;
+}
+
+[data-dir='suizo'] .col.data,
+[data-dir='suizo'] .col.events {
+  border-top: 2px solid var(--ink);
+  padding-top: 14px;
+}
+
+[data-dir='suizo'] .locator {
+  margin-bottom: 12px;
+}
+
+[data-dir='suizo'] .locator .pin::before {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin: -5px;
+  background: var(--red);
+  border: 1.5px solid #fff;
+}
+
+[data-dir='suizo'] .event-list {
+  margin-top: 8px;
+  font-family: var(--font-long);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+[data-dir='suizo'] .event-list li {
+  padding: 3px 0;
+}
+
+[data-dir='suizo'] .event-list .year {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  padding-top: 2px;
+}
+
+[data-dir='suizo'] .event-list a {
+  text-decoration: none;
+}
+
+[data-dir='suizo'] .event-list .cause {
+  font-size: 13.5px;
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .event-list .por {
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--red);
+}
+
+[data-dir='suizo'] .ficha .why .waterfall {
+  display: inline-block;
+  width: calc(50% - 14px);
+  vertical-align: top;
+  margin-right: 24px;
+}
+
+[data-dir='suizo'] .ficha .why .waterfall:last-child {
+  margin-right: 0;
+}
+
+/* Atlas */
+[data-dir='suizo'] .neatline {
+  inset: 0;
+  border: 24px solid var(--white);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+[data-dir='suizo'] .cartouche {
+  left: 48px;
+  top: 48px;
+  width: 340px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+}
+
+[data-dir='suizo'] .cartouche h1 {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 2px 0 4px;
+  text-wrap: balance;
+}
+
+[data-dir='suizo'] .cartouche .sub {
+  font-family: var(--font-long);
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .cartouche .note {
+  margin-top: 10px;
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+
+[data-dir='suizo'] .readouts {
+  margin: 12px 0;
+  border-top: 1px solid var(--rule);
+}
+
+[data-dir='suizo'] .readouts > div {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+[data-dir='suizo'] .readouts dt {
+  color: var(--ink-3);
+}
+
+[data-dir='suizo'] .readouts dd {
+  font-weight: 600;
+}
+
+[data-dir='suizo'] .readouts dd span {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+[data-dir='suizo'] .scalebar {
+  margin: 12px 0;
+  font-size: 11px;
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .scalebar .ruler {
+  height: 5px;
+  border: 1px solid var(--ink);
+}
+
+[data-dir='suizo'] .scalebar .ruler i:nth-child(odd) {
+  background: var(--ink);
+}
+
+/* Hoja */
+[data-dir='suizo'] .hoja h1 {
+  font-size: 60px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+[data-dir='suizo'] .hoja .tagline {
+  font-family: var(--font-long);
+  font-size: 22px;
+  color: var(--ink-2);
+}
+
+[data-dir='suizo'] .hoja h2 {
+  font-size: 15px;
+  font-weight: 700;
+  padding-top: 8px;
+  border-top: 2px solid var(--ink);
+}
+
+[data-dir='suizo'] .mock-links .btn {
+  border: 1.5px solid var(--ink);
+}
+
+[data-dir='suizo'] .t-text {
+  font-size: 18px;
+}
+
+[data-dir='suizo'] .t-long {
+  font-family: var(--font-long);
+  font-size: 19px;
+  line-height: 1.5;
+}
+
+[data-dir='suizo'] .t-realm {
+  letter-spacing: 0.2em;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+[data-dir='suizo'] .t-water {
+  font-family: var(--font-long);
+  font-style: italic;
+  font-size: 20px;
+  color: #3f6f97;
+}

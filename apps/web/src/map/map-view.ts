@@ -19,10 +19,12 @@ import {
   MapControls,
   normalizePose,
 } from './camera';
-import { CAMERA, LOD_BASE_DISTANCE, MAX_LAND_M, MEASURE, PALETTE, scaleForWidth } from './config';
+import { CAMERA, LOD_BASE_DISTANCE, MAX_LAND_M, MEASURE, scaleForWidth } from './config';
+import { LOOKS, type LookId, type MapLook } from './looks';
 import { RiverLayer, MarkerLayer } from './layers';
 import type { MapData } from './map-data';
 import {
+  atlasTerrainMaterial,
   createMapTextures,
   createMapUniforms,
   type MapTextures,
@@ -88,6 +90,7 @@ export interface MapViewOptions {
   readonly x: number | null;
   readonly z: number | null;
   readonly distance: number | null;
+  readonly look: LookId;
 }
 
 /** Niebla: lejos = fracción del plano lejano; cerca = múltiplo de la distancia, con tope (adim.). */
@@ -136,6 +139,7 @@ export class MapView {
   private readonly maxElevation: number;
   private readonly lodDistance: number;
   private exaggeration: number;
+  private readonly look: MapLook;
   private readonly abort = new AbortController();
 
   private pointer: { x: number; y: number } | null = null;
@@ -179,8 +183,11 @@ export class MapView {
     renderer.domElement.style.display = 'block';
     renderer.domElement.style.touchAction = 'none';
 
-    this.scene.background = new Color(PALETTE.sky);
-    this.fog = new Fog(PALETTE.sky, 100, this.limits.far);
+    this.look = LOOKS[options.look];
+    const [sr, sg, sb] = this.look.sky;
+    const sky = new Color(sr / 255, sg / 255, sb / 255).convertSRGBToLinear();
+    this.scene.background = sky;
+    this.fog = new Fog(sky, 100, this.limits.far);
     this.scene.fog = this.fog;
     this.camera = new PerspectiveCamera(
       CAMERA.fovDeg,
@@ -195,11 +202,17 @@ export class MapView {
     this.terrain = new Terrain(
       width,
       height,
-      terrainMaterial(this.textures, this.uniforms),
+      this.look.id === 'p1'
+        ? terrainMaterial(this.textures, this.uniforms)
+        : atlasTerrainMaterial(this.textures, this.uniforms, this.look),
       maxHeight,
     );
     this.scene.add(this.terrain.group);
-    this.rivers = new RiverLayer(data.rivers, width, riverMaterial(this.textures, this.uniforms));
+    this.rivers = new RiverLayer(
+      data.rivers,
+      width,
+      riverMaterial(this.textures, this.uniforms, this.look.id === 'p1' ? undefined : this.look),
+    );
     this.rivers.setMaxHeight(maxHeight, height);
     this.scene.add(this.rivers.group);
     this.settlements = new MarkerLayer(
@@ -352,6 +365,23 @@ export class MapView {
     });
   }
 
+  /**
+   * Punto de mundo (celdas; x con wrap) → píxeles CSS del canvas, sobre el relieve dibujado; null
+   * si queda detrás de la cámara. Lo usan las maquetas de P2.2 para ubicar rótulos y símbolos.
+   */
+  project(x: number, z: number): readonly [number, number] | null {
+    const { raster } = this.world;
+    const W = raster.width;
+    const nearX = x + Math.round((this.camera.position.x - x) / W) * W;
+    const y =
+      Math.max(sampleBilinear(raster.elevation, W, raster.height, x, z), 0) *
+      this.uniforms.heightScale.value;
+    const v = new Vector3(nearX, y, z).project(this.camera);
+    if (v.z > 1) return null;
+    const el = this.renderer.domElement;
+    return [((v.x + 1) / 2) * el.clientWidth, ((1 - v.y) / 2) * el.clientHeight];
+  }
+
   /** Celda y provincia bajo un punto de la pantalla (coordenadas de cliente). */
   pick(clientX: number, clientY: number): MapPick | null {
     const el = this.renderer.domElement;
@@ -436,9 +466,14 @@ export class MapView {
     const u = this.uniforms;
     u.heightScale.value = s.heightScale;
     u.shadeScale.value = s.shadeScale;
-    u.fillOpacity.value = s.fillOpacity;
+    // El look fija su propia opacidad de relleno (de cerca y de lejos) sobre el mismo zoom semántico.
+    const pol = this.look.political;
+    u.fillOpacity.value =
+      this.look.id === 'p1'
+        ? s.fillOpacity
+        : pol.fillNear + (pol.fillFar - pol.fillNear) * (1 - s.relief);
     u.provinceBorderAlpha.value = s.provinceBorderAlpha;
-    u.riverMinT.value = s.riverMinT;
+    u.riverMinT.value = Math.max(s.riverMinT, this.look.water.riverMinT);
     u.cameraX.value = cx;
     const viewHeightPx = Math.max(1, this.renderer.domElement.clientHeight);
     u.pxScale.value = (2 * Math.tan(CAMERA_FOV_RAD / 2)) / viewHeightPx;
