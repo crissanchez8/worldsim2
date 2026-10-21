@@ -1,0 +1,20 @@
+{
+  "name": "@ws/design",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Maquetas de las direcciones de diseño de P2.2 (D58), sobre renders reales del mapa",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit -p .",
+    "lint": "eslint --max-warnings=0 .",
+    "shoot": "node scripts/shoot-map.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
+    "vite": "catalog:"
+  }
+}

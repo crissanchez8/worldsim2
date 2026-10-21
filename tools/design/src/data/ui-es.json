@@ -1,0 +1,207 @@
+{
+  "k": 13000,
+  "url": "http://localhost:4176/mundo?seed=1&size=medium&map=continents&land=0.3&v=0.1.3",
+  "topBar": "Semilla 1 · Mediano · Continentes\n1000 d.C. · Edad moderna temprana\nResumen\nGuardar\nExportar\nCompartir\nCrear otro mundo\nes\nen",
+  "timeRow": "Pausa\n1×\n2×\n4×\nMáx.\n1000 d.C. · Edad moderna temprana\nsimulado hasta 1900 d.C.\n1,45 ms por año simulado",
+  "ticker": "Teletipo\n\n1000 d.C. Hoqos gobierna Yahala\n1000 d.C. Neu gobierna Waesaez\n1000 d.C. Muere Qadol a los 48 años\n1000 d.C. Muere Gaea a los 62 años\n1000 d.C. Termina la hambruna en provincia 400\n1000 d.C. Termina la hambruna en provincia 251\n999 d.C. Gaihuku gobierna Taife\n999 d.C. Yeiloqa gobierna Deinei\n999 d.C. Haeta gobierna Rajygu\n999 d.C. Muere Behelu a los 71 años\n999 d.C. Muere Oyei a los 60 años\n999 d.C. Muere Parramre a los 46 años\n999 d.C. Hambruna en provincia 400\n999 d.C. Hambruna en provincia 251\n999 d.C. Termina la hambruna en provincia 198\n998 d.C. Batalla en provincia 1305 entre Jaru y Tagune\n998 d.C. Termina la guerra entre Sujae y Towota\n997 d.C. Batalla en provincia 1273 entre Jaru y Tagune\n997 d.C. Batalla en provincia 1316 entre Sujae y Towota\n997 d.C. Viva gobierna Nitchi\n997 d.C. Yiye gobierna Nosmio\n997 d.C. Muere Nele a los 30 años\n997 d.C. Muere Baikfemai a los 40 años\n997 d.C. Termina la hambruna en provincia 1392\n997 d.C. Termina la hambruna en provincia 454\n997 d.C. Termina la hambruna en provincia 308\n996 d.C. Batalla en provincia 1316 entre Sujae y Towota\n996 d.C. Sayos gobierna Saepo\n996 d.C. Mumaga gobierna Vushuke\n996 d.C. Gaezu gobierna Naegopu",
+  "rail": "Modo de mapa\n\nPolítico\nBioma dominante\nUn color por provincia\nSin relleno\n\nLeyenda\n\nun color por estado\nsin color: sin dueño\npuntos: aldea → metrópolis",
+  "timeline": {
+    "bands": [
+      {
+        "from": 0,
+        "to": 6958,
+        "era": 0
+      },
+      {
+        "from": 6958,
+        "to": 9539,
+        "era": 1
+      },
+      {
+        "from": 9539,
+        "to": 11141,
+        "era": 2
+      },
+      {
+        "from": 11141,
+        "to": 12720,
+        "era": 3
+      },
+      {
+        "from": 12720,
+        "to": 13001,
+        "era": 4
+      }
+    ],
+    "markers": [
+      {
+        "k": 1854,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      },
+      {
+        "k": 6659,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      },
+      {
+        "k": 7147,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      },
+      {
+        "k": 7836,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      },
+      {
+        "k": 7964,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      },
+      {
+        "k": 8454,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      },
+      {
+        "k": 9205,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      },
+      {
+        "k": 10805,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      },
+      {
+        "k": 11012,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      },
+      {
+        "k": 11107,
+        "significance": 0.8125,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 11399,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      },
+      {
+        "k": 11411,
+        "significance": 0.8365,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 11433,
+        "significance": 0.8534999999999999,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 11563,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      },
+      {
+        "k": 11569,
+        "significance": 0.8200000000000001,
+        "type": "war.ended"
+      },
+      {
+        "k": 11657,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 11711,
+        "significance": 0.9924999999999999,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 11813,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 11887,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 11920,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 11937,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 11954,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 11957,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 12133,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 12140,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 12291,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 12297,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 12410,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      },
+      {
+        "k": 12622,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 12632,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 12632,
+        "significance": 1,
+        "type": "polity.collapsed"
+      },
+      {
+        "k": 12644,
+        "significance": 0.9,
+        "type": "innovation.invented"
+      }
+    ]
+  },
+  "endK": 13900,
+  "summary": "Semilla 1 · Mediano · Continentes\nResumen hasta 1895 d.C. (lo ya visto)\nVolver a la vista en vivo\nes\nen\nPoblación\n420.357.589\nEstados activos\n73 fundados: 256\nGuerras\n1016\nAsentamientos\n1256\nEra dominante\nEdad moderna temprana\nPoblación mundial\nCantidad de estados\nMayor estado (personas)\nEstadosAsentamientosCulturasPersonajesGuerras\nNombre\nFundación\nFin\nProvincias\nPoblación\nCapital\nAeai\n2579 a.C.\n1624 a.C.\n0\n0\n—\nAelshadu\n1877 a.C.\n1834 a.C.\n0\n0\n—\nAespaen\n3632 a.C.\n3628 a.C.\n0\n0\n—\nAevo\n2169 a.C.\n291 d.C.\n0\n0\n—\nAheis\n2356 a.C.\n2276 a.C.\n0\n0\n—\nAiat\n1752 a.C.\n1732 a.C.\n0\n0\n—\nAibuai\n2277 a.C.\n554 a.C.\n0\n0\n—\nAijahai\n907 a.C.\n869 a.C.\n0\n0\n—\nAinkur\n3012 a.C.\n—\n22\n9.279.460\nprovincia 580\nAiwi\n2779 a.C.\n1554 d.C.\n0\n0\n—\nAkkathai\n107 a.C.\n—\n3\n292.289\nprovincia 914\nAnnatha\n1578 a.C.\n1560 a.C.\n0\n0\n—\nAnu\n2462 a.C.\n2236 a.C.\n0\n0\n—\nApe\n483 a.C.\n400 a.C.\n0\n0\n—\nArhau\n1990 a.C.\n1965 a.C.\n0\n0\n—\nAuae\n590 a.C.\n554 a.C.\n0\n0\n—\nAubekak\n2845 a.C.\n297 d.C.\n0\n0\n—\nAuke\n2818 a.C.\n2439 a.C.\n0\n0\n—\nAwechon\n2954 a.C.\n2911 a.C.\n0\n0\n—\nBaie\n1973 a.C.\n1971 a.C.\n0\n0\n—\nBapempak\n2378 a.C.\n2123 a.C.\n0\n0\n—\nBatmairur\n1373 a.C.\n1276 a.C.\n0\n0\n—\nBogobo\n1750 a.C.\n1722 a.C.\n0\n0\n—\nBuopot\n1828 a.C.\n1728 a.C.\n0\n0\n—\nChachira\n1780 a.C.\n1754 a.C.\n0\n0\n—\nChetzozos\n2263 a.C.\n2241 a.C.\n0\n0\n—\n\n256 filas",
+  "polityName": "Mautu",
+  "polityUrl": "http://localhost:4176/mundo/resumen/polity/104?seed=1&size=medium&map=continents&land=0.3&v=0.1.3",
+  "polityPage": "Resumen\nEstado\nMautu\nVolver a la vista en vivo\nes\nen\n\nMostrar a la fecha (1000 d.C.) al final (solo con la corrida terminada)\n\nEstado\n\nMautu\n\na la fecha: 1000 d.C. · Edad moderna temprana\n\nFundación\n2278 a.C.\nFin\nactivo\nCapital\nprovincia 401\nProvincias\n41\nPoblación\n19.040.655\nGobernante\nJawai\nGobernantes\n+65 anterioresDupaHuamUmaiJaravaYataiyaRabuDaitaitaRaiaTaijuWubajaLauluUmuMairayaiAmaBahaBalamaiTaiyataWaiaRuyultaBailajaiAivaraLaiduAijaVavaMuhuVaimayuAmaivaiAbuRaipuAiaiDubapuYaludaUajaiMuyaUpaDaiaiMaluJubutaMujailpaJawai\nGuerras\nHarave (1751 a.C.)Harave (1704 a.C.)Harave (1384 a.C.)Aibuai (1017 a.C.)Aibuai (959 a.C.)Aibuai (833 a.C.)Aibuai (775 a.C.)Vatir (532 a.C.)Vatir (477 a.C.)Vatir (420 a.C.)Gissa (250 d.C.)Nitchi (762 d.C.)Nitchi (816 d.C.)\n\n¿Por qué? (estado exacto a la fecha)\n\nCalcular el porqué\n\nEventos (con sus causas)\n\n960 d.C. Jawai gobierna Mautu\n957 d.C. Mujailpa gobierna Mautu\n951 d.C. Jubuta gobierna Mautu\n930 d.C. Malu gobierna Mautu\n921 d.C. Daiai gobierna Mautu\n877 d.C. provincia 518 pasa de tierra libre a Mautu\n868 d.C. Upa gobierna Mautu\n831 d.C. Muya gobierna Mautu\n826 d.C. Termina la guerra entre Mautu y Nitchi\n826 d.C. Paz entre Mautu y Nitchi\npor: Termina la guerra entre Mautu y Nitchi\n825 d.C. Batalla en provincia 221 entre Mautu y Nitchi\n824 d.C. Batalla en provincia 479 entre Mautu y Nitchi\n823 d.C. Batalla en provincia 327 entre Mautu y Nitchi\n822 d.C. Batalla en provincia 427 entre Mautu y Nitchi\n821 d.C. Batalla en provincia 540 entre Mautu y Nitchi\n820 d.C. Batalla en provincia 260 entre Mautu y Nitchi\n820 d.C. provincia 260 pasa de Nitchi a Mautu\npor: Batalla en provincia 260 entre Mautu y Nitchi\n819 d.C. Batalla en provincia 366 entre Mautu y Nitchi\n818 d.C. Uajai gobierna Mautu\n818 d.C. Batalla en provincia 310 entre Mautu y Nitchi\n817 d.C. Batalla en provincia 540 entre Mautu y Nitchi\n816 d.C. Mautu declara la guerra a Nitchi\n816 d.C. Batalla en provincia 187 entre Mautu y Nitchi\n816 d.C. provincia 187 pasa de Nitchi a Mautu\npor: Batalla en provincia 187 entre Mautu y Nitchi\n787 d.C. Yaluda gobierna Mautu\n781 d.C. Dubapu gobierna Mautu\n768 d.C. Termina la guerra entre Mautu y Nitchi\n768 d.C. Paz entre Mautu y Nitchi\npor: Termina la guerra entre Mautu y Nitchi\n767 d.C. Batalla en provincia 540 entre Mautu y Nitchi\n766 d.C. Batalla en provincia 187 entre Mautu y Nitchi\n765 d.C. Batalla en provincia 453 entre Mautu y Nitchi\n764 d.C. Batalla en provincia 328 entre Mautu y Nitchi\n764 d.C. provincia 328 pasa de Nitchi a Mautu\npor: Batalla en provincia 328 entre Mautu y Nitchi\n763 d.C. Batalla en provincia 511 entre Mautu y Nitchi\n763 d.C. provincia 511 pasa de Nitchi a Mautu\npor: Batalla en provincia 511 entre Mautu y Nitchi\n762 d.C. Mautu declara la guerra a Nitchi\n762 d.C. Batalla en provincia 290 entre Mautu y Nitchi\n750 d.C. Aiai gobierna Mautu\n703 d.C. Raipu gobierna Mautu\n678 d.C. Abu gobierna Mautu\n664 d.C. Amaivai gobierna Mautu\n626 d.C. Vaimayu gobierna Mautu\n579 d.C. Muhu gobierna Mautu\n574 d.C. provincia 163 pasa de tierra libre a Mautu\n528 d.C. Vava gobierna Mautu\n498 d.C. Aija gobierna Mautu\n482 d.C. Laidu gobierna Mautu\n431 d.C. Aivara gobierna Mautu\n412 d.C. Bailajai gobierna Mautu\n358 d.C. Ruyulta gobierna Mautu\n310 d.C. Waia gobierna Mautu\n284 d.C. Taiyata gobierna Mautu\n256 d.C. Termina la guerra entre Mautu y Gissa\n256 d.C. Paz entre Mautu y Gissa\npor: Termina la guerra entre Mautu y Gissa\n255 d.C. Batalla en provincia 296 entre Mautu y Gissa\n254 d.C. Batalla en provincia 296 entre Mautu y Gissa\n253 d.C. Batalla en provincia 380 entre Mautu y Gissa\n252 d.C. Batalla en provincia 380 entre Mautu y Gissa\n251 d.C. Batalla en provincia 380 entre Mautu y Gissa\n250 d.C. Mautu declara la guerra a Gissa\n250 d.C. Batalla en provincia 296 entre Mautu y Gissa\n236 d.C. Balamai gobierna Mautu\n199 d.C. Baha gobierna Mautu\n164 d.C. Ama gobierna Mautu\n125 d.C. Mairayai gobierna Mautu\n92 d.C. Umu gobierna Mautu\n30 d.C. Laulu gobierna Mautu\n16 d.C. Wubaja gobierna Mautu\n7 d.C. Taiju gobierna Mautu\n19 a.C. Raia gobierna Mautu\n33 a.C. Daitaita gobierna Mautu\n35 a.C. Rabu gobierna Mautu\n38 a.C. Yataiya gobierna Mautu\n86 a.C. Jarava gobierna Mautu\n155 a.C. Umai gobierna Mautu\n184 a.C. Huam gobierna Mautu\n242 a.C. provincia 480 pasa de tierra libre a Mautu\n246 a.C. Dupa gobierna Mautu\n261 a.C. Aiu gobierna Mautu\n299 a.C. Luhai gobierna Mautu\n334 a.C. provincia 493 pasa de tierra libre a Mautu\n341 a.C. Baira gobierna Mautu\n362 a.C. Turu gobierna Mautu\n400 a.C. provincia 530 pasa de tierra libre a Mautu\n402 a.C. provincia 489 pasa de tierra libre a Mautu\n412 a.C. Uwaia gobierna Mautu\n414 a.C. Termina la guerra entre Mautu y Vatir\n414 a.C. Paz entre Mautu y Vatir\npor: Termina la guerra entre Mautu y Vatir\n415 a.C. Batalla en provincia 300 entre Mautu y Vatir\n415 a.C. provincia 300 pasa de Vatir a Mautu\npor: Batalla en provincia 300 entre Mautu y Vatir\n416 a.C. Batalla en provincia 294 entre Mautu y Vatir\n416 a.C. provincia 294 pasa de Vatir a Mautu\npor: Batalla en provincia 294 entre Mautu y Vatir\n417 a.C. Batalla en provincia 300 entre Mautu y Vatir\n418 a.C. Batalla en provincia 392 entre Mautu y Vatir\n418 a.C. provincia 392 pasa de Vatir a Mautu\npor: Batalla en provincia 392 entre Mautu y Vatir\n419 a.C. Batalla en provincia 231 entre Mautu y Vatir\n419 a.C. provincia 231 pasa de Vatir a Mautu\npor: Batalla en provincia 231 entre Mautu y Vatir\n420 a.C. Mautu declara la guerra a Vatir\n420 a.C. Batalla en provincia 392 entre Mautu y Vatir\n449 a.C. Vahaiu gobierna Mautu\n473 a.C. Termina la guerra entre Mautu y Vatir\n473 a.C. Paz entre Mautu y Vatir\npor: Termina la guerra entre Mautu y Vatir\n474 a.C. Batalla en provincia 351 entre Mautu y Vatir\n474 a.C. provincia 351 pasa de Vatir a Mautu\npor: Batalla en provincia 351 entre Mautu y Vatir\n475 a.C. Batalla en provincia 444 entre Mautu y Vatir\n475 a.C. provincia 444 pasa de Vatir a Mautu\npor: Batalla en provincia 444 entre Mautu y Vatir\n476 a.C. Batalla en provincia 411 entre Mautu y Vatir\n476 a.C. provincia 411 pasa de Vatir a Mautu\npor: Batalla en provincia 411 entre Mautu y Vatir\n477 a.C. Mautu declara la guerra a Vatir\n477 a.C. Batalla en provincia 220 entre Mautu y Vatir\n477 a.C. provincia 220 pasa de Vatir a Mautu\npor: Batalla en provincia 220 entre Mautu y Vatir\n488 a.C. Udaiu gobierna Mautu\n526 a.C. Vada gobierna Mautu\n526 a.C. Termina la guerra entre Mautu y Vatir\n526 a.C. Paz entre Mautu y Vatir\npor: Termina la guerra entre Mautu y Vatir\n527 a.C. Batalla en provincia 220 entre Mautu y Vatir\n528 a.C. Batalla en provincia 411 entre Mautu y Vatir\n529 a.C. Batalla en provincia 351 entre Mautu y Vatir\n530 a.C. Batalla en provincia 220 entre Mautu y Vatir\n531 a.C. Batalla en provincia 220 entre Mautu y Vatir\n532 a.C. Mautu declara la guerra a Vatir\n532 a.C. Batalla en provincia 220 entre Mautu y Vatir\n554 a.C. Aibuai se integra a Mautu\n554 a.C. provincia 338 pasa de Aibuai a Mautu\npor: Aibuai se integra a Mautu\n554 a.C. provincia 486 pasa de Aibuai a Mautu\npor: Aibuai se integra a Mautu\n589 a.C. Uvai gobierna Mautu\n619 a.C. Paipumai gobierna Mautu\n663 a.C. Taima gobierna Mautu\n709 a.C. Hawuvai gobierna Mautu\n732 a.C. Daiaya gobierna Mautu\n767 a.C. Termina la guerra entre Mautu y Aibuai\n767 a.C. Paz entre Mautu y Aibuai\npor: Termina la guerra entre Mautu y Aibuai\n768 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n769 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n770 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n771 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n772 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n773 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n774 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n775 a.C. Mautu declara la guerra a Aibuai\n775 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n786 a.C. Wupa gobierna Mautu\n809 a.C. Wuhaimai gobierna Mautu\n825 a.C. Termina la guerra entre Mautu y Aibuai\n825 a.C. Paz entre Mautu y Aibuai\npor: Termina la guerra entre Mautu y Aibuai\n826 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n827 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n828 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n829 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n830 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n831 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n832 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n833 a.C. Mautu declara la guerra a Aibuai\n833 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n844 a.C. Jawaitmai gobierna Mautu\n869 a.C. Aijahai se integra a Mautu\n869 a.C. provincia 443 pasa de Aijahai a Mautu\npor: Aijahai se integra a Mautu\n889 a.C. Yuyail gobierna Mautu\n910 a.C. Aidajai gobierna Mautu\n951 a.C. Termina la guerra entre Mautu y Aibuai\n951 a.C. Paz entre Mautu y Aibuai\npor: Termina la guerra entre Mautu y Aibuai\n952 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n953 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n954 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n955 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n956 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n957 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n958 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n959 a.C. Mautu declara la guerra a Aibuai\n959 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n971 a.C. Juyaivai gobierna Mautu\n980 a.C. Vuru gobierna Mautu\n1006 a.C. Palahai gobierna Mautu\n1013 a.C. Termina la guerra entre Mautu y Aibuai\n1013 a.C. Paz entre Mautu y Aibuai\npor: Termina la guerra entre Mautu y Aibuai\n1014 a.C. Batalla en provincia 431 entre Mautu y Aibuai\n1014 a.C. provincia 431 pasa de Aibuai a Mautu\npor: Batalla en provincia 431 entre Mautu y Aibuai\n1015 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n1016 a.C. Batalla en provincia 361 entre Mautu y Aibuai\n1016 a.C. provincia 361 pasa de Aibuai a Mautu\npor: Batalla en provincia 361 entre Mautu y Aibuai\n1017 a.C. Mautu declara la guerra a Aibuai\n1017 a.C. Batalla en provincia 407 entre Mautu y Aibuai\n1017 a.C. provincia 407 pasa de Aibuai a Mautu\npor: Batalla en provincia 407 entre Mautu y Aibuai\n1063 a.C. Yaipaiyu gobierna Mautu\n1077 a.C. Uyu gobierna Mautu\n1111 a.C. Uhau gobierna Mautu\n1123 a.C. Paiai gobierna Mautu\n1165 a.C. Daidua gobierna Mautu\n1166 a.C. Ruahu gobierna Mautu\n1195 a.C. Bairaijai gobierna Mautu\n1232 a.C. Buma gobierna Mautu\n1276 a.C. Batmairur se integra a Mautu\n1276 a.C. provincia 460 pasa de Batmairur a Mautu\npor: Batmairur se integra a Mautu\n1286 a.C. Ayahu gobierna Mautu\n1300 a.C. Rahaimai gobierna Mautu\n1324 a.C. Puai gobierna Mautu\n1378 a.C. Termina la guerra entre Mautu y Harave\n1378 a.C. Paz entre Mautu y Harave\npor: Termina la guerra entre Mautu y Harave\n1379 a.C. Batalla en provincia 220 entre Mautu y Harave\n1380 a.C. Batalla en provincia 294 entre Mautu y Harave",
+  "polityPageWhy": "Resumen\nEstado\nMautu\nVolver a la vista en vivo\nes\nen\n\nMostrar a la fecha (1000 d.C.) al final (solo con la corrida terminada)\n\nEstado\n\nMautu\n\na la fecha: 1000 d.C. · Edad moderna temprana\n\nFundación\n2278 a.C.\nFin\nactivo\nCapital\nprovincia 401\nProvincias\n41\nPoblación\n19.040.655\nGobernante\nJawai\nGobernantes\n+65 anterioresDupaHuamUmaiJaravaYataiyaRabuDaitaitaRaiaTaijuWubajaLauluUmuMairayaiAmaBahaBalamaiTaiyataWaiaRuyultaBailajaiAivaraLaiduAijaVavaMuhuVaimayuAmaivaiAbuRaipuAiaiDubapuYaludaUajaiMuyaUpaDaiaiMaluJubutaMujailpaJawai\nGuerras\nHarave (1751 a.C.)Harave (1704 a.C.)Harave (1384 a.C.)Aibuai (1017 a.C.)Aibuai (959 a.C.)Aibuai (833 a.C.)Aibuai (775 a.C.)Vatir (532 a.C.)Vatir (477 a.C.)Vatir (420 a.C.)Gissa (250 d.C.)Nitchi (762 d.C.)Nitchi (816 d.C.)\n\n¿Por qué? (estado exacto a la fecha)\n\ncalculado para 1000 d.C. en 55 ms\n\nProvincias\n41\nPoblación\n19.039.978\nGobernante\nJawai\nHeredero\nPubuyai\nFuerza militar 566.325 puntos\nbase 190.400\n1.1 Metalurgia del cobre\n1.3 Bronce\n1.3 Hierro\n1.6 Pólvora\nAlcance administrativo 100 días\nbase 25\n10 Rueda\n25 Escritura\n20 Moneda acuñada\n20 Pólvora\n\nEventos (con sus causas)\n\n960 d.C. Jawai gobierna Mautu\n957 d.C. Mujailpa gobierna Mautu\n951 d.C. Jubuta gobierna Mautu\n930 d.C. Malu gobierna Mautu\n921 d.C. Daiai gobierna Mautu\n877 d.C. provincia 518 pasa de tierra libre a Mautu\n868 d.C. Upa gobierna Mautu\n831 d.C. Muya gobierna Mautu\n826 d.C. Termina la guerra entre Mautu y Nitchi\n826 d.C. Paz entre Mautu y Nitchi\npor: Termina la guerra entre Mautu y Nitchi\n825 d.C. Batalla en provincia 221 entre Mautu y Nitchi\n824 d.C. Batalla en provincia 479 entre Mautu y Nitchi\n823 d.C. Batalla en provincia 327 entre Mautu y Nitchi\n822 d.C. Batalla en provincia 427 entre Mautu y Nitchi\n821 d.C. Batalla en provincia 540 entre Mautu y Nitchi\n820 d.C. Batalla en provincia 260 entre Mautu y Nitchi\n820 d.C. provincia 260 pasa de Nitchi a Mautu\npor: Batalla en provincia 260 entre Mautu y Nitchi\n819 d.C. Batalla en provincia 366 entre Mautu y Nitchi\n818 d.C. Uajai gobierna Mautu\n818 d.C. Batalla en provincia 310 entre Mautu y Nitchi\n817 d.C. Batalla en provincia 540 entre Mautu y Nitchi\n816 d.C. Mautu declara la guerra a Nitchi\n816 d.C. Batalla en provincia 187 entre Mautu y Nitchi\n816 d.C. provincia 187 pasa de Nitchi a Mautu\npor: Batalla en provincia 187 entre Mautu y Nitchi\n787 d.C. Yaluda gobierna Mautu\n781 d.C. Dubapu gobierna Mautu\n768 d.C. Termina la guerra entre Mautu y Nitchi\n768 d.C. Paz entre Mautu y Nitchi\npor: Termina la guerra entre Mautu y Nitchi\n767 d.C. Batalla en provincia 540 entre Mautu y Nitchi\n766 d.C. Batalla en provincia 187 entre Mautu y Nitchi\n765 d.C. Batalla en provincia 453 entre Mautu y Nitchi\n764 d.C. Batalla en provincia 328 entre Mautu y Nitchi\n764 d.C. provincia 328 pasa de Nitchi a Mautu\npor: Batalla en provincia 328 entre Mautu y Nitchi\n763 d.C. Batalla en provincia 511 entre Mautu y Nitchi\n763 d.C. provincia 511 pasa de Nitchi a Mautu\npor: Batalla en provincia 511 entre Mautu y Nitchi\n762 d.C. Mautu declara la guerra a Nitchi\n762 d.C. Batalla en provincia 290 entre Mautu y Nitchi\n750 d.C. Aiai gobierna Mautu\n703 d.C. Raipu gobierna Mautu\n678 d.C. Abu gobierna Mautu\n664 d.C. Amaivai gobierna Mautu\n626 d.C. Vaimayu gobierna Mautu\n579 d.C. Muhu gobierna Mautu\n574 d.C. provincia 163 pasa de tierra libre a Mautu\n528 d.C. Vava gobierna Mautu\n498 d.C. Aija gobierna Mautu\n482 d.C. Laidu gobierna Mautu\n431 d.C. Aivara gobierna Mautu\n412 d.C. Bailajai gobierna Mautu\n358 d.C. Ruyulta gobierna Mautu\n310 d.C. Waia gobierna Mautu\n284 d.C. Taiyata gobierna Mautu\n256 d.C. Termina la guerra entre Mautu y Gissa\n256 d.C. Paz entre Mautu y Gissa\npor: Termina la guerra entre Mautu y Gissa\n255 d.C. Batalla en provincia 296 entre Mautu y Gissa\n254 d.C. Batalla en provincia 296 entre Mautu y Gissa\n253 d.C. Batalla en provincia 380 entre Mautu y Gissa\n252 d.C. Batalla en provincia 380 entre Mautu y Gissa\n251 d.C. Batalla en provincia 380 entre Mautu y Gissa\n250 d.C. Mautu declara la guerra a Gissa\n250 d.C. Batalla en provincia 296 entre Mautu y Gissa\n236 d.C. Balamai gobierna Mautu\n199 d.C. Baha gobierna Mautu\n164 d.C. Ama gobierna Mautu\n125 d.C. Mairayai gobierna Mautu\n92 d.C. Umu gobierna Mautu\n30 d.C. Laulu gobierna Mautu\n16 d.C. Wubaja gobierna Mautu\n7 d.C. Taiju gobierna Mautu\n19 a.C. Raia gobierna Mautu\n33 a.C. Daitaita gobierna Mautu\n35 a.C. Rabu gobierna Mautu\n38 a.C. Yataiya gobierna Mautu\n86 a.C. Jarava gobierna Mautu\n155 a.C. Umai gobierna Mautu\n184 a.C. Huam gobierna Mautu\n242 a.C. provincia 480 pasa de tierra libre a Mautu\n246 a.C. Dupa gobierna Mautu\n261 a.C. Aiu gobierna Mautu\n299 a.C. Luhai gobierna Mautu\n334 a.C. provincia 493 pasa de tierra libre a Mautu\n341 a.C. Baira gobierna Mautu\n362 a.C. Turu gobierna Mautu\n400 a.C. provincia 530 pasa de tierra libre a Mautu\n402 a.C. provincia 489 pasa de tierra libre a Mautu\n412 a.C. Uwaia gobierna Mautu\n414 a.C. Termina la guerra entre Mautu y Vatir\n414 a.C. Paz entre Mautu y Vatir\npor: Termina la guerra entre Mautu y Vatir\n415 a.C. Batalla en provincia 300 entre Mautu y Vatir\n415 a.C. provincia 300 pasa de Vatir a Mautu\npor: Batalla en provincia 300 entre Mautu y Vatir\n416 a.C. Batalla en provincia 294 entre Mautu y Vatir\n416 a.C. provincia 294 pasa de Vatir a Mautu\npor: Batalla en provincia 294 entre Mautu y Vatir\n417 a.C. Batalla en provincia 300 entre Mautu y Vatir\n418 a.C. Batalla en provincia 392 entre Mautu y Vatir\n418 a.C. provincia 392 pasa de Vatir a Mautu\npor: Batalla en provincia 392 entre Mautu y Vatir\n419 a.C. Batalla en provincia 231 entre Mautu y Vatir\n419 a.C. provincia 231 pasa de Vatir a Mautu\npor: Batalla en provincia 231 entre Mautu y Vatir\n420 a.C. Mautu declara la guerra a Vatir\n420 a.C. Batalla en provincia 392 entre Mautu y Vatir\n449 a.C. Vahaiu gobierna Mautu\n473 a.C. Termina la guerra entre Mautu y Vatir\n473 a.C. Paz entre Mautu y Vatir\npor: Termina la guerra entre Mautu y Vatir\n474 a.C. Batalla en provincia 351 entre Mautu y Vatir\n474 a.C. provincia 351 pasa de Vatir a Mautu\npor: Batalla en provincia 351 entre Mautu y Vatir\n475 a.C. Batalla en provincia 444 entre Mautu y Vatir\n475 a.C. provincia 444 pasa de Vatir a Mautu\npor: Batalla en provincia 444 entre Mautu y Vatir\n476 a.C. Batalla en provincia 411 entre Mautu y Vatir\n476 a.C. provincia 411 pasa de Vatir a Mautu\npor: Batalla en provincia 411 entre Mautu y Vatir\n477 a.C. Mautu declara la guerra a Vatir\n477 a.C. Batalla en provincia 220 entre Mautu y Vatir\n477 a.C. provincia 220 pasa de Vatir a Mautu\npor: Batalla en provincia 220 entre Mautu y Vatir\n488 a.C. Udaiu gobierna Mautu\n526 a.C. Vada gobierna Mautu\n526 a.C. Termina la guerra entre Mautu y Vatir\n526 a.C. Paz entre Mautu y Vatir\npor: Termina la guerra entre Mautu y Vatir\n527 a.C. Batalla en provincia 220 entre Mautu y Vatir\n528 a.C. Batalla en provincia 411 entre Mautu y Vatir\n529 a.C. Batalla en provincia 351 entre Mautu y Vatir\n530 a.C. Batalla en provincia 220 entre Mautu y Vatir\n531 a.C. Batalla en provincia 220 entre Mautu y Vatir\n532 a.C. Mautu declara la guerra a Vatir\n532 a.C. Batalla en provincia 220 entre Mautu y Vatir\n554 a.C. Aibuai se integra a Mautu\n554 a.C. provincia 338 pasa de Aibuai a Mautu\npor: Aibuai se integra a Mautu\n554 a.C. provincia 486 pasa de Aibuai a Mautu\npor: Aibuai se integra a Mautu\n589 a.C. Uvai gobierna Mautu\n619 a.C. Paipumai gobierna Mautu\n663 a.C. Taima gobierna Mautu\n709 a.C. Hawuvai gobierna Mautu\n732 a.C. Daiaya gobierna Mautu\n767 a.C. Termina la guerra entre Mautu y Aibuai\n767 a.C. Paz entre Mautu y Aibuai\npor: Termina la guerra entre Mautu y Aibuai\n768 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n769 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n770 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n771 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n772 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n773 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n774 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n775 a.C. Mautu declara la guerra a Aibuai\n775 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n786 a.C. Wupa gobierna Mautu\n809 a.C. Wuhaimai gobierna Mautu\n825 a.C. Termina la guerra entre Mautu y Aibuai\n825 a.C. Paz entre Mautu y Aibuai\npor: Termina la guerra entre Mautu y Aibuai\n826 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n827 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n828 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n829 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n830 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n831 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n832 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n833 a.C. Mautu declara la guerra a Aibuai\n833 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n844 a.C. Jawaitmai gobierna Mautu\n869 a.C. Aijahai se integra a Mautu\n869 a.C. provincia 443 pasa de Aijahai a Mautu\npor: Aijahai se integra a Mautu\n889 a.C. Yuyail gobierna Mautu\n910 a.C. Aidajai gobierna Mautu\n951 a.C. Termina la guerra entre Mautu y Aibuai\n951 a.C. Paz entre Mautu y Aibuai\npor: Termina la guerra entre Mautu y Aibuai\n952 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n953 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n954 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n955 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n956 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n957 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n958 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n959 a.C. Mautu declara la guerra a Aibuai\n959 a.C. Batalla en provincia 450 entre Mautu y Aibuai\n971 a.C. Juyaivai gobierna Mautu\n980 a.C. Vuru gobierna Mautu\n1006 a.C. Palahai gobierna Mautu\n1013 a.C. Termina la guerra entre Mautu y Aibuai\n1013 a.C. Paz entre Mautu y Aibuai\npor: Termina la guerra entre Mautu y Aibuai\n1014 a.C. Batalla en provincia 431 entre Mautu y Aibuai\n1014 a.C. provincia 431 pasa de Aibuai a Mautu\npor: Batalla en provincia 431 entre Mautu y Aibuai\n1015 a.C. Batalla en provincia 402 entre Mautu y Aibuai\n1016 a.C. Batalla en provincia 361 entre Mautu y Aibuai\n1016 a.C. provincia 361 pasa de Aibuai a Mautu\npor: Batalla en provincia 361 entre Mautu y Aibuai\n1017 a.C. Mautu declara la guerra a Aibuai\n1017 a.C. Batalla en provincia 407 entre Mautu y Aibuai\n1017 a.C. provincia 407 pasa de Aibuai a Mautu\npor: Batalla en provincia 407 entre Mautu y Aibuai\n1063 a.C. Yaipaiyu gobierna Mautu\n1077 a.C. Uyu gobierna Mautu\n1111 a.C. Uhau gobierna Mautu\n1123 a.C. Paiai gobierna Mautu\n1165 a.C. Daidua gobierna Mautu\n1166 a.C. Ruahu gobierna Mautu\n1195 a.C. Bairaijai gobierna Mautu\n1232 a.C. Buma gobierna Mautu\n1276 a.C. Batmairur se integra a Mautu\n1276 a.C. provincia 460 pasa de Batmairur a Mautu\npor: Batmairur se integra a Mautu\n1286 a.C. Ayahu gobierna Mautu\n1300 a.C. Rahaimai gobierna Mautu\n1324 a.C. Puai gobierna Mautu\n1378 a.C. Termina la guerra entre Mautu y Harave\n1378 a.C. Paz entre Mautu y Harave\npor: Termina la guerra entre Mautu y Harave\n1379 a.C. Batalla en provincia 220 entre Mautu y Harave\n1380 a.C. Batalla en provincia 294 entre Mautu y Harave",
+  "provincePage": "Resumen\nProvincia\nprovincia 401\nVolver a la vista en vivo\nes\nen\n\nMostrar a la fecha (1000 d.C.) al final (solo con la corrida terminada)\n\nProvincia\n\nprovincia 401\n\na la fecha: 1000 d.C. · Edad moderna temprana\n\nDueño\nMautu\nAsentamiento\nMaimaiGran ciudad\nPoblación\n846.885urbana 16,1 %\nCultura mayoritaria\nHaimair\nConoce\nAgriculturaPastoreoCerámicaRuedaMetalurgia del cobreAradoEscrituraBronceHierroMoneda acuñadaRotación de cultivosImprentaPólvora\n\n¿Por qué? (estado exacto a la fecha)\n\nCalcular el porqué\n\nEventos (con sus causas)\n\n644 d.C. Imprenta surge en provincia 401\n637 d.C. Maimai crece: ahora es gran ciudad\n510 d.C. Termina la hambruna en provincia 401\n509 d.C. Hambruna en provincia 401\n166 d.C. Termina la hambruna en provincia 401\n165 d.C. Hambruna en provincia 401\n850 a.C. Maimai crece: ahora es ciudad\n1149 a.C. Termina la hambruna en provincia 401\n1368 a.C. Termina la hambruna en provincia 401\n2278 a.C. Nace Mautu en provincia 401\n2278 a.C. provincia 401 pasa de tierra libre a Mautu\npor: Nace Mautu en provincia 401\n2692 a.C. Maimai crece: ahora es pueblo\n2812 a.C. Termina la hambruna en provincia 401\n3148 a.C. Se funda Maimai en provincia 401\n3406 a.C. En provincia 401 la agricultura ya alimenta a la mayoría",
+  "provincePageWhy": "Resumen\nProvincia\nprovincia 401\nVolver a la vista en vivo\nes\nen\n\nMostrar a la fecha (1000 d.C.) al final (solo con la corrida terminada)\n\nProvincia\n\nprovincia 401\n\na la fecha: 1000 d.C. · Edad moderna temprana\n\nDueño\nMautu\nAsentamiento\nMaimaiGran ciudad\nPoblación\n846.885urbana 16,1 %\nCultura mayoritaria\nHaimair\nConoce\nAgriculturaPastoreoCerámicaRuedaMetalurgia del cobreAradoEscrituraBronceHierroMoneda acuñadaRotación de cultivosImprentaPólvora\n\n¿Por qué? (estado exacto a la fecha)\n\ncalculado para 1000 d.C. en 0 ms\n\nTierra cultivada\n94,4 %\nAlimento / necesidad\n100 %\nPoblación por cultura\nHaimair 846.897\nRendimiento del cultivo 3,12 t por km² y año\nbase 0,8\n1.1 Cerámica\n1.5 Arado\n1.05 Bronce\n1.25 Hierro\n1.8 Rotación de cultivos\nRendimiento del forrajeo 0,04 t por km² y año\nbase 0,03\n1.6 Pastoreo\nTierra cultivable alcanzable 100 % proporción\nbase 40 %\n20 % Arado\n20 % Hierro\n20 % Rotación de cultivos\nDifusión del conocimiento 0,019 por año\nbase 0,006\n1.2 Rueda\n1.5 Escritura\n1.2 Moneda acuñada\n1.5 Imprenta\nFracción urbana base 8 % proporción\nbase 3 %\n2 % Escritura\n1 % Moneda acuñada\n2 % Imprenta\n\nEventos (con sus causas)\n\n644 d.C. Imprenta surge en provincia 401\n637 d.C. Maimai crece: ahora es gran ciudad\n510 d.C. Termina la hambruna en provincia 401\n509 d.C. Hambruna en provincia 401\n166 d.C. Termina la hambruna en provincia 401\n165 d.C. Hambruna en provincia 401\n850 a.C. Maimai crece: ahora es ciudad\n1149 a.C. Termina la hambruna en provincia 401\n1368 a.C. Termina la hambruna en provincia 401\n2278 a.C. Nace Mautu en provincia 401\n2278 a.C. provincia 401 pasa de tierra libre a Mautu\npor: Nace Mautu en provincia 401\n2692 a.C. Maimai crece: ahora es pueblo\n2812 a.C. Termina la hambruna en provincia 401\n3148 a.C. Se funda Maimai en provincia 401\n3406 a.C. En provincia 401 la agricultura ya alimenta a la mayoría"
+}

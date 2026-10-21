@@ -16,6 +16,8 @@ export const SCOPES = [
   'chronicle',
   'i18n',
   'ui',
+  // Maquetas y exploración de diseño (tools/design, P2).
+  'design',
   'web',
   'cli',
   'spikes',

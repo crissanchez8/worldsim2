@@ -1,0 +1,621 @@
+/* A · Grabado: atlas grabado de 1780 recién impreso. Papel blanco, tinta ferrogálica, filetes
+   dobles de mapa (marco), versalitas espaciadas para títulos y rótulos, cursiva para el agua y las
+   notas, rúbrica en bermellón para lo actual. Sin texturas de papel ni ornamento. */
+
+[data-dir='grabado'] {
+  --bg: var(--paper);
+  --surface: var(--paper);
+  --fg: var(--ink);
+  --fg2: var(--ink-2);
+  --fg3: var(--ink-3);
+  --line: rgb(43 38 32 / 0.28);
+  --accent: var(--rubric);
+  --font-ui: 'Libre Caslon Text', 'Iowan Old Style', Georgia, serif;
+  --font-num: 'Libre Caslon Text', Georgia, serif;
+  --font-long: 'Libre Caslon Text', Georgia, serif;
+  --font-display: 'Libre Caslon Display', 'Libre Caslon Text', serif;
+  --icon-stroke: 1.25;
+  --icon-cap: square;
+  --icon-join: miter;
+  --sep: '  ·  ';
+  --crumb: '  ›  ';
+  --halo: 0 0 2px var(--paper), 0 0 2px var(--paper), 0 0 3px var(--paper);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* Marco de mapa: filete grueso afuera, fino adentro. */
+[data-dir='grabado'] :is(.rail, .inspector, .cartouche) {
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  box-shadow:
+    inset 0 0 0 3px var(--paper),
+    inset 0 0 0 3.75px var(--ink);
+  padding: 14px 16px;
+}
+
+[data-dir='grabado'] .panel-title,
+[data-dir='grabado'] .section-title,
+[data-dir='grabado'] .why-title,
+[data-dir='grabado'] .col-title,
+[data-dir='grabado'] .kicker {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+[data-dir='grabado'] .section-title {
+  margin: 14px 0 4px;
+  padding-top: 8px;
+  border-top: 0.75px solid var(--line);
+}
+
+[data-dir='grabado'] .section-title .count,
+[data-dir='grabado'] .why-title span,
+[data-dir='grabado'] .col-title span {
+  letter-spacing: 0;
+  text-transform: none;
+  font-style: italic;
+  color: var(--ink-3);
+}
+
+/* Barra superior: título a la izquierda, fecha grabada al centro, acciones en texto. */
+[data-dir='grabado'] .topbar {
+  background: var(--paper);
+  border-bottom: 3px double var(--ink);
+}
+
+[data-dir='grabado'] .world-name {
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+[data-dir='grabado'] .world-params {
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+[data-dir='grabado'] .date .year {
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 1;
+  font-variant-numeric: oldstyle-nums;
+  color: var(--rubric);
+}
+
+[data-dir='grabado'] .date .era {
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+[data-dir='grabado'] .btn {
+  color: var(--ink);
+  padding: 4px 2px;
+}
+
+[data-dir='grabado'] .actions .btn span {
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 3px;
+}
+
+[data-dir='grabado'] .lang button {
+  padding: 2px 6px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+[data-dir='grabado'] .lang button + button {
+  border-left: 0.75px solid var(--ink);
+}
+
+[data-dir='grabado'] .lang [aria-pressed='true'] {
+  color: var(--rubric);
+}
+
+/* Riel */
+[data-dir='grabado'] .modes {
+  margin: 8px 0 14px;
+}
+
+[data-dir='grabado'] .mode {
+  padding: 4px 0;
+  color: var(--ink-2);
+}
+
+[data-dir='grabado'] .mode .dot {
+  width: 18px;
+  text-align: center;
+}
+
+[data-dir='grabado'] .mode .dot::before {
+  content: '○';
+}
+
+[data-dir='grabado'] .mode[aria-checked='true'] {
+  color: var(--ink);
+  font-style: italic;
+}
+
+[data-dir='grabado'] .legend {
+  margin-top: 8px;
+  display: grid;
+  gap: 5px;
+  font-size: 13px;
+}
+
+[data-dir='grabado'] .legend .sw {
+  opacity: 0.75;
+}
+
+[data-dir='grabado'] .sw.none {
+  border: 0.75px solid var(--ink);
+  background: var(--paper);
+}
+
+/* Inspector y ficha */
+[data-dir='grabado'] .panel-bar {
+  margin: -4px 0 10px;
+}
+
+[data-dir='grabado'] .panel-bar .btn {
+  font-size: 13px;
+}
+
+[data-dir='grabado'] .kind {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+[data-dir='grabado'] .entity-name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.05;
+}
+
+[data-dir='grabado'] .asof {
+  font-style: italic;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+[data-dir='grabado'] .facts {
+  margin-top: 12px;
+  row-gap: 2px;
+}
+
+[data-dir='grabado'] .facts dt {
+  font-style: italic;
+  color: var(--ink-3);
+}
+
+[data-dir='grabado'] .facts .note {
+  font-style: italic;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+[data-dir='grabado'] a {
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 2px;
+}
+
+[data-dir='grabado'] .more {
+  font-style: italic;
+  color: var(--ink-3);
+}
+
+[data-dir='grabado'] .why-btn {
+  margin-top: 14px;
+  padding: 5px 10px;
+  border: 0.75px solid var(--ink);
+}
+
+[data-dir='grabado'] .chip {
+  font-size: 12.5px;
+  font-style: italic;
+  text-decoration: none;
+}
+
+[data-dir='grabado'] .chip + .chip::before {
+  content: '·';
+  margin-right: 4px;
+  color: var(--ink-3);
+  font-style: normal;
+}
+
+/* Porqué: libro de cuentas. */
+[data-dir='grabado'] .why {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 3px double var(--ink);
+}
+
+[data-dir='grabado'] .computed {
+  font-style: italic;
+  font-size: 12px;
+  color: var(--ink-3);
+  margin: 2px 0 6px;
+}
+
+[data-dir='grabado'] .why .facts {
+  margin: 0 0 6px;
+  font-size: 13px;
+}
+
+[data-dir='grabado'] .ledger {
+  margin-top: 10px;
+}
+
+[data-dir='grabado'] .ledger h4 {
+  font-weight: 700;
+  font-size: 13.5px;
+}
+
+[data-dir='grabado'] .ledger li {
+  font-size: 13px;
+}
+
+[data-dir='grabado'] .ledger .base .lbl {
+  font-style: italic;
+  color: var(--ink-3);
+}
+
+[data-dir='grabado'] .ledger .op {
+  color: var(--rubric);
+  margin-right: 3px;
+}
+
+[data-dir='grabado'] .ledger .total {
+  margin-top: 2px;
+  font-weight: 700;
+}
+
+[data-dir='grabado'] .ledger .total .num {
+  border-bottom: 3px double var(--ink);
+}
+
+[data-dir='grabado'] .ledger .total .dots {
+  border: 0;
+}
+
+[data-dir='grabado'] .ledger .unit {
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink-3);
+}
+
+/* Barra de tiempo */
+[data-dir='grabado'] .bottom {
+  background: var(--paper);
+  border-top: 3px double var(--ink);
+  padding: 8px 16px 10px;
+  display: grid;
+  gap: 6px;
+}
+
+[data-dir='grabado'] .speeds button {
+  padding: 2px 9px;
+  font-size: 13px;
+  border: 0.75px solid var(--ink);
+  margin-left: -0.75px;
+}
+
+[data-dir='grabado'] .speeds [aria-checked='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+[data-dir='grabado'] .now .num {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-variant-numeric: oldstyle-nums;
+  color: var(--rubric);
+}
+
+[data-dir='grabado'] .now span + span {
+  margin-left: 6px;
+  font-style: italic;
+}
+
+[data-dir='grabado'] .head,
+[data-dir='grabado'] .perf {
+  font-style: italic;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+[data-dir='grabado'] .track {
+  border: 0.75px solid var(--ink);
+}
+
+[data-dir='grabado'] .band span {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+[data-dir='grabado'] .band + .band {
+  border-left: 0.75px solid var(--ink);
+}
+
+[data-dir='grabado'] .ahead {
+  background: var(--paper);
+  border-left: 0.75px dashed var(--ink);
+}
+
+[data-dir='grabado'] .marker {
+  width: 1px;
+  top: 55%;
+  background: var(--ink);
+}
+
+[data-dir='grabado'] .playhead {
+  width: 2px;
+  margin-left: -1px;
+  top: -4px;
+  bottom: -4px;
+  background: var(--rubric);
+}
+
+[data-dir='grabado'] .ticks {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--ink-3);
+}
+
+[data-dir='grabado'] .ticker {
+  column-gap: 32px;
+  font-size: 13px;
+}
+
+[data-dir='grabado'] .ticker .year {
+  font-variant-numeric: oldstyle-nums;
+  color: var(--ink-3);
+  width: 64px;
+}
+
+[data-dir='grabado'] .ticker a {
+  text-decoration: none;
+}
+
+/* Mapa */
+[data-dir='grabado'] .realm {
+  font-family: var(--font-ui);
+  letter-spacing: 0.34em;
+  color: var(--ink);
+  text-shadow: var(--halo);
+}
+
+[data-dir='grabado'] .realm.is-selected {
+  color: var(--rubric);
+}
+
+[data-dir='grabado'] .mname {
+  font-style: italic;
+  font-size: 12px;
+  text-shadow: var(--halo);
+}
+
+/* Ficha */
+[data-dir='grabado'] .topbar.page .crumbs {
+  font-style: italic;
+}
+
+[data-dir='grabado'] .ficha {
+  padding: 26px 40px 0;
+}
+
+[data-dir='grabado'] .ficha-head {
+  padding-bottom: 16px;
+  border-bottom: 3px double var(--ink);
+}
+
+[data-dir='grabado'] .ficha .entity-name {
+  font-size: 46px;
+}
+
+[data-dir='grabado'] .asof-toggle button {
+  padding: 4px 10px;
+  border: 0.75px solid var(--ink);
+  margin-left: -0.75px;
+  font-size: 13px;
+}
+
+[data-dir='grabado'] .asof-toggle [aria-checked='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+[data-dir='grabado'] .asof-toggle [disabled] {
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+[data-dir='grabado'] .ficha-cols {
+  column-gap: 40px;
+  padding-top: 18px;
+}
+
+[data-dir='grabado'] .locator {
+  border: 1.5px solid var(--ink);
+  box-shadow:
+    inset 0 0 0 3px var(--paper),
+    inset 0 0 0 3.75px var(--ink);
+  margin-bottom: 12px;
+}
+
+[data-dir='grabado'] .locator .pin::before {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin: -5px;
+  border: 1.5px solid var(--rubric);
+  border-radius: 50%;
+}
+
+[data-dir='grabado'] .col.events {
+  border-left: 0.75px solid var(--line);
+  padding-left: 32px;
+}
+
+[data-dir='grabado'] .event-list {
+  margin-top: 8px;
+  font-size: 13.5px;
+}
+
+[data-dir='grabado'] .event-list li {
+  padding: 2px 0;
+}
+
+[data-dir='grabado'] .event-list .year {
+  font-variant-numeric: oldstyle-nums;
+  color: var(--ink-3);
+}
+
+[data-dir='grabado'] .event-list a {
+  text-decoration: none;
+}
+
+[data-dir='grabado'] .event-list .cause {
+  font-style: italic;
+  font-size: 12.5px;
+}
+
+[data-dir='grabado'] .event-list .por {
+  color: var(--rubric);
+}
+
+[data-dir='grabado'] .ficha .why .ledger {
+  display: inline-block;
+  width: calc(50% - 12px);
+  vertical-align: top;
+  margin-right: 20px;
+}
+
+[data-dir='grabado'] .ficha .why .ledger:last-child {
+  margin-right: 0;
+}
+
+/* Atlas: hoja con marco graduado y cartela. */
+[data-dir='grabado'] .neatline {
+  inset: 14px;
+  border: 1.5px solid var(--ink);
+  box-shadow:
+    0 0 0 14px var(--paper),
+    inset 0 0 0 6px rgb(246 245 241 / 0.85),
+    inset 0 0 0 6.75px var(--ink);
+}
+
+[data-dir='grabado'] .cartouche {
+  left: 44px;
+  bottom: 44px;
+  width: 330px;
+}
+
+[data-dir='grabado'] .cartouche h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.1;
+  margin: 4px 0;
+}
+
+[data-dir='grabado'] .cartouche .sub,
+[data-dir='grabado'] .cartouche .note {
+  font-style: italic;
+  color: var(--ink-2);
+  font-size: 12.5px;
+}
+
+[data-dir='grabado'] .cartouche .note {
+  margin-top: 8px;
+  color: var(--ink-3);
+  font-size: 11.5px;
+}
+
+[data-dir='grabado'] .readouts {
+  margin: 10px 0;
+  padding: 6px 0;
+  border-top: 0.75px solid var(--line);
+  border-bottom: 0.75px solid var(--line);
+  font-size: 13px;
+}
+
+[data-dir='grabado'] .readouts dt {
+  font-style: italic;
+  color: var(--ink-3);
+}
+
+[data-dir='grabado'] .scalebar {
+  margin: 10px 0;
+  font-size: 11px;
+}
+
+[data-dir='grabado'] .scalebar .ruler {
+  border: 0.75px solid var(--ink);
+}
+
+[data-dir='grabado'] .scalebar .ruler i:nth-child(odd) {
+  background: var(--ink);
+}
+
+[data-dir='grabado'] .legend.compact {
+  font-size: 12.5px;
+}
+
+/* Hoja */
+[data-dir='grabado'] .hoja h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 64px;
+  line-height: 1;
+}
+
+[data-dir='grabado'] .hoja .tagline {
+  font-style: italic;
+  font-size: 20px;
+  color: var(--ink-2);
+}
+
+[data-dir='grabado'] .hoja h2 {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding-bottom: 6px;
+  border-bottom: 3px double var(--ink);
+}
+
+[data-dir='grabado'] .mock-links .btn {
+  border: 0.75px solid var(--ink);
+  padding: 6px 12px;
+}
+
+[data-dir='grabado'] .t-display {
+  font-family: var(--font-display);
+  font-size: 40px;
+}
+
+[data-dir='grabado'] .t-text {
+  font-size: 17px;
+}
+
+[data-dir='grabado'] .t-realm {
+  letter-spacing: 0.34em;
+  font-size: 22px;
+}
+
+[data-dir='grabado'] .t-water {
+  font-style: italic;
+  font-size: 20px;
+  color: #46688a;
+}

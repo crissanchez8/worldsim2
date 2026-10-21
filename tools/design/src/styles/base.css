@@ -1,0 +1,719 @@
+/* Esqueleto común de las maquetas de P2.2: la estructura de D57 y la hoja de especificación.
+   Cada dirección define sus alias (--bg, --fg, --font-ui…) y el aspecto en su propio archivo. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+html:not([data-page='hoja']) body {
+  width: 1440px;
+  height: 900px;
+  overflow: hidden;
+}
+
+.frame {
+  position: relative;
+  width: 1440px;
+  height: 900px;
+  overflow: hidden;
+}
+
+[data-page='hoja'] .frame {
+  width: auto;
+  height: auto;
+  overflow: visible;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+dl,
+dd,
+ol,
+ul {
+  margin: 0;
+}
+
+ol,
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+.icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke, 1.5);
+  stroke-linecap: var(--icon-cap, round);
+  stroke-linejoin: var(--icon-join, round);
+  flex: none;
+}
+
+.num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.inline-list a .num {
+  margin-left: 0.35em;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Separadores de listas en línea: por CSS, nunca en el texto (lint de texto de UI de P1). */
+.inline-list > * + *::before {
+  content: var(--sep, ' · ');
+  color: var(--fg3);
+  text-decoration: none;
+  display: inline-block;
+  white-space: pre;
+}
+
+/* ── Mapa ───────────────────────────────────────────────────────────────────────────────────── */
+
+.map {
+  position: absolute;
+  inset: 0;
+}
+
+.map .render {
+  position: absolute;
+  inset: 0;
+  width: 1440px;
+  height: 900px;
+  object-fit: cover;
+}
+
+.labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.msym {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transform: translate(-8px, -8px);
+}
+
+.msym .sym {
+  display: block;
+}
+
+.mname {
+  white-space: nowrap;
+}
+
+.realm {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+/* ── Vista en vivo (D57) ───────────────────────────────────────────────────────────────────── */
+
+.topbar {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 16px;
+  z-index: 3;
+}
+
+.topbar .world,
+.topbar .actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar .world {
+  flex: 1;
+}
+
+.topbar .date {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.world-params > * + *::before {
+  content: var(--sep, ' · ');
+}
+
+.lang {
+  display: inline-flex;
+}
+
+.rail {
+  position: absolute;
+  left: 12px;
+  top: 68px;
+  width: 184px;
+  z-index: 2;
+}
+
+.modes {
+  display: flex;
+  flex-direction: column;
+}
+
+.mode {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+}
+
+.legend > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend dt {
+  width: 34px;
+  display: flex;
+  justify-content: center;
+}
+
+.swatches {
+  display: inline-flex;
+}
+
+.sw {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+}
+
+.sw.none {
+  width: 28px;
+}
+
+.inspector {
+  position: absolute;
+  right: 12px;
+  top: 68px;
+  max-height: calc(900px - 68px - 204px);
+  width: 344px;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.inspector.wide {
+  width: 452px;
+  max-height: calc(900px - 68px - 132px);
+}
+
+.panel-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.entity-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.entity-header .emblem,
+.entity-header .sym {
+  flex: none;
+}
+
+.kind > span::before,
+.asof > span::before {
+  content: var(--sep, ' · ');
+}
+
+.asof > span:first-child::before {
+  content: ' ';
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 14px;
+}
+
+.facts > div {
+  display: contents;
+}
+
+.facts dd {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.section-title .count::before,
+.why-title span::before,
+.col-title span::before {
+  content: ' ';
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.bottom {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 3;
+}
+
+.time-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.speeds {
+  display: inline-flex;
+}
+
+.timeline {
+  position: relative;
+}
+
+.track {
+  position: relative;
+  height: 22px;
+}
+
+.band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.band span {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+.ahead,
+.marker,
+.playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.ticks {
+  position: relative;
+  height: 16px;
+}
+
+.ticks span {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.ticks span:first-child {
+  transform: none;
+}
+
+.ticks span:last-child {
+  transform: translateX(-100%);
+}
+
+.ticker {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
+}
+
+.ticker .ev {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* ── Porqué ─────────────────────────────────────────────────────────────────────────────────── */
+
+.ledger ol li {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.ledger .dots {
+  flex: 1;
+  border-bottom: 1px dotted var(--fg3);
+  transform: translateY(-3px);
+}
+
+.gauge .bar {
+  display: flex;
+  height: 8px;
+  gap: 2px;
+}
+
+.gauge table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.gauge td.num {
+  text-align: right;
+}
+
+.waterfall li {
+  display: grid;
+  grid-template-columns: 1fr 112px 64px;
+  gap: 10px;
+  align-items: center;
+}
+
+.waterfall .track {
+  position: relative;
+  height: 10px;
+}
+
+.waterfall .bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.waterfall .num {
+  text-align: right;
+}
+
+.band.narrow span {
+  display: none;
+}
+
+/* ── Ficha ──────────────────────────────────────────────────────────────────────────────────── */
+
+.topbar.page {
+  gap: 16px;
+}
+
+.crumbs {
+  display: flex;
+  align-items: baseline;
+}
+
+.crumbs > * + *::before {
+  content: var(--crumb, ' › ');
+  white-space: pre;
+}
+
+.ficha {
+  position: absolute;
+  inset: 56px 0 0;
+  overflow: hidden;
+}
+
+.ficha-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.asof-toggle {
+  display: inline-flex;
+}
+
+.asof-toggle button span::before {
+  content: ' ';
+}
+
+.ficha-cols {
+  display: grid;
+  grid-template-columns: 560px 1fr;
+}
+
+.locator {
+  position: relative;
+  height: 150px;
+  background-image: var(--src);
+  background-size: 1440px 900px;
+  background-position: calc(280px - var(--x)) calc(75px - var(--y));
+}
+
+.locator .pin {
+  position: absolute;
+  left: 280px;
+  top: 75px;
+}
+
+.event-list li {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+}
+
+.event-list .cause {
+  display: block;
+}
+
+.event-list .por::after {
+  content: ' ';
+}
+
+/* ── Atlas ──────────────────────────────────────────────────────────────────────────────────── */
+
+.atlas-sheet {
+  position: absolute;
+  inset: 0;
+}
+
+.neatline {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cartouche {
+  position: absolute;
+  z-index: 2;
+}
+
+.readouts > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scalebar {
+  display: grid;
+  gap: 2px;
+}
+
+.scalebar .ruler {
+  display: flex;
+  width: var(--w);
+  height: 6px;
+}
+
+.scalebar .ruler i {
+  flex: 1;
+}
+
+.scalebar .lbl {
+  display: flex;
+  justify-content: space-between;
+  width: calc(var(--w) + 24px);
+  margin-left: -4px;
+}
+
+/* ── Hoja de especificación ─────────────────────────────────────────────────────────────────── */
+
+.hoja {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 48px 32px 96px;
+  display: grid;
+  gap: 48px;
+}
+
+.hoja-head .mock-links {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.hoja .lead {
+  font-family: var(--font-long);
+  font-size: 19px;
+  line-height: 1.55;
+  max-width: 68ch;
+  text-wrap: pretty;
+}
+
+.hoja .concept .facts {
+  margin-top: 20px;
+  row-gap: 8px;
+  max-width: 80ch;
+}
+
+.hoja h2 {
+  margin-bottom: 14px;
+}
+
+.hoja .hint {
+  color: var(--fg2);
+  max-width: 75ch;
+  margin-bottom: 12px;
+}
+
+.swatch-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px 24px;
+  margin-bottom: 20px;
+}
+
+.swatch-list li {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  grid-template-rows: auto auto auto;
+  column-gap: 12px;
+}
+
+.big-sw {
+  grid-row: span 3;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+}
+
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tbl th,
+.tbl td {
+  text-align: left;
+  padding: 8px 10px 8px 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.tbl .pass::after {
+  content: ' AA';
+}
+
+.tbl .fail::after {
+  content: ' no AA';
+  color: var(--accent);
+}
+
+.pair {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+}
+
+.strip {
+  display: inline-flex;
+}
+
+.strip span {
+  width: 26px;
+  height: 22px;
+}
+
+.type-list li {
+  display: grid;
+  grid-template-columns: 220px 220px 1fr;
+  gap: 16px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.type-list .role,
+.type-list .family {
+  color: var(--fg2);
+  font-size: 13px;
+}
+
+.icon-row {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.icon-row .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.sym-row span {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.sym-row .sym {
+  width: 32px;
+  height: 32px;
+}
+
+.emblem-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+}
+
+.bullets {
+  list-style: disc;
+  padding-left: 1.2em;
+  display: grid;
+  gap: 6px;
+  max-width: 70ch;
+}
+
+.phase {
+  font-family: var(--font-num);
+  font-size: 12px;
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+}
